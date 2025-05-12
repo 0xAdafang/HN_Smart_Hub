@@ -1,0 +1,44 @@
+<UserControl x:Class="RHApp.Views.RHView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:RHApp.ViewModels"
+             xmlns:local="clr-namespace:RHApp.Views">
+    <UserControl.DataContext>
+        <vm:RHViewModel />
+    </UserControl.DataContext>
+
+    <Grid Margin="10">
+    <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+
+    <!-- Boutons visibles seulement si admin -->
+    <StackPanel Orientation="Horizontal" Visibility="{Binding EstAdmin, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0 0 0 10">
+        <Button Content="Ajouter" Margin="0 0 10 0" Command="{Binding AjouterCommand}" />
+        <Button Content="Modifier" Margin="0 0 10 0" Command="{Binding ModifierCommand}" />
+        <Button Content="Supprimer" Command="{Binding SupprimerCommand}" />
+    </StackPanel>
+
+    <!-- DataGrid -->
+    <DataGrid Grid.Row="1"
+              ItemsSource="{Binding ListeIndicateurs}"
+              SelectedItem="{Binding IndicateurSelectionne, Mode=TwoWay}"
+              AutoGenerateColumns="False"
+              IsReadOnly="True">
+        <DataGrid.Columns>
+            <DataGridTextColumn Header="Nom" Binding="{Binding Employe.Nom}" />
+            <DataGridTextColumn Header="Prénom" Binding="{Binding Employe.Prenom}" />
+            <DataGridTextColumn Header="Date" Binding="{Binding DateEvaluation, StringFormat=d}" />
+            <DataGridTextColumn Header="Ponctualité" Binding="{Binding Ponctualite}" />
+            <DataGridTextColumn Header="Assiduité" Binding="{Binding Assiduite}" />
+            <DataGridTextColumn Header="Service Client" Binding="{Binding ServiceClient}" />
+            <DataGridTextColumn Header="Outils" Binding="{Binding Outils}" />
+            <DataGridTextColumn Header="Respect" Binding="{Binding RespectConsignes}" />
+            <DataGridTextColumn Header="Rendement" Binding="{Binding Rendement}" />
+            <DataGridTextColumn Header="Redressements" Binding="{Binding Redressements}" />
+            <DataGridTextColumn Header="Conséquences" Binding="{Binding Consequences}" />
+        </DataGrid.Columns>
+    </DataGrid>
+</Grid>
+</UserControl>
