@@ -1,5 +1,0 @@
-public MainWindow(User utilisateur)
-{
-    InitializeComponent();
-    HN_Smart_Hub.DataContext = new HN_Smart_Hub(utilisateur);
-}

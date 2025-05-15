@@ -1,0 +1,12 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main",
+  "description": "Fenêtre principale – droits minimum + ouverture de fichiers/URL",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "opener:default"
+  ]
+}
