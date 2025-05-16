@@ -1637,6 +1637,7 @@ version = "0.1.0"
 dependencies = [
  "bcrypt",
  "dotenvy",
+ "once_cell",
  "serde",
  "serde_json",
  "sqlx",
