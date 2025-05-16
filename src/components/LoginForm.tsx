@@ -3,7 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 type Props = {
   onRegister: () => void;
-  onSuccess: () => void;
+  onSuccess: (role: "Admin" | "User") => void;
 };
 
 export default function LoginForm({ onRegister, onSuccess }: Props) {
@@ -17,12 +17,18 @@ export default function LoginForm({ onRegister, onSuccess }: Props) {
 
     try {
       const result = await invoke("login_user", {
-        payload: { username, password },
-      });
+      payload: { username, password },
+      }) as { username: string; role: "Admin" | "User", prenom: string, nom: string };
+
+      // Stockage dans localStorage
+      localStorage.setItem("role", result.role);
+      localStorage.setItem("prenom", result.prenom);
+      localStorage.setItem("nom", result.nom);
+      
 
       console.log("✅ Résultat du login :", result);
       alert(`Bienvenue ${username} !`);
-      onSuccess(); // déclenche le passage au dashboard
+      onSuccess(result.role); // déclenche le passage au dashboard
 
     } catch (err) {
       console.error("❌ Erreur login :", err);
