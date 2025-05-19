@@ -56,8 +56,7 @@ export default function LoginForm({ onRegister, onSuccess }: Props) {
       />
 
       <button type="submit">Se connecter</button>
-      <button type="button" onClick={onRegister}>Créer un compte</button>
-
+      
       {error && <p style={{ color: "red" }}>{error}</p>}
     </form>
   );

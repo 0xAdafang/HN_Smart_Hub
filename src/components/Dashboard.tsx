@@ -4,6 +4,7 @@ type Props = {
   role: string;
   onNavigate: (section: string) => void;
   onCreateUser: () => void;
+  onLogout: () => void;
 };
 
 const sections = [
@@ -15,7 +16,12 @@ const sections = [
   { id: "liens", label: "Liens utiles" },
 ];
 
-export default function Dashboard({ role, onNavigate, onCreateUser }: Props) {
+export default function Dashboard({ role, onNavigate, onCreateUser, onLogout }: Props) {
+  const handleLogoutClick = () => {
+    window.alert("À bientôt 👋");
+    onLogout();
+  };
+
   return (
     <div style={{ padding: 20 }}>
       <h1>Tableau de bord</h1>
@@ -42,12 +48,20 @@ export default function Dashboard({ role, onNavigate, onCreateUser }: Props) {
         ))}
       </div>
 
-      {/* Bouton visible uniquement pour Admin */}
-      {role === "Admin" && (
-        <div style={{ marginTop: 40 }}>
-          <button onClick={onCreateUser}>Créer un nouvel utilisateur</button>
-        </div>
-      )}
+      {/* Boutons bas du dashboard */}
+      <div style={{ marginTop: 40, display: "flex", flexDirection: "column", gap: 10 }}>
+        {role === "Admin" && (
+          <button onClick={() => onNavigate("gestionComptes")}>
+            👤 Gérer les comptes
+          </button>
+        )}
+        <button
+          onClick={handleLogoutClick}
+          style={{ backgroundColor: "#ffcccc", color: "black" }}
+        >
+          🚪 Se déconnecter
+        </button>
+      </div>
     </div>
   );
 }

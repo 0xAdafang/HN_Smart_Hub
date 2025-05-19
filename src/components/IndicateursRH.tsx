@@ -91,6 +91,37 @@ export default function IndicateursRH() {
     }
   };
 
+  const printGrille = (id: number) => {
+  const content = document.getElementById(`grille-eval-${id}`);
+  if (!content) return;
+
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) return;
+
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Grille RH</title>
+        <style>
+          body { font-family: sans-serif; padding: 20px; }
+          ul { list-style: none; padding: 0; }
+          li { margin-bottom: 4px; }
+          table, td, th { border: 1px solid black; border-collapse: collapse; padding: 6px; }
+        </style>
+      </head>
+      <body>${content.innerHTML}</body>
+    </html>
+  `);
+
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+};
+
+const exportPDFGrille = (id: number) => {
+  printGrille(id); 
+};
+
   return (
     <div style={{ padding: 20 }}>
       <h2>Évaluation RH</h2>
@@ -193,9 +224,47 @@ export default function IndicateursRH() {
                     <br />
                     <strong>Conséquences :</strong><br />
                     {evaluation.consequences || "—"}
-                    <button onClick={() => handleDelete(evaluation.id)} style={{ marginTop: 10, backgroundColor: "#f44336", color: "white" }}>
-                    🗑️ Supprimer
-                    </button>
+
+                    <div id={`grille-eval-${evaluation.id}`} style={{ display: "none" }}>
+                      <h3>Grille RH de {evaluation.prenom ?? "?"} {evaluation.nom ?? ""}</h3>
+                      <p>Date : {new Date(evaluation.date_evaluation).toLocaleDateString("fr-FR")}</p>
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Critère</th>
+                            <th>Note</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[
+                            ["Ponctualité", evaluation.ponctualite],
+                            ["Assiduité", evaluation.assiduite],
+                            ["Service client", evaluation.service_client],
+                            ["Outils", evaluation.outils],
+                            ["Respect des consignes", evaluation.respect_consignes],
+                            ["Rendement", evaluation.rendement],
+                          ].map(([label, score]) => (
+                            <tr key={label}>
+                              <td>{label}</td>
+                              <td>{score ?? "-"}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      <p><strong>Redressements :</strong> {evaluation.redressements || "—"}</p>
+                      <p><strong>Conséquences :</strong> {evaluation.consequences || "—"}</p>
+                    </div>
+
+                    <div style={{ marginTop: 10, display: "flex", gap: "5px", flexWrap: "wrap" }}>
+                      <button onClick={() => printGrille(evaluation.id)}>🖨️ Imprimer</button>
+                      <button onClick={() => exportPDFGrille(evaluation.id)}>📥 PDF</button>
+                      <button
+                        onClick={() => handleDelete(evaluation.id)}
+                        style={{ backgroundColor: "#f44336", color: "white" }}
+                      >
+                        🗑️ Supprimer
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

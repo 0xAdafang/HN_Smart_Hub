@@ -12,11 +12,12 @@ export default function RegisterForm({ onBack }: Props) {
     password: "",
     nom: "",
     prenom: "",
-    poste: ""
+    poste: "",
+    role: "",
   });
   const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -24,7 +25,7 @@ export default function RegisterForm({ onBack }: Props) {
     e.preventDefault();
     try {
       console.log("Payload envoyé :", form);
-      await invoke("create_user", { payload: form });
+      await invoke("'create_user'_and_employee", { payload: form });
       alert("Compte créé avec succès");
       onBack();
     } catch (err) {
@@ -40,6 +41,11 @@ export default function RegisterForm({ onBack }: Props) {
       <input name="poste" placeholder="Poste" value={form.poste} onChange={handleChange} required />
       <input name="username" placeholder="Nom d'utilisateur" value={form.username} onChange={handleChange} required />
       <input type="password" name="password" placeholder="Mot de passe" value={form.password} onChange={handleChange} required />
+      <select name="role" value={form.role} onChange={handleChange} required>
+        <option value="">-- Sélectionner un rôle --</option>
+        <option value="Admin">Admin</option>
+        <option value="User">Utilisateur</option>
+      </select>
       <button type="submit">Créer</button>
       <button type="button" onClick={onBack}>Retour</button>
       {error && <p style={{ color: "red" }}>{error}</p>}
