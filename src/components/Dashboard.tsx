@@ -7,20 +7,22 @@ type Props = {
   onLogout: () => void;
 };
 
-const sections = [
-  { id: "indicateurs", label: "Indicateurs RH" },
-  { id: "conges", label: "Congés" },
-  { id: "formation", label: "Formation" },
-  { id: "produits", label: "Produits" },
-  { id: "televente", label: "Télévente" },
-  { id: "liens", label: "Liens utiles" },
-];
+
 
 export default function Dashboard({ role, onNavigate, onCreateUser, onLogout }: Props) {
   const handleLogoutClick = () => {
     window.alert("À bientôt 👋");
     onLogout();
   };
+
+  const sections = [
+  { id: "indicateurs", label: "Indicateurs RH" },
+  { id: "conges", label: role === "Admin" ? "Gérer les congés" : "Congés" },
+  { id: "formation", label: "Formation" },
+  { id: "produits", label: "Produits" },
+  { id: "televente", label: "Télévente" },
+  { id: "liens", label: "Liens utiles" },
+];
 
   return (
     <div style={{ padding: 20 }}>
@@ -51,9 +53,11 @@ export default function Dashboard({ role, onNavigate, onCreateUser, onLogout }: 
       {/* Boutons bas du dashboard */}
       <div style={{ marginTop: 40, display: "flex", flexDirection: "column", gap: 10 }}>
         {role === "Admin" && (
-          <button onClick={() => onNavigate("gestionComptes")}>
-            👤 Gérer les comptes
-          </button>
+          <>
+            <button onClick={() => onNavigate("gestionComptes")}>
+              👤 Gérer les comptes
+            </button>
+          </>
         )}
         <button
           onClick={handleLogoutClick}

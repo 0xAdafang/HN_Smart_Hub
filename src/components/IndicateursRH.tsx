@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { toast } from "react-toastify";
 
 type Employe = {
   id: number;
@@ -38,6 +39,7 @@ export default function IndicateursRH() {
     consequences: "",
   });
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
+  const [rechercheNom, setRechercheNom] = useState("");
 
   useEffect(() => {
     invoke("get_employes_non_admins")
@@ -54,8 +56,8 @@ export default function IndicateursRH() {
   };
 
   const handleSubmit = async () => {
-    if (!selectedId) return alert("Veuillez sélectionner un employé");
-
+    if (!selectedId) return toast.error("Veuillez sélectionner un employé");
+    
     try {
       await invoke("submit_evaluation", {
         payload: {
@@ -71,10 +73,10 @@ export default function IndicateursRH() {
         },
       });
 
-      alert("✅ Évaluation enregistrée !");
+      toast.success("Évaluation enregistrée !");
     } catch (err) {
       console.error(err);
-      alert("❌ Erreur lors de l'enregistrement");
+      toast.error("Erreur lors de l'enregistrement");
     }
   };
 
@@ -84,10 +86,10 @@ export default function IndicateursRH() {
     try {
         await invoke("delete_evaluation", {id});
         setEvaluations((prev) => prev.filter((e)=> e.id !== id));
-        alert("✅ Évaluation supprimée !");
+        toast.success("Évaluation supprimée !");
     } catch (err) {
         console.error(err);
-        alert("❌ Erreur lors de la suppression");
+        toast.error("Erreur lors de la suppression");
     }
   };
 
@@ -121,6 +123,9 @@ export default function IndicateursRH() {
 const exportPDFGrille = (id: number) => {
   printGrille(id); 
 };
+const evaluationsFiltrees = evaluations.filter((e) =>
+    `${e.prenom ?? ""} ${e.nom ?? ""}`.toLowerCase().includes(rechercheNom.toLowerCase())
+  );
 
   return (
     <div style={{ padding: 20 }}>
@@ -190,6 +195,13 @@ const exportPDFGrille = (id: number) => {
       {mode === "list" && (
         <>
           <h3>Évaluations enregistrées</h3>
+          <input
+            type="text"
+            placeholder="🔍 Rechercher un employé..."
+            value={rechercheNom}
+            onChange={(e) => setRechercheNom(e.target.value)}
+            style={{ marginBottom: 10, padding: 5, width: "100%" }}
+          />
           <table border={1} cellPadding={5} style={{ width: "100%", marginTop: 10 }}>
             <thead>
               <tr>
@@ -200,7 +212,7 @@ const exportPDFGrille = (id: number) => {
               </tr>
             </thead>
             <tbody>
-              {evaluations.map((evaluation) => (
+              {evaluationsFiltrees.map((evaluation) => (
                 <tr key={evaluation.id}>
                   <td>{evaluation.prenom ?? "?"} {evaluation.nom ?? ""}</td>
                   <td>{new Date(evaluation.date_evaluation).toLocaleDateString("fr-FR")}</td>

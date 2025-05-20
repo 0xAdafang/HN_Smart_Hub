@@ -18,7 +18,11 @@ type Evaluation = {
   consequences: string | null;
 };
 
-export default function MaGrilleRH() {
+type Props = {
+  onBack: () => void;
+};
+
+export default function MaGrilleRH({ onBack }: Props) {
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
 
   useEffect(() => {
@@ -37,9 +41,7 @@ export default function MaGrilleRH() {
       .catch(console.error);
   }, []);
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const handlePrint = () => window.print();
 
   const handleExportPDF = () => {
     const content = document.getElementById("grille-rh-pdf");
@@ -76,6 +78,7 @@ export default function MaGrilleRH() {
   return (
     <div style={{ padding: 20 }}>
       <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+        <button onClick={onBack}>⬅ Retour</button>
         <button onClick={handlePrint}>🖨️ Imprimer</button>
         <button onClick={handleExportPDF}>📥 Exporter en PDF</button>
       </div>

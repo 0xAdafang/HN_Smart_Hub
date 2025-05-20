@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { toast } from "react-toastify";
 
 type Props = {
   onRegister: () => void;
@@ -18,16 +19,17 @@ export default function LoginForm({ onRegister, onSuccess }: Props) {
     try {
       const result = await invoke("login_user", {
       payload: { username, password },
-      }) as { username: string; role: "Admin" | "User", prenom: string, nom: string };
+      }) as { username: string; role: "Admin" | "User", prenom: string, nom: string, employe_id: number; };
 
       // Stockage dans localStorage
       localStorage.setItem("role", result.role);
       localStorage.setItem("prenom", result.prenom);
       localStorage.setItem("nom", result.nom);
+      localStorage.setItem("employe_id", String(result.employe_id));
       
 
       console.log("✅ Résultat du login :", result);
-      alert(`Bienvenue ${username} !`);
+      toast.success(`Bienvenue ${username} !`);
       onSuccess(result.role); // déclenche le passage au dashboard
 
     } catch (err) {

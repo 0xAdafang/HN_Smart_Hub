@@ -13,6 +13,7 @@ pub struct LoginResponse {
     pub role: String,
     pub prenom: String,
     pub nom: String,
+    pub employe_id: i32,
 }
 
 #[derive(Deserialize)]
@@ -76,4 +77,39 @@ pub struct UserWithEmploye {
     pub nom: Option<String>,
     pub prenom: Option<String>,
     pub poste: Option<String>,
+}
+
+#[derive(serde::Deserialize)]
+pub struct DemandeCongesPayload {
+    pub employe_id: i32,
+    pub date_debut: NaiveDate,
+    pub date_fin: NaiveDate,
+    pub type_conge: String,
+}
+
+#[derive(serde::Serialize, sqlx::FromRow)]
+pub struct Conges {
+    pub id: i32,
+    pub employe_id: i32,
+    pub date_debut: NaiveDate,
+    pub date_fin: NaiveDate,
+    pub type_conge: Option<String>,
+    pub statut: Option<String>, 
+}
+
+#[derive(serde::Deserialize)]
+pub struct GetCongesPayload {
+    #[serde(rename = "employeId")]
+    pub employe_id: i32,
+}
+
+#[derive(serde::Serialize, sqlx::FromRow)]
+pub struct CongeAvecEmploye {
+    pub id: i32,
+    pub nom: String,
+    pub prenom: String,
+    pub type_conge: Option<String>,
+    pub date_debut: NaiveDate,
+    pub date_fin: NaiveDate, 
+    pub statut: Option<String>,
 }

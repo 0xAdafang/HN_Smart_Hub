@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/core';
+import { toast } from 'react-toastify';
 
 interface Compte {
     id: number;
@@ -36,7 +37,7 @@ export default function GestionComptes() {
     );
     } catch (err: any) {
     console.error("Erreur changement rôle :", err);
-    alert(err);
+    toast.success(err);
     }
   };
 
@@ -49,25 +50,25 @@ export default function GestionComptes() {
         setComptes((prev) => prev.filter((u) => u.id !== id));
         } catch (err: any) {
         console.error("Erreur suppression :", err);
-        alert("Erreur : " + (err?.toString() ?? "inconnue"));
+        toast.success("Erreur : " + (err?.toString() ?? "inconnue"));
         }
   };
 
   const handleResetPassword = async (id: number, nouveauMotDePasse: string) => {
     if(!nouveauMotDePasse) {
-        alert("Veuillez entrer un nouveau mot de passe.");
+        toast.success("Veuillez entrer un nouveau mot de passe.");
         return;
     }
 
     try {
         await invoke("reset_user_password", { userId: id, newPassword: nouveauMotDePasse});
-        alert("✅ Mot de passe réinitialisé !");
+        toast.success("Mot de passe réinitialisé !");
         setComptes((prev) =>
             prev.map((u) => (u.id === id ? { ...u, nouveauMotDePasse: "" } : u))
         );
     } catch (err: any) {
         console.error("Erreur réinitialisation mot de passe :", err);
-        alert("Erreur : " + (err?.toString() ?? "inconnue"));
+        toast.success("Erreur : " + (err?.toString() ?? "inconnue"));
     }
 };
 

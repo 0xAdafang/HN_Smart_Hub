@@ -9,7 +9,7 @@ use crate::AppState;
 pub async fn login_user(payload: LoginPayload, state: State<'_, AppState>) -> Result<LoginResponse, String> {
     let result = sqlx::query!(
         r#"
-        SELECT u.username, u.role, e.prenom, e.nom
+        SELECT u.username, u.role, e.prenom, e.nom, e.id as employe_id
         FROM users u
         JOIN employees e ON u.id = e.user_id
         WHERE u.username = $1 AND u.password = $2
@@ -27,6 +27,7 @@ pub async fn login_user(payload: LoginPayload, state: State<'_, AppState>) -> Re
             role: row.role,
             prenom: row.prenom.unwrap_or_default(),
             nom: row.nom.unwrap_or_default(),
+            employe_id: row.employe_id,
         }),
         None => Err("Identifiants invalides.".into()),
     }

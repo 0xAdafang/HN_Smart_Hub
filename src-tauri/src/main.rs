@@ -9,7 +9,10 @@ use sqlx::PgPool;
 use std::env;
 use std::sync::Arc;
 
-use commands::{comptes::*, indicateurs::*};
+use commands::{comptes::*, indicateurs::*, conges::*};
+use commands::conges::demande_conge;
+
+
 
 pub struct AppState {
     pub db: Arc<PgPool>,
@@ -42,6 +45,11 @@ async fn main() {
             get_user_evaluation,
             delete_evaluation,
             reset_user_password,
+            // Congés
+            demande_conge,
+            get_mes_conges,
+            get_all_conges, 
+            update_statut_conge
         ])
         .run(tauri::generate_context!())
         .expect("Erreur lors du lancement de l'application");

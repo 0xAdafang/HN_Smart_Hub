@@ -1,6 +1,7 @@
 // RegisterForm.tsx
 import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { toast } from "react-toastify";
 
 type Props = {
   onBack: () => void;
@@ -26,7 +27,7 @@ export default function RegisterForm({ onBack }: Props) {
     try {
       console.log("Payload envoyé :", form);
       await invoke("'create_user'_and_employee", { payload: form });
-      alert("Compte créé avec succès");
+      toast.success("Compte créé avec succès");
       onBack();
     } catch (err) {
       setError("Erreur lors de la création");
