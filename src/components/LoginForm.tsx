@@ -11,6 +11,7 @@ export default function LoginForm({ onRegister, onSuccess }: Props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +35,9 @@ export default function LoginForm({ onRegister, onSuccess }: Props) {
 
     } catch (err) {
       console.error("❌ Erreur login :", err);
-      setError("Échec de la connexion");
+      toast.error("Identifiants incorrects");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,7 +60,9 @@ export default function LoginForm({ onRegister, onSuccess }: Props) {
         required
       />
 
-      <button type="submit">Se connecter</button>
+      <button type="submit" disabled={loading}>
+        {loading ? "Connexion..." : "Se connecter"}
+      </button>
       
       {error && <p style={{ color: "red" }}>{error}</p>}
     </form>

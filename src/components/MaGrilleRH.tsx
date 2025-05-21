@@ -74,6 +74,21 @@ export default function MaGrilleRH({ onBack }: Props) {
   if (!evaluation) {
     return <p>📭 Aucune évaluation disponible pour le moment.</p>;
   }
+  function calculerMoyenne(e: Evaluation): number | null {
+    const valeurs = [
+      e.ponctualite,
+      e.assiduite,
+      e.service_client,
+      e.outils,
+      e.respect_consignes,
+      e.rendement,
+    ].filter((n): n is number => typeof n === "number");
+
+    if (valeurs.length === 0) return null;
+
+    const somme = valeurs.reduce((a, b) => a + b, 0);
+    return Math.round((somme / valeurs.length) * 10) / 10;
+}
 
   return (
     <div style={{ padding: 20 }}>
@@ -89,7 +104,33 @@ export default function MaGrilleRH({ onBack }: Props) {
           Évalué le :
           <strong> {new Date(evaluation.date_evaluation).toLocaleDateString("fr-FR")}</strong>
         </p>
+        {(() => {
+            const moyenne = calculerMoyenne(evaluation);
+            if (moyenne === null) return null;
 
+            let couleur = "gray";
+            if (moyenne >= 7) couleur = "green";
+            else if (moyenne >= 4) couleur = "orange";
+            else couleur = "red";
+
+            return (
+              <p>
+                Moyenne :
+                <span
+                  style={{
+                    backgroundColor: couleur,
+                    color: "white",
+                    padding: "4px 8px",
+                    borderRadius: "8px",
+                    fontWeight: "bold",
+                    marginLeft: "10px"
+                  }}
+                >
+                  {moyenne}/10
+                </span>
+              </p>
+            );
+          })()}
         <table>
           <thead>
             <tr>

@@ -52,6 +52,18 @@ export default function GestionConges() {
       : new Date(b.date_debut).getTime() - new Date(a.date_debut).getTime();
   });
 
+  function detecteChevauchement(current: CongeAvecEmploye) : boolean {
+    const d1 = new Date(current.date_debut);
+    const f1 = new Date(current.date_fin);
+    
+    return conges.some(other => {
+      if(other.id === current.id || other.nom === current.nom) return false;
+      const d2 = new Date(other.date_debut);
+      const f2 = new Date(other.date_fin);
+      return d1 <= f2 && d2 >= f1;
+    })
+  }
+
   return (
     <div style={{ padding: 20 }}>
       <h2>Gestion des demandes de congé</h2>
@@ -99,24 +111,49 @@ export default function GestionConges() {
           <tbody>
             {congesTries.map((c) => (
               <tr key={c.id}>
-                <td>{c.prenom} {c.nom}</td>
+                <td>
+                  {c.prenom} {c.nom}
+                  {detecteChevauchement(c) && (
+                    <span style={{
+                      backgroundColor: "orange",
+                      color: "white",
+                      padding: "2px 6px",
+                      marginLeft: 8,
+                      borderRadius: "6px",
+                      fontSize: "0.75rem"
+                    }}>
+                      ⚠️ Conflit 
+                    </span>
+                  )}
+                </td>
                 <td>{c.type_conge}</td>
                 <td>{new Date(c.date_debut).toLocaleDateString("fr-FR")}</td>
                 <td>{new Date(c.date_fin).toLocaleDateString("fr-FR")}</td>
-                <td
-                  style={{
-                    color:
-                      c.statut === "Approuvé"
-                        ? "green"
-                        : c.statut === "Refusé"
-                        ? "red"
-                        : "black",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {c.statut ?? "—"}
-                </td>
-                <td>
+                  <td>
+                      {(() => {
+                        let bg = "gray";
+                        let label = c.statut ?? "—";
+
+                        if (label === "Approuvé") bg = "green";
+                        else if (label === "Refusé") bg = "red";
+                        else if (label === "En attente") bg = "orange";
+                        return (
+                          <span
+                            style={{
+                              backgroundColor: bg,
+                              color: "white",
+                              padding: "4px 8px",
+                              borderRadius: "8px",
+                              fontWeight: "bold",
+                              fontSize: "0.85rem",
+                            }}
+                          >
+                            {label}
+                          </span>
+                        );
+                      })()}
+                    </td>
+                  <td>
                   {c.statut === "En attente" ? (
                     <>
                       <button onClick={() => handleStatut(c.id, "Approuvé")}>✅</button>

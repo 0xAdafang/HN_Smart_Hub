@@ -56,7 +56,23 @@ export default function IndicateursRH() {
   };
 
   const handleSubmit = async () => {
+    function aDejaEteEvalueCeMois(id: number): boolean {
+      const maintenant = new Date();
+      return evaluations.some(e => {
+        if (e.employee_id !== id) return false;
+        const dateEval = new Date(e.date_evaluation);
+        return (
+          dateEval.getFullYear() === maintenant.getFullYear() &&
+          dateEval.getMonth() === maintenant.getMonth()
+        );
+      });
+    }
     if (!selectedId) return toast.error("Veuillez sélectionner un employé");
+
+    if (aDejaEteEvalueCeMois(selectedId)) {
+      toast.error("⚠️ Cet employé a déjà été évalué ce mois-ci.");
+      return;
+    }
     
     try {
       await invoke("submit_evaluation", {
@@ -126,6 +142,24 @@ const exportPDFGrille = (id: number) => {
 const evaluationsFiltrees = evaluations.filter((e) =>
     `${e.prenom ?? ""} ${e.nom ?? ""}`.toLowerCase().includes(rechercheNom.toLowerCase())
   );
+
+function calculerMoyenne(e: Evaluation): number | null {
+  const valeurs = [
+
+    e.ponctualite,
+    e.assiduite,
+    e.service_client,
+    e.outils,
+    e.respect_consignes,
+    e.rendement,
+  ].filter((n): n is number => typeof n === "number");
+
+  if (valeurs.length === 0) return null;
+
+  const somme = valeurs.reduce((a, b) => a + b, 0);
+  return Math.round((somme / valeurs.length) * 10) / 10;
+
+}
 
   return (
     <div style={{ padding: 20 }}>
@@ -207,6 +241,7 @@ const evaluationsFiltrees = evaluations.filter((e) =>
               <tr>
                 <th>Employé</th>
                 <th>Date</th>
+                <th>Moyenne</th>
                 <th>Scores</th>
                 <th>Commentaires</th>
               </tr>
@@ -216,6 +251,31 @@ const evaluationsFiltrees = evaluations.filter((e) =>
                 <tr key={evaluation.id}>
                   <td>{evaluation.prenom ?? "?"} {evaluation.nom ?? ""}</td>
                   <td>{new Date(evaluation.date_evaluation).toLocaleDateString("fr-FR")}</td>
+                        <td>
+                      {(() => {
+                        const moyenne = calculerMoyenne(evaluation);
+                        if (moyenne === null) return "—";
+
+                        let couleur = "gray";
+                        if (moyenne >= 7) couleur = "green";
+                        else if (moyenne >= 4) couleur = "orange";
+                        else couleur = "red";
+
+                        return (
+                          <span
+                            style={{
+                              backgroundColor: couleur,
+                              color: "white",
+                              padding: "4px 8px",
+                              borderRadius: "8px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {moyenne}/10
+                          </span>
+                        );
+                      })()}
+                    </td>
                   <td>
                     {[
                       ["ponctualité", evaluation.ponctualite],

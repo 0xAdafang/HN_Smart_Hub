@@ -15,6 +15,26 @@ interface Compte {
 export default function GestionComptes() {
     const [comptes, setComptes] = useState<Compte[]>([]);
     const [erreur, setErreur] = useState<string | null>(null);
+    const [modal, setModal] = useState<{ open: boolean; user: Compte | null }>({ open: false, user: null });
+    const [pw1, setPw1] = useState('');
+    const [pw2, setPw2] = useState('');
+
+    function openPwdModal(user: Compte) {
+      setModal({ open: true, user });
+      setPw1('');
+      setPw2('');
+    }
+    function closePwdModal() {
+      setModal({ open: false, user: null });
+      setPw1('');
+      setPw2('');
+    }
+    function isPasswordStrong(pwd: string): boolean {
+      const longEnough = pwd.length >= 7;
+      const hasNumber = /\d/.test(pwd);
+      const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(pwd);
+      return longEnough && hasNumber && hasSpecialChar;
+    }
 
     const estAdmin = localStorage.getItem("role") === "Admin";
 
@@ -30,6 +50,14 @@ export default function GestionComptes() {
   }, []);
 
   const handleChangeRole = async (id: number, nouveauRole: string) => {
+    const compte = comptes.find(u => u.id === id);
+    if(!compte) return;
+
+    if (compte.role === nouveauRole) {
+      toast.info("Ce rôle est déjà assigné à l'utilisateur.");
+      return;
+    }
+
     try {
     await invoke("update_user_role", { id, role: nouveauRole });
     setComptes((prev) =>
@@ -37,7 +65,7 @@ export default function GestionComptes() {
     );
     } catch (err: any) {
     console.error("Erreur changement rôle :", err);
-    toast.success(err);
+    toast.error("Erreur : " + (err?.toString() ?? "inconnue"));
     }
   };
 
@@ -88,6 +116,7 @@ export default function GestionComptes() {
             <th>Username</th>
             <th>Rôle</th>
             <th>Actions</th>
+            <th>Supprimer un compte</th>
           </tr>
         </thead>
         <tbody>
@@ -106,29 +135,7 @@ export default function GestionComptes() {
                   <option value="User">User</option>
                 </select>
               </td>
-              <td>
-                <button onClick={() => handleDelete(c.id)} style={{ color: "red", marginBottom: "5px" }}>
-                    Supprimer
-                </button>
-                <br />
-                <input
-                    type="password"
-                    placeholder="Nouveau mot de passe"
-                    onChange={(e) =>
-                    setComptes((prev) =>
-                        prev.map((u) =>
-                        u.id === c.id ? { ...u, nouveauMotDePasse: e.target.value } : u
-                        )
-                    )
-                    }
-                />
-                <button
-                    onClick={() => handleResetPassword(c.id, c.nouveauMotDePasse ?? "")}
-                    disabled={!c.nouveauMotDePasse}
-                >
-                    🔑 Réinitialiser
-                </button>
-                </td>
+              <button onClick={() => openPwdModal(c)}>🔑 Réinitialiser</button>
               <td>
                 <button onClick={() => handleDelete(c.id)} style={{ color: "red" }}>
                   Supprimer
@@ -138,6 +145,65 @@ export default function GestionComptes() {
           ))}
         </tbody>
       </table>
+      {modal.open && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-80 shadow-xl">
+            <h3 className="text-lg font-semibold mb-4">
+              Nouveau mot de passe – {modal.user?.username}
+            </h3>
+
+            <input
+              type="password"
+              placeholder="Mot de passe"
+              value={pw1}
+              onChange={e => setPw1(e.target.value)}
+              className="w-full border rounded p-2 mb-2"
+            />
+            <input
+              type="password"
+              placeholder="Confirmation"
+              value={pw2}
+              onChange={e => setPw2(e.target.value)}
+              className="w-full border rounded p-2"
+            />
+
+            {pw1 && pw2 && pw1 !== pw2 && (
+              <p className="text-red-500 text-sm mt-1">
+                Les mots de passe ne correspondent pas.
+              </p>
+            )}
+            {pw1 && !isPasswordStrong(pw1) && (
+              <p className="text-red-500 text-sm mt-1">
+                Le mot de passe doit contenir au moins 7 caractères, un chiffre et un caractère spécial.
+              </p>
+            )}
+
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={closePwdModal}
+                className="px-3 py-1 rounded bg-gray-300"
+              >
+                Annuler
+              </button>
+
+              <button
+                disabled={!pw1 || pw1 !== pw2 || !isPasswordStrong(pw1)}
+                onClick={async () => {
+                  try {
+                    await handleResetPassword(modal.user!.id, pw1);
+                    closePwdModal();
+                  } catch {
+                    
+                  }
+                }}
+                className="px-3 py-1 rounded bg-emerald-600 text-white disabled:opacity-50"
+              >
+                Confirmer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

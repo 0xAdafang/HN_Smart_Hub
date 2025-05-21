@@ -59,6 +59,14 @@ export default function MesConges() {
         },
       });
 
+      const debut = new Date(form.date_debut);
+      const fin = new Date(form.date_fin);
+
+      if(debut > fin) {
+        toast.error("La date de début ne peut pas être après la date de fin.");
+        return
+      }
+
       toast.success("Demande envoyée !");
       setForm({ type_conge: "", date_debut: "", date_fin: "" });
 
@@ -148,24 +156,36 @@ export default function MesConges() {
                 <th>Statut</th>
               </tr>
             </thead>
-            <tbody>
+           <tbody>
               {congesTries.map((c) => (
                 <tr key={c.id}>
                   <td>{c.type_conge ?? "—"}</td>
                   <td>{new Date(c.date_debut).toLocaleDateString("fr-FR")}</td>
                   <td>{new Date(c.date_fin).toLocaleDateString("fr-FR")}</td>
-                  <td
-                    style={{
-                      color:
-                        c.statut === "Approuvé"
-                          ? "green"
-                          : c.statut === "Refusé"
-                          ? "red"
-                          : "black",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {c.statut ?? "—"}
+                  <td>
+                    {(() => {
+                      let bg = "gray";
+                      let label = c.statut ?? "—";
+
+                      if (label === "Approuvé") bg = "green";
+                      else if (label === "Refusé") bg = "red";
+                      else if (label === "En attente") bg = "orange";
+
+                      return (
+                        <span
+                          style={{
+                            backgroundColor: bg,
+                            color: "white",
+                            padding: "4px 8px",
+                            borderRadius: "8px",
+                            fontWeight: "bold",
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          {label}
+                        </span>
+                      );
+                    })()}
                   </td>
                 </tr>
               ))}

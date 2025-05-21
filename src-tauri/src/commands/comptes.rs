@@ -38,24 +38,24 @@ pub async fn create_user_and_employee(payload: RegisterPayload, state: State<'_,
     if payload.role != "Admin" && payload.role != "User" {
         return Err("❌ Rôle invalide".into());
     }
+    
+    let exists = sqlx::query_scalar!(
+        "SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)",
+        payload.username
+    )
+    .fetch_one(&*state.db)
+    .await
+    .map_err(|e| format!("Erreur SQL : {}", e))?;
+
+    if exists.unwrap_or(false) {
+        return Err("❌ Ce nom d'utilisateur existe déjà".into());
+    }
 
     let mut tx = state
         .db
         .begin()
         .await
         .map_err(|e| format!("Erreur démarrage transaction: {}", e))?;
-
-    let exists = sqlx::query_scalar!(
-        "SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)",
-        payload.username
-    )
-    .fetch_one(&mut *tx)
-    .await
-    .map_err(|e| format!("Erreur vérification user: {}", e))?;
-
-    if exists.unwrap_or(false) {
-        return Err("❌ Ce nom d'utilisateur existe déjà".into());
-    }
 
     let user_id = sqlx::query_scalar!(
         r#"
@@ -71,6 +71,7 @@ pub async fn create_user_and_employee(payload: RegisterPayload, state: State<'_,
     .await
     .map_err(|e| format!("Erreur insertion user: {}", e))?;
 
+    
     sqlx::query!(
         r#"
         INSERT INTO employees (user_id, nom, prenom, poste)
