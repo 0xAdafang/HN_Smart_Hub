@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "react-toastify";
 
@@ -14,6 +14,7 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
   });
 
   const [pendingList, setPendingList] = useState<typeof form[]>([]);
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target as HTMLInputElement;
@@ -55,9 +56,38 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
       toast.error("❌ Erreur : " + err);
     }
   };
+    const [salesToday, setSalesToday] = useState(0);
+    const TARGET_CALLS = 10;
+    
+    useEffect(() => {
+        const fetchTodaySales = async () => {
+            const today = new Date().toISOString().split("T")[0];
+            try {
+            const result = await invoke<any[]>("get_televente_entries_by_date", { date: today });
+            const userSales = result.filter((entry) => entry.employee_id === employeeId);
+            setSalesToday(userSales.length);
+            } catch (err) {
+            console.error("Erreur chargement jauge télévente :", err);
+            }
+        };
+
+        fetchTodaySales();
+        }, [pendingList]); // refresh la jauge à chaque ajout ou validation
+
 
   return (
-    <div className="bg-white shadow-xl rounded-xl p-4 max-w-xl w-full">
+        <div className="bg-white shadow-xl rounded-xl p-4 max-w-xl w-full">
+            <div className="mb-4">
+                <p className="font-semibold">
+                    📈 Progression : {salesToday} / {TARGET_CALLS} appels aujourd’hui
+                </p>
+                <div className="w-full h-4 bg-gray-200 rounded overflow-hidden mt-1">
+                    <div
+                    className="h-full bg-green-500 transition-all"
+                    style={{ width: `${Math.min((salesToday / TARGET_CALLS) * 100, 100)}%` }}
+                />
+            </div>
+        </div>
       <h2 className="text-xl font-bold mb-4">Ajouter un appel à la liste</h2>
       <input name="client_name" placeholder="Nom client" className="input" value={form.client_name} onChange={handleChange} />
       <input name="client_number" placeholder="N° client" className="input" value={form.client_number} onChange={handleChange} />
