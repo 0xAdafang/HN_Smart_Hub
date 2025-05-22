@@ -1,5 +1,6 @@
 import React from "react";
 
+
 type Props = {
   role: string;
   onNavigate: (section: string) => void;

@@ -9,6 +9,8 @@ import MaGrilleRH from "./components/MaGrilleRH";
 import GestionComptes from "./components/GestionComptes";
 import MesConges from "./components/MesConges";
 import GestionConges from "./components/GestionConges";
+import TeleventePage from "./pages/Televente";
+
 
 // Tu peux gérer chaque section comme une chaîne de texte
 type Section =
@@ -110,6 +112,14 @@ function App() {
     <>
       <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
       <MesConges />
+    </>
+  );
+}
+if (section === "televente") {
+  return (
+    <>
+      <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
+      <TeleventePage />
     </>
   );
 }

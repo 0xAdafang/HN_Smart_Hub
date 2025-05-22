@@ -3,6 +3,7 @@
 mod models;
 mod commands;
 
+use commands::televente::{add_televente_entry, get_televente_entries_by_date};
 use tauri::{Builder, State};
 use dotenvy::dotenv;
 use sqlx::PgPool;
@@ -49,7 +50,10 @@ async fn main() {
             demande_conge,
             get_mes_conges,
             get_all_conges, 
-            update_statut_conge
+            update_statut_conge,
+            // Televente
+            add_televente_entry,
+            get_televente_entries_by_date,
         ])
         .run(tauri::generate_context!())
         .expect("Erreur lors du lancement de l'application");

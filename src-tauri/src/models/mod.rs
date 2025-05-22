@@ -113,3 +113,28 @@ pub struct CongeAvecEmploye {
     pub date_fin: NaiveDate, 
     pub statut: Option<String>,
 }
+
+#[derive(serde::Deserialize)]
+pub struct TeleventePayload {
+    pub employee_id: i32,
+    pub date: String,
+    pub client_number: String,
+    pub client_name: String,
+    pub product_code: String,
+    pub product_name: String,
+    pub quantity: i32,
+    pub hit_click: bool,
+}
+
+#[derive(Serialize)]
+pub struct TeleventeEntry {
+    pub employee_id: i32,
+    pub employee_name: String,
+    pub date: NaiveDate,
+    pub client_number: String,
+    pub client_name: String,
+    pub product_code: String,
+    pub product_name: String,
+    pub quantity: i32,
+    pub hit_click: bool,
+}
