@@ -138,3 +138,15 @@ pub struct TeleventeEntry {
     pub quantity: i32,
     pub hit_click: bool,
 }
+
+#[derive(Deserialize)]
+pub struct UnlockAchievementPayload {
+    pub employee_id: i32,
+    pub achievement_code: String,
+}
+
+#[derive(serde::Serialize)]
+pub struct UnlockedAchievement {
+    pub code: String,
+    pub unlocked_at: Option<chrono::NaiveDateTime>,
+}

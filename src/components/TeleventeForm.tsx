@@ -74,8 +74,12 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
         fetchTodaySales();
         }, [pendingList]); // refresh la jauge à chaque ajout ou validation
 
+        
+
 
   return (
+      
+    
         <div className="bg-white shadow-xl rounded-xl p-4 max-w-xl w-full">
             <div className="mb-4">
                 <p className="font-semibold">

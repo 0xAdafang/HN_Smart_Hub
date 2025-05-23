@@ -2,7 +2,7 @@ use tauri::State;
 use sqlx::FromRow;
 use chrono::NaiveDate;
 use crate::AppState;
-use crate::models::{TeleventeEntry, TeleventePayload};
+use crate::models::{TeleventeEntry, TeleventePayload, UnlockAchievementPayload, UnlockedAchievement};
 
 
 #[tauri::command]
@@ -84,4 +84,70 @@ pub async fn get_televente_entries_by_date(
         .collect();
 
     Ok(entries)
+}
+
+
+#[tauri::command]
+pub async fn unlock_achievement(payload: UnlockAchievementPayload, state: State<'_, AppState>) -> Result<(), String> {
+    
+    let achievement = sqlx::query!(
+        r#"
+        SELECT id FROM achievements
+        WHERE code = $1
+        "#,
+        payload.achievement_code
+    )
+    .fetch_optional(&*state.db)
+    .await
+    .map_err(|e| format!("Erreur récupération succès : {}", e))?;
+
+    let achievement_id = if let Some(a) = achievement {
+        a.id
+    } else {
+        return Err("Succès non trouvé".into());
+    };
+
+    
+    sqlx::query!(
+        r#"
+        INSERT INTO user_achievements (employee_id, achievement_id)
+        VALUES ($1, $2)
+        ON CONFLICT (employee_id, achievement_id) DO NOTHING
+        "#,
+        payload.employee_id,
+        achievement_id
+    )
+    .execute(&*state.db)
+    .await
+    .map_err(|e| format!("Erreur insertion succès : {}", e))?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn get_user_achievements(employee_id: i32, state: State<'_, AppState>) -> Result<Vec<UnlockedAchievement>, String> {
+    
+   let records = sqlx::query!(
+        r#"
+        SELECT a.code, ua.unlocked_at
+        FROM user_achievements ua
+        JOIN achievements a ON a.id = ua.achievement_id
+        WHERE ua.employee_id = $1
+        "#,
+        employee_id
+        )
+    .fetch_all(&*state.db)
+    .await
+    .map_err(|e| format!("Erreur lecture succès : {}", e))?;
+
+    let achievements = records
+        .into_iter()
+        .map(|r| UnlockedAchievement {
+            code: r.code,
+            unlocked_at: r.unlocked_at,
+        })
+        .collect();
+
+    Ok(achievements)
+
 }
