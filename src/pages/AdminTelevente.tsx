@@ -24,7 +24,7 @@ export default function AdminTelevente() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data: Vente[] = await invoke("get_televente_entries");
+                const data: Vente[] = await invoke("get_all_televente_entries");
                 setVentes(data);
             } catch (err) {
                 console.error("Erreur lors de la récupération des données :", err);

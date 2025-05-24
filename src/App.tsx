@@ -106,14 +106,14 @@ function AppContent() {
   }
 
   if (section === "televente") {
-    return (
-      <>
-        <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
-        <TeleventePage />
-      </>
-    );
-  }
-  if (section === "adminTelevente") {
+  return (
+    <>
+      <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
+      {user.role === "Admin" ? <AdminTelevente /> : <TeleventePage />}
+    </>
+  );
+}
+  if (section === "adminTelevente" && user.role === "Admin") {
   return (
     <>
       <button onClick={() => setSection("dashboard")}>⬅ Retour</button>

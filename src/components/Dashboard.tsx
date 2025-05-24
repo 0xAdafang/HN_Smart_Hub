@@ -23,7 +23,7 @@ export default function Dashboard({ role, onNavigate, onCreateUser, onLogout }: 
   { id: "produits", label: "Produits" },
   { id: "televente", label: "Télévente" },
   { id: "liens", label: "Liens utiles" },
-  { id: "adminTelevente", label: "Ventes (admin)" }
+  
 ];
 
   return (
