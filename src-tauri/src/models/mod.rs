@@ -150,3 +150,16 @@ pub struct UnlockedAchievement {
     pub code: String,
     pub unlocked_at: Option<chrono::NaiveDateTime>,
 }
+
+#[derive(Serialize)]
+pub struct AdminTeleventeEntry {
+    pub employee_id: i32,
+    pub employee_name: String,
+    pub date: NaiveDate,
+    pub client_number: String,
+    pub client_name: String,
+    pub product_code: String,
+    pub product_name: String,
+    pub quantity: i32,
+    pub hit_click: bool,
+}

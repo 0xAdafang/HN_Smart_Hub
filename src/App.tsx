@@ -10,9 +10,9 @@ import GestionComptes from "./components/GestionComptes";
 import MesConges from "./components/MesConges";
 import GestionConges from "./components/GestionConges";
 import TeleventePage from "./pages/Televente";
+import { UserProvider, useUser } from "./contexts/UserContext"; 
+import AdminTelevente from "./pages/AdminTelevente";
 
-
-// Tu peux gérer chaque section comme une chaîne de texte
 type Section =
   | "dashboard"
   | "indicateurs"
@@ -24,37 +24,25 @@ type Section =
   | "createUser"
   | "gestionComptes"
   | "mesConges"
-  | "gestionConges";
+  | "gestionConges"
+  | "adminTelevente";
 
-function App() {
-  // État global de l'utilisateur
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [role, setRole] = useState<"Admin" | "User">(() => {
-    return (localStorage.getItem("role") as "Admin" | "User") ?? "User";
-  });
+function AppContent() {
   const [section, setSection] = useState<Section>("dashboard");
+  const { user, logout } = useUser();
 
-  const handleLogin = (userRole: "Admin" | "User") => {
-    localStorage.setItem("role", userRole);
-    setLoggedIn(true);
-    setRole(userRole);
-    setSection("dashboard");
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("role");
-    setLoggedIn(false);
-    setSection("dashboard");
-  };
-
-  if (!loggedIn) {
+  if (!user) {
     return (
       <LoginForm
         onRegister={() => setSection("createUser")}
-        onSuccess={(role) => handleLogin(role)}
+        onSuccess={(loggedInUser) => {
+          setSection("dashboard");
+        }}
       />
     );
   }
+
+  const isAdmin = user.role === "Admin";
 
   if (section === "createUser") {
     return (
@@ -63,7 +51,7 @@ function App() {
         <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
           <button onClick={() => setSection("gestionComptes")}>⬅ Retour</button>
         </div>
-        <RegisterForm onBack={() => setSection("gestionComptes" as Section)} />
+        <RegisterForm onBack={() => setSection("gestionComptes")} />
       </div>
     );
   }
@@ -85,7 +73,7 @@ function App() {
     return (
       <>
         <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
-        {role === "Admin" ? <IndicateursRH /> : <MaGrilleRH onBack={() => setSection("dashboard")} />}
+        {isAdmin ? <IndicateursRH /> : <MaGrilleRH onBack={() => setSection("dashboard")} />}
       </>
     );
   }
@@ -94,7 +82,7 @@ function App() {
     return (
       <>
         <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
-        {role === "Admin" ? <GestionConges /> : <MesConges />}
+        {isAdmin ? <GestionConges /> : <MesConges />}
       </>
     );
   }
@@ -107,40 +95,56 @@ function App() {
       </>
     );
   }
+
   if (section === "mesConges") {
+    return (
+      <>
+        <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
+        <MesConges />
+      </>
+    );
+  }
+
+  if (section === "televente") {
+    return (
+      <>
+        <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
+        <TeleventePage />
+      </>
+    );
+  }
+  if (section === "adminTelevente") {
   return (
     <>
       <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
-      <MesConges />
-    </>
-  );
-}
-if (section === "televente") {
-  return (
-    <>
-      <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
-      <TeleventePage />
+      <AdminTelevente />
     </>
   );
 }
 
   return (
     <Dashboard
-      role={role}
+      role={user.role}
       onNavigate={(id) => {
         if (id === "conges") {
-          if (role === "Admin") {
-            setSection("gestionConges");
-          } else {
-            setSection("mesConges");
-          }
+          setSection(user.role === "Admin" ? "gestionConges" : "mesConges");
         } else {
           setSection(id as Section);
         }
-      } }
+      }}
       onCreateUser={() => setSection("createUser")}
-      onLogout={handleLogout} />
+      onLogout={logout}
+    />
   );
 }
 
-export default App;
+
+
+export default function App() {
+  return (
+    <UserProvider>
+      <ToastContainer />
+      <AppContent />
+    </UserProvider>
+  );
+}

@@ -3,7 +3,7 @@
 mod models;
 mod commands;
 
-use commands::televente::{add_televente_entry, get_televente_entries_by_date, get_user_achievements, unlock_achievement};
+use commands::televente::{add_televente_entry, get_all_televente_entries, get_televente_entries_by_date, get_user_achievements, unlock_achievement};
 use tauri::{Builder, State};
 use dotenvy::dotenv;
 use sqlx::PgPool;
@@ -56,6 +56,7 @@ async fn main() {
             get_televente_entries_by_date,
             unlock_achievement,
             get_user_achievements,
+            get_all_televente_entries,
         ])
         .run(tauri::generate_context!())
         .expect("Erreur lors du lancement de l'application");

@@ -2,7 +2,7 @@ use tauri::State;
 use sqlx::FromRow;
 use chrono::NaiveDate;
 use crate::AppState;
-use crate::models::{TeleventeEntry, TeleventePayload, UnlockAchievementPayload, UnlockedAchievement};
+use crate::models::{TeleventeEntry, TeleventePayload, UnlockAchievementPayload, UnlockedAchievement, AdminTeleventeEntry};
 
 
 #[tauri::command]
@@ -37,10 +37,7 @@ pub async fn add_televente_entry(payload: TeleventePayload, state: State<'_, App
 }
 
 #[tauri::command]
-pub async fn get_televente_entries_by_date(
-    date: String,
-    state: State<'_, AppState>
-) -> Result<Vec<TeleventeEntry>, String> {
+pub async fn get_televente_entries_by_date(date: String,state: State<'_, AppState>) -> Result<Vec<TeleventeEntry>, String> {
     let parsed_date = chrono::NaiveDate::parse_from_str(&date, "%Y-%m-%d")
         .map_err(|e| format!("Date invalide : {}", e))?;
 
@@ -149,5 +146,44 @@ pub async fn get_user_achievements(employee_id: i32, state: State<'_, AppState>)
         .collect();
 
     Ok(achievements)
+
+}
+
+#[tauri::command]
+pub async fn get_all_televente_entries(state: State<'_, AppState>) -> Result<Vec<AdminTeleventeEntry>, String> {
+    let rows = sqlx::query!(
+         r#"
+        SELECT 
+            t.employee_id,
+            CONCAT(e.prenom, ' ', e.nom) AS employee_name,
+            t.date,
+            t.client_number,
+            t.client_name,
+            t.product_code,
+            t.product_name,
+            t.quantity,
+            t.hit_click
+        FROM televente_entries t
+        JOIN employees e ON e.id = t.employee_id
+        ORDER BY t.date DESC
+        "#
+    )
+    .fetch_all(&*state.db)
+    .await
+    .map_err(|e| format!("Erreur lecture télévente : {}", e))?;
+
+    let result = rows.into_iter().map(|r| AdminTeleventeEntry {
+        employee_id: r.employee_id,
+        employee_name: r.employee_name.unwrap_or_default(),
+        date: r.date,
+        client_number: r.client_number,
+        client_name: r.client_name,
+        product_code: r.product_code,
+        product_name: r.product_name,
+        quantity: r.quantity,
+        hit_click: r.hit_click,
+    }).collect();
+
+    Ok(result)
 
 }

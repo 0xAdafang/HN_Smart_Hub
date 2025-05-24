@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "react-toastify";
+import { useUser } from "../contexts/UserContext";
+
 
 type Props = {
   onRegister: () => void;
@@ -13,25 +15,32 @@ export default function LoginForm({ onRegister, onSuccess }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const { login } = useUser();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     try {
       const result = await invoke("login_user", {
-      payload: { username, password },
-      }) as { username: string; role: "Admin" | "User", prenom: string, nom: string, employe_id: number; };
+        payload: { username, password },
+      }) as {
+        username: string;
+        role: "Admin" | "User";
+        prenom: string;
+        nom: string;
+        employe_id: number;
+      };
 
-      // Stockage dans localStorage
-      localStorage.setItem("role", result.role);
-      localStorage.setItem("prenom", result.prenom);
-      localStorage.setItem("nom", result.nom);
-      localStorage.setItem("employe_id", String(result.employe_id));
-      
+      login({
+        id: result.employe_id,
+        name: `${result.prenom} ${result.nom}`,
+        role: result.role,
+      });
 
       console.log("✅ Résultat du login :", result);
-      toast.success(`Bienvenue ${username} !`);
-      onSuccess(result.role); // déclenche le passage au dashboard
+      toast.success(`Bienvenue ${result.prenom} !`);
+      onSuccess(result.role);
 
     } catch (err) {
       console.error("❌ Erreur login :", err);
@@ -68,3 +77,5 @@ export default function LoginForm({ onRegister, onSuccess }: Props) {
     </form>
   );
 }
+
+
