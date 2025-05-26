@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { toast } from 'react-toastify';
+import { useUser } from "../contexts/UserContext";
 
 interface Compte {
     id: number;
@@ -36,7 +37,8 @@ export default function GestionComptes() {
       return longEnough && hasNumber && hasSpecialChar;
     }
 
-    const estAdmin = localStorage.getItem("role") === "Admin";
+    const { user } = useUser();
+    const estAdmin = user?.role === "Admin";
 
     useEffect(() => {
     if (!estAdmin) return;

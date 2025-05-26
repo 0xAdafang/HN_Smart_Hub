@@ -12,6 +12,8 @@
   "dependencies": {
     "@tauri-apps/api": "^2.0.1",
     "@tauri-apps/plugin-opener": "^2.2.6",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-toastify": "^11.0.5",
