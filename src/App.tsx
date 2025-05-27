@@ -12,6 +12,11 @@ import GestionConges from "./components/GestionConges";
 import TeleventePage from "./pages/Televente";
 import { UserProvider, useUser } from "./contexts/UserContext"; 
 import AdminTelevente from "./pages/AdminTelevente";
+import FormationPage from "./pages/FormationPage";
+import FormationModule from "./components/FormationModule";
+import type { Module } from "./pages/FormationPage";
+import AdminFormation from "./components/AdminFormation";
+
 
 type Section =
   | "dashboard"
@@ -25,11 +30,14 @@ type Section =
   | "gestionComptes"
   | "mesConges"
   | "gestionConges"
-  | "adminTelevente";
+  | "adminTelevente"
+  | "adminFormation";
+
 
 function AppContent() {
   const [section, setSection] = useState<Section>("dashboard");
   const { user, logout } = useUser();
+  const [formationModule, setFormationModule] = useState<Module | null>(null);
 
   if (!user) {
     return (
@@ -121,6 +129,27 @@ function AppContent() {
     </>
   );
 }
+if (section === "formation" && !isAdmin) {
+  if (formationModule) {
+    return (
+      <FormationModule
+        module={formationModule}
+        employeeId={user.id}
+        onBack={() => setFormationModule(null)}
+      />
+    );
+  }
+  return (
+    <>
+      <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
+      <FormationPage onOpen={(m: any) => setFormationModule(m)} />
+    </>
+  );
+}
+
+if (section === "adminFormation" && isAdmin) {
+  return <AdminFormation onBack={() => setSection("dashboard")} />;
+}
 
   return (
     <Dashboard
@@ -132,11 +161,11 @@ function AppContent() {
           setSection(id as Section);
         }
       }}
-      onCreateUser={() => setSection("createUser")}
-      onLogout={logout}
-    />
-  );
-}
+            onCreateUser={() => setSection("createUser")}
+            onLogout={logout}
+          />
+        );
+      }
 
 
 

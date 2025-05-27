@@ -19,7 +19,7 @@ export default function Dashboard({ role, onNavigate, onCreateUser, onLogout }: 
   const sections = [
   { id: "indicateurs", label: "Indicateurs RH" },
   { id: "conges", label: role === "Admin" ? "Gérer les congés" : "Congés" },
-  { id: "formation", label: "Formation" },
+  { id: role === "Admin" ? "adminFormation" : "formation", label: "Formation" },
   { id: "produits", label: "Produits" },
   { id: "televente", label: "Télévente" },
   { id: "liens", label: "Liens utiles" },

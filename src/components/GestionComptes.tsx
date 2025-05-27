@@ -137,7 +137,9 @@ export default function GestionComptes() {
                   <option value="User">User</option>
                 </select>
               </td>
-              <button onClick={() => openPwdModal(c)}>🔑 Réinitialiser</button>
+              <td>
+                <button onClick={() => openPwdModal(c)}>🔑 Réinitialiser</button>
+              </td>
               <td>
                 <button onClick={() => handleDelete(c.id)} style={{ color: "red" }}>
                   Supprimer

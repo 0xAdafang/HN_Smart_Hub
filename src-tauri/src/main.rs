@@ -61,6 +61,8 @@ async fn main() {
             get_formation_by_code,
             submit_quiz_result,
             get_employee_quiz_results,
+            get_questions_for_module,
+            get_all_quiz_results_with_names,
         ])
         .run(tauri::generate_context!())
         .expect("Erreur lors du lancement de l'application");
