@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use chrono::NaiveDate;
+use chrono::{NaiveDate, NaiveDateTime};
 
 #[derive(Deserialize)]
 pub struct LoginPayload {
@@ -162,4 +162,22 @@ pub struct AdminTeleventeEntry {
     pub product_name: String,
     pub quantity: i32,
     pub hit_click: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize,sqlx::FromRow)]
+
+pub struct Formation {
+    pub id: i32,
+    pub code: String,
+    pub titre : String,
+    pub contenu : String,
+}
+
+#[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
+pub struct QuizResult {
+    pub id: i32,
+    pub formation_code: String,
+    pub employee_id: i32,
+    pub date_completed: Option<NaiveDateTime>,
+    pub score: i32,
 }
