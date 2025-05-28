@@ -31,6 +31,8 @@ export default function FormationModule({
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [score, setScore] = useState<number | null>(null);
+  const [wrongQuestions, setWrongQuestions] = useState<{ id: number, question: string }[]>([]);
+
 
   useEffect(() => {
     invoke("get_questions_for_module", { formationCode: module.code })
@@ -39,27 +41,36 @@ export default function FormationModule({
   }, [module]);
 
   const handleSubmit = async () => {
-    const total = questions.length;
-    const correct = questions.filter(
-      (q) => answers[q.id] === q.correct_option
-    ).length;
-    const result = Math.round((correct / total) * 100);
+  const total = questions.length;
+  let correct = 0;
+  const incorrects: { id: number, question: string }[] = [];
 
-    setScore(result);
-
-    try {
-      await invoke("submit_quiz_result", {
-        employeeId: employeeId,
-        formationCode: module.code,
-        score: result,
-      });
-      alert("✅ Résultat envoyé !");
-    } catch (err) {
-      console.error(err);
-      alert("❌ Erreur lors de l’envoi du score.");
+  questions.forEach((q) => {
+    const userAnswer = answers[q.id];
+    if (userAnswer === q.correct_option) {
+      correct += 1;
+    } else {
+      incorrects.push({ id: q.id, question: q.question });
     }
-  };
+  });
 
+  setWrongQuestions(incorrects);
+
+  const result = Math.round((correct / total) * 100);
+  setScore(result);
+
+  try {
+    await invoke("submit_quiz_result", {
+      employeeId: employeeId,
+      formationCode: module.code,
+      score: result,
+    });
+    alert("✅ Résultat envoyé !");
+  } catch (err) {
+    console.error(err);
+    alert("❌ Erreur lors de l’envoi du score.");
+  }
+};
   return (
     <div className="p-6">
       <button onClick={onBack} className="mb-4">
@@ -106,8 +117,21 @@ export default function FormationModule({
       {score !== null && (
         <p className="mt-4 text-lg">
           🏁 Score : <strong>{score}%</strong>
-        </p>
+        </p> 
+      )}
+      {wrongQuestions.length > 0 && (
+        <div className="mt-6 bg-yellow-100 p-4 rounded shadow">
+          <h4 className="font-semibold mb-2">📌 Questions à revoir :</h4>
+          <ul className="list-disc list-inside">
+            {wrongQuestions.map((q) => (
+              <li key={q.id}>
+                <strong>Question {q.id}</strong> : {q.question}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
+    
   );
 }
