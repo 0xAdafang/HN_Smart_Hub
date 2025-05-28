@@ -36,6 +36,7 @@ export default function LoginForm({ onRegister, onSuccess }: Props) {
         id: result.employe_id,
         name: `${result.prenom} ${result.nom}`,
         role: result.role,
+        employe_id: result.employe_id
       });
 
       console.log("✅ Résultat du login :", result);
