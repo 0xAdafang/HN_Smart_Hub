@@ -129,8 +129,7 @@ function AppContent() {
     </>
   );
 }
-console.log("👤 user dans App :", user);
-console.log("👤 employe_id :", user?.employe_id);
+
 if (section === "formation" && !isAdmin) {
   if (formationModule) {
     return (

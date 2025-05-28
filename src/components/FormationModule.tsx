@@ -48,13 +48,11 @@ export default function FormationModule({
     setScore(result);
 
     try {
-      const payload = {
+      await invoke("submit_quiz_result", {
         employeeId: employeeId,
         formationCode: module.code,
         score: result,
-      };
-      console.log("payload ⇒", payload);
-      await invoke("submit_quiz_result", payload);
+      });
       alert("✅ Résultat envoyé !");
     } catch (err) {
       console.error(err);
