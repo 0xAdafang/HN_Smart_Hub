@@ -4,13 +4,14 @@ mod models;
 mod commands;
 
 
+
 use tauri::{Builder, State};
 use dotenvy::dotenv;
 use sqlx::PgPool;
 use std::env;
 use std::sync::Arc;
 
-use commands::{comptes::*, indicateurs::*, conges::*, televente::*, formation::*};
+use commands::{comptes::*, indicateurs::*, conges::*, televente::*, formation::*, produits::*};
 use commands::conges::demande_conge;
 
 
@@ -63,6 +64,9 @@ async fn main() {
             get_employee_quiz_results,
             get_questions_for_module,
             get_all_quiz_results_with_names,
+            // Produits
+            get_all_produits,
+            rechercher_produits
         ])
         .run(tauri::generate_context!())
         .expect("Erreur lors du lancement de l'application");

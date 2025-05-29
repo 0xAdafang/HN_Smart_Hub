@@ -2,7 +2,7 @@ use crate::{models::ProduitAlimentaire, AppState};
 use sqlx::FromRow;
 
 #[tauri::command]
-pub async fn get_all_produits(start: tauri::State<'_, AppState>) -> Result<Vec<ProduitAlimentaire>, String> {
+pub async fn get_all_produits(state: tauri::State<'_, AppState>) -> Result<Vec<ProduitAlimentaire>, String> {
     sqlx::query_as::<_, ProduitAlimentaire>("SELECT * FROM produit_alimentaire ORDER BY nom")
     .fetch_all(&*state.db)
     .await
