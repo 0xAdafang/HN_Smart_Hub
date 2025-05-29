@@ -205,3 +205,10 @@ pub struct QuizResultWithNames {
     pub score: i32,
     pub date_completed: chrono::NaiveDateTime,
 }
+
+#[derive(Debug, Serialize, Deserialize, FromRow)]
+pub struct ProduitAlimentaire {
+    pub id : i32,
+    pub nom : String,
+    pub description : Option<String>,
+}
