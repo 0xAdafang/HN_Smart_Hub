@@ -137,7 +137,7 @@ function AppContent() {
   }
 
   if (section === "produits") {
-    return <ProduitsPage />;
+    return <ProduitsPage onBack={() => setSection("dashboard")} />;
   }
 
   if (section === "formation" && !isAdmin) {
