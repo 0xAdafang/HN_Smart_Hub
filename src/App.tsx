@@ -10,13 +10,13 @@ import GestionComptes from "./components/GestionComptes";
 import MesConges from "./components/MesConges";
 import GestionConges from "./components/GestionConges";
 import TeleventePage from "./pages/Televente";
-import { UserProvider, useUser } from "./contexts/UserContext"; 
+import { UserProvider, useUser } from "./contexts/UserContext";
 import AdminTelevente from "./pages/AdminTelevente";
 import FormationPage from "./pages/FormationPage";
 import FormationModule from "./components/FormationModule";
 import type { Module } from "./pages/FormationPage";
 import AdminFormation from "./components/AdminFormation";
-
+import ProduitsPage from "./pages/ProduitsPage";
 
 type Section =
   | "dashboard"
@@ -31,8 +31,8 @@ type Section =
   | "mesConges"
   | "gestionConges"
   | "adminTelevente"
-  | "adminFormation";
-
+  | "adminFormation"
+  | "produits";
 
 function AppContent() {
   const [section, setSection] = useState<Section>("dashboard");
@@ -70,7 +70,9 @@ function AppContent() {
         <h2>Gestion des comptes</h2>
         <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
           <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
-          <button onClick={() => setSection("createUser")}>➕ Créer un utilisateur</button>
+          <button onClick={() => setSection("createUser")}>
+            ➕ Créer un utilisateur
+          </button>
         </div>
         <GestionComptes />
       </div>
@@ -81,7 +83,11 @@ function AppContent() {
     return (
       <>
         <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
-        {isAdmin ? <IndicateursRH /> : <MaGrilleRH onBack={() => setSection("dashboard")} />}
+        {isAdmin ? (
+          <IndicateursRH />
+        ) : (
+          <MaGrilleRH onBack={() => setSection("dashboard")} />
+        )}
       </>
     );
   }
@@ -114,43 +120,47 @@ function AppContent() {
   }
 
   if (section === "televente") {
-  return (
-    <>
-      <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
-      {user.role === "Admin" ? <AdminTelevente /> : <TeleventePage />}
-    </>
-  );
-}
-  if (section === "adminTelevente" && user.role === "Admin") {
-  return (
-    <>
-      <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
-      <AdminTelevente />
-    </>
-  );
-}
-
-if (section === "formation" && !isAdmin) {
-  if (formationModule) {
     return (
-      <FormationModule
-        module={formationModule}
-        employeeId={user.employe_id}
-        onBack={() => setFormationModule(null)}
-      />
+      <>
+        <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
+        {user.role === "Admin" ? <AdminTelevente /> : <TeleventePage />}
+      </>
     );
   }
-  return (
-    <>
-      <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
-      <FormationPage onOpen={(m: any) => setFormationModule(m)} />
-    </>
-  );
-}
+  if (section === "adminTelevente" && user.role === "Admin") {
+    return (
+      <>
+        <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
+        <AdminTelevente />
+      </>
+    );
+  }
 
-if (section === "adminFormation" && isAdmin) {
-  return <AdminFormation onBack={() => setSection("dashboard")} />;
-}
+  if (section === "produits") {
+    return <ProduitsPage />;
+  }
+
+  if (section === "formation" && !isAdmin) {
+    if (formationModule) {
+      return (
+        <FormationModule
+          module={formationModule}
+          employeeId={user.employe_id}
+          onBack={() => setFormationModule(null)}
+        />
+      );
+    }
+    return (
+      <>
+        <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
+        <FormationPage onOpen={(m: any) => setFormationModule(m)} />
+      </>
+    );
+  }
+
+  if (section === "adminFormation" && isAdmin) {
+    return <AdminFormation onBack={() => setSection("dashboard")} />;
+  }
 
   return (
     <Dashboard
@@ -162,13 +172,11 @@ if (section === "adminFormation" && isAdmin) {
           setSection(id as Section);
         }
       }}
-            onCreateUser={() => setSection("createUser")}
-            onLogout={logout}
-          />
-        );
-      }
-
-
+      onCreateUser={() => setSection("createUser")}
+      onLogout={logout}
+    />
+  );
+}
 
 export default function App() {
   return (
