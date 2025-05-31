@@ -66,7 +66,10 @@ async fn main() {
             get_all_quiz_results_with_names,
             // Produits
             get_all_produits,
-            rechercher_produits
+            rechercher_produits,
+            ajouter_produit,
+            modifier_produit,
+            supprimer_produit,
         ])
         .run(tauri::generate_context!())
         .expect("Erreur lors du lancement de l'application");

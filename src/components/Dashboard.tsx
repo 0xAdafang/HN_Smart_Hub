@@ -10,7 +10,7 @@ type Props = {
 
 
 
-export default function Dashboard({ role, onNavigate, onCreateUser, onLogout }: Props) {
+export default function Dashboard({ role, onNavigate, onLogout }: Props) {
   const handleLogoutClick = () => {
     window.alert("À bientôt 👋");
     onLogout();
@@ -20,9 +20,10 @@ export default function Dashboard({ role, onNavigate, onCreateUser, onLogout }: 
   { id: "indicateurs", label: "Indicateurs RH" },
   { id: "conges", label: role === "Admin" ? "Gérer les congés" : "Congés" },
   { id: role === "Admin" ? "adminFormation" : "formation", label: "Formation" },
-  { id: "produits", label: "Produits" },
+  { id: "produits", label: "Repertoire alimentaire" },
   { id: "televente", label: "Télévente" },
   { id: "liens", label: "Liens utiles" },
+  
   
 ];
 

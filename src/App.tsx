@@ -17,6 +17,9 @@ import FormationModule from "./components/FormationModule";
 import type { Module } from "./pages/FormationPage";
 import AdminFormation from "./components/AdminFormation";
 import ProduitsPage from "./pages/ProduitsPage";
+import { Produit } from "./components/ProductForm";
+import ProduitsAdmin from "./pages/ProduitsAdmin";
+import EditProduit from "./pages/EditProduit";
 
 type Section =
   | "dashboard"
@@ -32,12 +35,16 @@ type Section =
   | "gestionConges"
   | "adminTelevente"
   | "adminFormation"
-  | "produits";
+  | "produits"
+  | "produitsAdmin"     
+  | "editProduit"; 
+
 
 function AppContent() {
   const [section, setSection] = useState<Section>("dashboard");
   const { user, logout } = useUser();
   const [formationModule, setFormationModule] = useState<Module | null>(null);
+  const [produitAModifier, setProduitAModifier] = useState<Produit | null>(null);
 
   if (!user) {
     return (
@@ -140,6 +147,26 @@ function AppContent() {
     return <ProduitsPage onBack={() => setSection("dashboard")} />;
   }
 
+  if (section === "produitsAdmin" && isAdmin) {
+  return (
+    <ProduitsAdmin
+      onBack={() => setSection("dashboard")}
+      onEdit={(p) => {
+        setProduitAModifier(p);
+        setSection("editProduit");
+      }}
+    />
+  );
+}
+
+if (section === "editProduit" && produitAModifier) {
+  return (
+    <EditProduit
+      produit={produitAModifier}
+      onBack={() => setSection("produitsAdmin")}
+    />
+  );
+}
   if (section === "formation" && !isAdmin) {
     if (formationModule) {
       return (
@@ -150,6 +177,9 @@ function AppContent() {
         />
       );
     }
+
+ 
+  
     return (
       <>
         <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
