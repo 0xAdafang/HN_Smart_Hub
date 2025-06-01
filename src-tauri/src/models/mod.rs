@@ -212,3 +212,9 @@ pub struct ProduitAlimentaire {
     pub nom : String,
     pub description : Option<String>,
 }
+
+#[derive(serde::Serialize)]
+pub struct InfosEmploye {
+    pub prenom: String,
+    pub nom: String,
+}

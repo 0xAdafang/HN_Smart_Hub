@@ -39,6 +39,7 @@ async fn main() {
             get_all_users,
             update_user_role,
             delete_user_and_employee,
+            get_infos_employe,
             // RH
             get_employes_non_admins,
             submit_evaluation,

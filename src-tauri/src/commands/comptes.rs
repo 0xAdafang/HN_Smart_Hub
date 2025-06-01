@@ -1,7 +1,7 @@
 use tauri::State;
 use sqlx::query_as;
 use crate::models::{
-    LoginPayload, LoginResponse, RegisterPayload, UserWithEmploye,
+    InfosEmploye, LoginPayload, LoginResponse, RegisterPayload, UserWithEmploye
 };
 use crate::AppState;
 
@@ -167,4 +167,20 @@ pub async fn reset_user_password(user_id: i32, new_password: String, state: Stat
     }
 
     Ok(())
+}
+
+#[tauri::command]
+pub async fn get_infos_employe(employee_id: i32, state: tauri::State<'_, AppState>,) -> Result<InfosEmploye, String> {
+    let row = sqlx::query!(
+        r#"SELECT prenom, nom FROM employees WHERE id = $1"#,
+        employee_id
+    )
+    .fetch_one(&*state.db)
+    .await
+    .map_err(|e| format!("Erreur récupération employé : {}", e))?;
+
+    Ok(InfosEmploye {
+        prenom: row.prenom.unwrap_or_default(),
+        nom: row.nom.unwrap_or_default(),
+    })
 }

@@ -20,6 +20,7 @@ import ProduitsPage from "./pages/ProduitsPage";
 import { Produit } from "./components/ProductForm";
 import ProduitsAdmin from "./pages/ProduitsAdmin";
 import EditProduit from "./pages/EditProduit";
+import Options from "./components/Options";
 
 type Section =
   | "dashboard"
@@ -37,7 +38,8 @@ type Section =
   | "adminFormation"
   | "produits"
   | "produitsAdmin"     
-  | "editProduit"; 
+  | "editProduit"
+  | "options"; 
 
 
 function AppContent() {
@@ -167,26 +169,36 @@ if (section === "editProduit" && produitAModifier) {
     />
   );
 }
-  if (section === "formation" && !isAdmin) {
-    if (formationModule) {
-      return (
-        <FormationModule
-          module={formationModule}
-          employeeId={user.employe_id}
-          onBack={() => setFormationModule(null)}
-        />
-      );
-    }
+if (section === "options") {
+  return (
+    <Options
+      employeeId={user.employe_id}
+      role={user.role === "Admin" ? "admin" : "user"}
+      onLogout={() => {
+        logout();
+        setSection("dashboard");
+      }}
+    />
+  );
+}
 
- 
-  
+if (section === "formation" && !isAdmin) {
+  if (formationModule) {
     return (
-      <>
-        <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
-        <FormationPage onOpen={(m: any) => setFormationModule(m)} />
-      </>
+      <FormationModule
+        module={formationModule}
+        employeeId={user.employe_id}
+        onBack={() => setFormationModule(null)}
+      />
     );
   }
+  return (
+    <>
+      <button onClick={() => setSection("dashboard")}>⬅ Retour</button>
+      <FormationPage onOpen={(m: any) => setFormationModule(m)} />
+    </>
+  );
+}
 
   if (section === "adminFormation" && isAdmin) {
     return <AdminFormation onBack={() => setSection("dashboard")} />;

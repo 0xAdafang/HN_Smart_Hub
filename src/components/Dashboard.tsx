@@ -9,7 +9,6 @@ type Props = {
 };
 
 
-
 export default function Dashboard({ role, onNavigate, onLogout }: Props) {
   const handleLogoutClick = () => {
     window.alert("À bientôt 👋");
@@ -23,6 +22,7 @@ export default function Dashboard({ role, onNavigate, onLogout }: Props) {
   { id: "produits", label: "Repertoire alimentaire" },
   { id: "televente", label: "Télévente" },
   { id: "liens", label: "Liens utiles" },
+  { id: "options", label: "Options"},
   
   
 ];
