@@ -1,3 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+html, body {
+  @apply min-h-screen bg-marble dark:bg-black text-black dark:text-white;
+}
 .logo.vite:hover {
   filter: drop-shadow(0 0 2em #747bff);
 }
@@ -5,6 +14,7 @@
 .logo.typescript:hover {
   filter: drop-shadow(0 0 2em #2d79c7);
 }
+
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;

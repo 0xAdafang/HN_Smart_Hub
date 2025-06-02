@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import './styles.css';
+import { ThemeProvider } from "./lib/theme-provider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoginForm from "./components/LoginForm";
@@ -21,6 +23,8 @@ import { Produit } from "./components/ProductForm";
 import ProduitsAdmin from "./pages/ProduitsAdmin";
 import EditProduit from "./pages/EditProduit";
 import Options from "./components/Options";
+import ToggleTheme from "./components/ui/ToggleTheme";
+import Layout from "./components/layout/Layout";
 
 type Section =
   | "dashboard"
@@ -205,6 +209,9 @@ if (section === "formation" && !isAdmin) {
   }
 
   return (
+    <>
+    <ToggleTheme />
+    <Layout>
     <Dashboard
       role={user.role}
       onNavigate={(id) => {
@@ -217,14 +224,18 @@ if (section === "formation" && !isAdmin) {
       onCreateUser={() => setSection("createUser")}
       onLogout={logout}
     />
+    </Layout>
+  </>
   );
 }
 
 export default function App() {
   return (
-    <UserProvider>
-      <ToastContainer />
-      <AppContent />
-    </UserProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <UserProvider>
+        <ToastContainer />
+        <AppContent />
+      </UserProvider>
+    </ThemeProvider>
   );
 }
