@@ -5,8 +5,9 @@ export default function Header() {
   const { user, logout } = useUser();
 
   return (
-    <header className="flex items-center justify-between px-6 py-4 bg-white dark:bg-zinc-900 shadow-md">
-      <h1 className="text-xl font-bold text-zinc-800 dark:text-white">
+    <header className="z-10 flex items-center justify-between px-6 py-4 bg-white dark:bg-nightblue border-b border-zinc-300 dark:border-zinc-700"
+>
+      <h1 className="text-xl font-bold text-black dark:text-white">
         HN Smart Hub
       </h1>
 

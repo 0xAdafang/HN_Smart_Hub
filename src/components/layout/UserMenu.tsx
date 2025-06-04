@@ -45,38 +45,38 @@ export default function UserMenu({ employeeId, role, onLogout }: Props) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-bioGreen text-white hover:opacity-90 transition">
-            <div className="rounded-full bg-white text-bioGreen w-8 h-8 flex items-center justify-center text-sm font-bold">
+          <div className="rounded-full bg-white text-bioGreen w-8 h-8 flex items-center justify-center text-sm font-bold">
             {infos.prenom[0]}
-            </div>
-            <span className="text-sm font-medium">
+          </div>
+          <span className="text-sm font-medium">
             {infos.prenom} {infos.nom}
-            </span>
-            <svg className="w-4 h-4 fill-white" viewBox="0 0 20 20">
+          </span>
+          <svg className="w-4 h-4 fill-white" viewBox="0 0 20 20">
             <path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.01l3.71-3.78a.75.75 0 0 1 1.08 1.04l-4.25 4.33a.75.75 0 0 1-1.08 0L5.21 8.27a.75.75 0 0 1 .02-1.06z" />
-            </svg>
+          </svg>
         </button>
-        </DropdownMenuTrigger>
+      </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="z-50 p-2 rounded-md shadow-lg bg-white dark:bg-zinc-800 border dark:border-zinc-700 w-56 mt-2">
-            <DropdownMenuLabel className="text-sm font-semibold">
-            {role === "admin" ? "Administrateur" : "Employé"}
-            </DropdownMenuLabel>
+      <DropdownMenuContent className="z-[999] p-2 rounded-xl shadow-lg bg-white dark:bg-nightblue border border-zinc-200 dark:border-zinc-700 w-56 mt-2">
+        <DropdownMenuLabel className="text-sm font-semibold text-black dark:text-white">
+          {role === "admin" ? "Administrateur" : "Employé"}
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-            className="flex justify-between items-center cursor-pointer px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded"
-            >
-            <span className="flex items-center gap-2">
-                {theme === "light" ? <Sun size={16} /> : <Moon size={16} />}
-                Mode
-            </span>
-            <span className="text-xs opacity-60 capitalize">{theme}</span>
+          onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+          className="flex justify-between items-center cursor-pointer px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded text-black dark:text-white"
+        >
+          <span className="flex items-center gap-2">
+            {theme === "light" ? <Sun size={16} /> : <Moon size={16} />}
+            Mode
+          </span>
+          <span className="text-xs opacity-60 capitalize">{theme}</span>
         </DropdownMenuItem>
 
         <DropdownMenuItem
           onClick={() => setNotifications((n) => !n)}
-          className="flex items-center gap-2 cursor-pointer px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded"
+          className="flex items-center gap-2 cursor-pointer px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded text-black dark:text-white"
         >
           <Bell size={16} />
           {notifications ? "Désactiver notif." : "Activer notif."}
