@@ -45,6 +45,8 @@ async fn main() {
             submit_evaluation,
             get_all_evaluations,
             get_user_evaluation,
+            has_new_evaluation,
+            set_evaluation_vue,
             delete_evaluation,
             reset_user_password,
             // Congés
@@ -52,6 +54,7 @@ async fn main() {
             get_mes_conges,
             get_all_conges, 
             update_statut_conge,
+            get_conges_restants,
             // Televente
             add_televente_entry,
             get_televente_entries_by_date,

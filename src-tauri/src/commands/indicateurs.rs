@@ -1,6 +1,6 @@
 use tauri::State;
 use crate::AppState;
-use crate::models::{EmployeLite, EvaluationPayload, EvaluationDetail, UserEvalQuery};
+use crate::models::{EmployeLite, EvaluationCheck, EvaluationDetail, EvaluationPayload, UserEvalQuery};
 
 #[tauri::command]
 pub async fn get_employes_non_admins(state: State<'_, AppState>) -> Result<Vec<EmployeLite>, String> {
@@ -120,6 +120,34 @@ pub async fn delete_evaluation(id: i32, state: State<'_, AppState>) -> Result<()
         .execute(&*state.db)
         .await
         .map_err(|e| format!("Erreur DB : {}", e))?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn has_new_evaluation(id: i32, state: State<'_, AppState>) -> Result<EvaluationCheck, String> {
+    let res = sqlx::query!(
+        "SELECT id FROM indicateurs_rh WHERE employee_id = $1 AND vue = false LIMIT 1",
+        id
+    )
+    .fetch_optional(&*state.db)
+    .await
+    .map_err(|e| e.to_string())?;
+
+    Ok(EvaluationCheck {
+        id: res.map(|r| r.id),
+    })
+}
+
+#[tauri::command]
+pub async fn set_evaluation_vue(evaluation_id: i32, state: State<'_, AppState>) -> Result<(), String> {
+    sqlx::query!(
+        "UPDATE indicateurs_rh SET vue = true WHERE id = $1",
+        evaluation_id
+    )
+    .execute(&*state.db)
+    .await
+    .map_err(|e| e.to_string())?;
 
     Ok(())
 }

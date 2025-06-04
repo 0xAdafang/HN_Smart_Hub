@@ -70,6 +70,11 @@ pub struct EvaluationDetail {
     pub consequences: Option<String>,
 }
 
+#[derive(serde::Serialize)]
+pub struct EvaluationCheck {
+    pub id: Option<i32>,
+}
+
 #[derive(Serialize, sqlx::FromRow)]
 pub struct UserWithEmploye {
     pub id: i32,

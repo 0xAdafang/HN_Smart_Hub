@@ -84,3 +84,19 @@ pub async fn update_statut_conge(id: i32, statut: String, state: State<'_, AppSt
 
     Ok(())
 }
+
+#[tauri::command]
+pub async fn get_conges_restants(id: i32, state: State<'_, AppState>) -> Result<i32, String> {
+    let jours_pris: i64 = sqlx::query_scalar!(
+        "SELECT COALESCE(SUM((date_fin - date_debut) + 1), 0)
+         FROM conges
+         WHERE employe_id = $1 AND statut = 'Approuvé'",
+        id
+    )
+    .fetch_one(&*state.db)
+    .await
+    .map_err(|e| e.to_string())?
+    .unwrap_or(0);
+
+    Ok(14 - jours_pris as i32)
+}
