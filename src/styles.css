@@ -2,9 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
-html, body {
+html,
+body {
   @apply min-h-screen bg-white dark:bg-nightblue text-black dark:text-white;
 }
 .logo.vite:hover {
@@ -12,7 +11,7 @@ html, body {
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .logo.typescript:hover {
@@ -127,4 +126,19 @@ button {
   button:active {
     background-color: #0f0f0f69;
   }
+}
+
+.rdp {
+  --rdp-cell-size: 2.2rem;
+}
+.rdp-day_selected:not([disabled]) {
+  background-color: #f8f8f8; /* bioGreen */
+  color: white;
+}
+.rdp-day_today {
+  font-weight: bold;
+}
+.rdp-nav_button {
+  @apply bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 
+         rounded-full text-black dark:text-white p-2 transition;
 }

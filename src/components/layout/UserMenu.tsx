@@ -44,8 +44,8 @@ export default function UserMenu({ employeeId, role, onLogout }: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-bioGreen text-white hover:opacity-90 transition">
-          <div className="rounded-full bg-white text-bioGreen w-8 h-8 flex items-center justify-center text-sm font-bold">
+        <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-nightblue text-black dark:text-white border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+          <div className="rounded-full bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white w-8 h-8 flex items-center justify-center text-sm font-bold">
             {infos.prenom[0]}
           </div>
           <span className="text-sm font-medium">

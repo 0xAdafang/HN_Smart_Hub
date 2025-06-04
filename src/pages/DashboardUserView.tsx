@@ -8,6 +8,8 @@ import {
   FileText,
   CheckCircle,
 } from "lucide-react";
+import CalendarWidget from "../components/CalendarWidget";
+import { DayPicker } from "react-day-picker";
 
 interface Props {
   employeeId: number;
@@ -28,8 +30,15 @@ export default function DashboardUserView({ employeeId }: Props) {
   }, [employeeId]);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-      <Widget title="Évaluation RH">
+  <div className="flex flex-col xl:flex-row gap-6">
+    {/* Colonne gauche : calendrier aligné avec admin view */}
+    <div className="w-full xl:w-[460px] flex-shrink-0 space-y-6">
+       <CalendarWidget />
+    </div>
+
+    {/* Colonne droite : widgets en 2 colonnes */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 flex-1">
+      <Widget title="Évaluation RH" className="min-h-[100px]">
         <div className="flex items-center gap-2">
           {aNouvelleEvaluation ? (
             <>
@@ -45,11 +54,11 @@ export default function DashboardUserView({ employeeId }: Props) {
         </div>
       </Widget>
 
-      <Widget title="Congés">
+      <Widget title="Congés" className="min-h-[80px]">
         Il vous reste <strong>{joursCongesRestants} jours</strong> de congés (sur 14).
       </Widget>
 
-      <Widget title="Alertes">
+      <Widget title="Alertes" className="min-h-[140px] sm:col-span-1">
         <div className="flex items-center gap-2">
           <PhoneCall size={16} /> Liste d’appels à faire
         </div>
@@ -62,5 +71,7 @@ export default function DashboardUserView({ employeeId }: Props) {
         </div>
       </Widget>
     </div>
-  );
+  </div>
+);
+
 }
