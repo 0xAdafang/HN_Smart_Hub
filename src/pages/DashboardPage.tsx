@@ -1,8 +1,13 @@
 import { useUser } from "../contexts/UserContext";
 import DashboardUserView from "./DashboardUserView";
 import DashboardAdminView from "./DashboardAdminView";
+import type { AppSection } from "../App"; 
 
-export default function DashboardPage() {
+type Props = {
+  onNavigate: (section: AppSection) => void;
+};
+
+export default function DashboardPage({ onNavigate }: Props) {
   const { user } = useUser();
 
   if (!user) return null;
@@ -10,6 +15,6 @@ export default function DashboardPage() {
   return user.role === "Admin" ? (
     <DashboardAdminView />
   ) : (
-    <DashboardUserView employeeId={user.employe_id} />
+    <DashboardUserView onNavigate={(route: string) => onNavigate(route as AppSection)} />
   );
 }

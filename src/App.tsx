@@ -48,6 +48,7 @@ function AppContent() {
   const { user, logout } = useUser();
   const [formationModule, setFormationModule] = useState<Module | null>(null);
   const [produitAModifier, setProduitAModifier] = useState<Produit | null>(null);
+  const [renderKey, setRenderKey] = useState(0);
 
   if (!user) {
     return (
@@ -65,13 +66,13 @@ function AppContent() {
       {(() => {
         switch (section) {
           case "dashboard":
-            return <DashboardPage />;
+            return <DashboardPage onNavigate={setSection} />;
 
           case "indicateurs":
             return isAdmin ? (
               <IndicateursRH />
             ) : (
-              <MaGrilleRH onBack={() => setSection("dashboard")} />
+              <MaGrilleRH onBack={() => { setRenderKey(k => k + 1); setSection("dashboard")}} />
             );
 
           case "conges":
@@ -119,7 +120,7 @@ function AppContent() {
                 onBack={() => setSection("produitsAdmin")}
               />
             ) : (
-              <DashboardPage />
+              <DashboardPage key={renderKey} onNavigate={setSection} />
             );
 
           case "gestionComptes":
@@ -129,7 +130,7 @@ function AppContent() {
             return <RegisterForm onBack={() => setSection("gestionComptes")} />;
 
           default:
-            return <DashboardPage />;
+            return <DashboardPage onNavigate={setSection} />; // ← éviter TS error
         }
       })()}
     </Layout>

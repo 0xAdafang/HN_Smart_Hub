@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import Widget from "../components/ui/Widget";
+import { useNavigate } from "react-router-dom";
 import TodoWidget from "../components/TodoWidget";
 import {
   AlertTriangle,
@@ -12,13 +13,18 @@ import {
 import CalendarWidget from "../components/CalendarWidget";
 import { useUser } from "../contexts/UserContext";   
 
-export default function DashboardUserView() {        
+interface DashboardUserViewProps {
+  onNavigate: (route: string) => void;
+}
+
+export default function DashboardUserView({ onNavigate }: DashboardUserViewProps) {        
   const { user } = useUser();                        
   const employe_id = user?.employe_id;               
 
   const [joursCongesRestants, setJoursCongesRestants] = useState(14);
   const [aNouvelleEvaluation, setANouvelleEvaluation] = useState(false);
   const [evaluationId, setEvaluationId] = useState<number | null>(null);
+
 
   useEffect(() => {
     if (!user?.id) return;
@@ -39,8 +45,11 @@ export default function DashboardUserView() {
 
   const handleConsulterEvaluation = () => {
     if (!evaluationId) return;
-    invoke("set_evaluation_vue", { evaluation_id: evaluationId })
-      .then(() => setANouvelleEvaluation(false))
+    invoke("set_evaluation_vue", { id: evaluationId })
+      .then(() => {
+        setANouvelleEvaluation(false);
+        onNavigate("indicateurs"); 
+      })
       .catch((e) => console.error("Erreur mise à jour évaluation :", e));
   };
 

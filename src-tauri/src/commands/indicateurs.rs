@@ -140,10 +140,10 @@ pub async fn has_new_evaluation(id: i32, state: State<'_, AppState>) -> Result<E
 }
 
 #[tauri::command]
-pub async fn set_evaluation_vue(evaluation_id: i32, state: State<'_, AppState>) -> Result<(), String> {
+pub async fn set_evaluation_vue(id: i32, state: State<'_, AppState>) -> Result<(), String> {
     sqlx::query!(
         "UPDATE indicateurs_rh SET vue = true WHERE id = $1",
-        evaluation_id
+        id
     )
     .execute(&*state.db)
     .await

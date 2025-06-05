@@ -21,7 +21,11 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
       <nav className="flex flex-col gap-4">
         <SidebarLink icon={<Home />} label="Dashboard" section="dashboard" onClick={onNavigate} />
         <SidebarLink icon={<LineChart />} label="Indicateurs RH" section="indicateurs" onClick={onNavigate} />
-        <SidebarLink icon={<Users />} label="Congés" section="conges" onClick={onNavigate} />
+        {user?.role === "Admin" ? (
+            <SidebarLink icon={<Users />} label="Congés" section="conges" onClick={onNavigate} />
+          ) : (
+            <SidebarLink icon={<Users />} label="Mes congés" section="mesConges" onClick={onNavigate} />
+          )}
         <SidebarLink icon={<GraduationCap />} label="Formation" section="formation" onClick={onNavigate} />
         <SidebarLink icon={<Package />} label="Produits" section="produits" onClick={onNavigate} />
         <SidebarLink icon={<PhoneCall />} label="Télévente" section="televente" onClick={onNavigate} />
