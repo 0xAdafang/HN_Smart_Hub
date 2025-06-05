@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { toast } from "react-toastify";
 import { useUser } from "../contexts/UserContext";
 
 type Props = {
@@ -39,11 +38,9 @@ export default function LoginForm({onSuccess }: Props) {
         employe_id: result.employe_id,
       });
 
-      toast.success(`Bienvenue ${result.prenom} !`);
       onSuccess(result.role);
     } catch (err) {
       console.error("❌ Erreur login :", err);
-      toast.error("Identifiants incorrects");
     } finally {
       setLoading(false);
     }

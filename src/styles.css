@@ -10,9 +10,9 @@ html, body, #root {
 html,
 body {
   height: 100%;
-  background-color: #F2F8DC; /* marble */
-  @apply dark:bg-natureDark text-black dark:text-[#E6F4E6];
+  @apply text-black dark:text-[#E6F4E6] dark:bg-natureDark;
 }
+
 .logo.vite:hover {
   filter: drop-shadow(0 0 2em #747bff);
 }

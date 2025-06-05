@@ -17,7 +17,7 @@ interface SidebarProps {
 export default function Sidebar({ onNavigate }: SidebarProps) {
   const { user } = useUser();
   return (
-   <aside className="w-64 bg-white dark:bg-widgetDarkNature bg-opacity-80 backdrop-blur-sm border-r border-zinc-300 dark:border-borderDarkNature p-4 hidden md:block">
+   <aside className="w-64 bg-[#F8FAF4] dark:bg-widgetDarkNature bg-opacity-80 backdrop-blur-sm border-r border-zinc-300 dark:border-borderDarkNature p-4 hidden md:block">
 
 
       <nav className="flex flex-col gap-4">
