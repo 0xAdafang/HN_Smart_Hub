@@ -23,6 +23,7 @@ import ProduitsAdmin from "./pages/ProduitsAdmin";
 import EditProduit from "./pages/EditProduit";
 import Layout from "./components/layout/Layout";
 import DashboardPage from "./pages/DashboardPage";
+import LoginPage from "./pages/LoginPage";
 
 export type AppSection =
   | "dashboard"
@@ -50,14 +51,13 @@ function AppContent() {
   const [produitAModifier, setProduitAModifier] = useState<Produit | null>(null);
   const [renderKey, setRenderKey] = useState(0);
 
-  if (!user) {
-    return (
-      <LoginForm
-        onRegister={() => setSection("createUser")}
-        onSuccess={() => setSection("dashboard")}
-      />
-    );
-  }
+ if (!user) {
+  return (
+    <LoginPage
+      onSuccess={() => setSection("dashboard")}
+    />
+  );
+}
 
   const isAdmin = user.role === "Admin";
 
