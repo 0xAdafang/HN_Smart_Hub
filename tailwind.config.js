@@ -9,9 +9,10 @@ module.exports = {
       colors: {
         marble: "#F2F8DC",
         bioGreen: "#228B22",
-        nightblue: "#060a23",      // fond dark
-        widgetLight: "#FFFFFF",    // widget light
-        widgetDark: "#060a23", // widget dark
+        bioGreenLight: "#B4D3B2",
+        natureDark: "#1C1F1B",
+        widgetDarkNature: "#2A2E27",
+        borderDarkNature: "#3E453D",
       },
       borderRadius: {
         lg: "0.5rem",

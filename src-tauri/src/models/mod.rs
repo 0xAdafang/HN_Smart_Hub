@@ -223,3 +223,4 @@ pub struct InfosEmploye {
     pub prenom: String,
     pub nom: String,
 }
+

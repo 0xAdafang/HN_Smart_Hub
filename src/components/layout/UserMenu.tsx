@@ -44,7 +44,7 @@ export default function UserMenu({ employeeId, role, onLogout }: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-nightblue text-black dark:text-white border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+        <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-widgetDarkNature text-black dark:text-[#E6F4E6] border border-zinc-300 dark:border-borderDarkNature hover:bg-zinc-100 dark:hover:bg-[#3A3F37] transition">
           <div className="rounded-full bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white w-8 h-8 flex items-center justify-center text-sm font-bold">
             {infos.prenom[0]}
           </div>
@@ -57,7 +57,7 @@ export default function UserMenu({ employeeId, role, onLogout }: Props) {
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="z-[999] p-2 rounded-xl shadow-lg bg-white dark:bg-nightblue border border-zinc-200 dark:border-zinc-700 w-56 mt-2">
+      <DropdownMenuContent className="z-[999] p-2 rounded-xl shadow-lg bg-white dark:bg-widgetDarkNature border border-zinc-200 dark:border-borderDarkNature w-56 mt-2">
         <DropdownMenuLabel className="text-sm font-semibold text-black dark:text-white">
           {role === "admin" ? "Administrateur" : "Employé"}
         </DropdownMenuLabel>

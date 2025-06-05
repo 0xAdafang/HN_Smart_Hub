@@ -17,7 +17,9 @@ interface SidebarProps {
 export default function Sidebar({ onNavigate }: SidebarProps) {
   const { user } = useUser();
   return (
-    <aside className="w-64 bg-white dark:bg-nightblue bg-opacity-70 backdrop-blur-sm border-r border-zinc-300 dark:border-zinc-700 p-4 hidden md:block">
+   <aside className="w-64 bg-white dark:bg-widgetDarkNature bg-opacity-80 backdrop-blur-sm border-r border-zinc-300 dark:border-borderDarkNature p-4 hidden md:block">
+
+
       <nav className="flex flex-col gap-4">
         <SidebarLink icon={<Home />} label="Dashboard" section="dashboard" onClick={onNavigate} />
         <SidebarLink icon={<LineChart />} label="Indicateurs RH" section="indicateurs" onClick={onNavigate} />
@@ -56,10 +58,10 @@ function SidebarLink({
   return (
     <div
       onClick={() => onClick?.(section)}
-      className="flex items-center gap-3 p-2 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer transition"
+      className="flex items-center gap-3 p-2 rounded hover:bg-bioGreen/10 dark:hover:bg-zinc-800 cursor-pointer transition"
     >
-      <div className="text-lg text-black dark:text-white">{icon}</div>
-      <span className="font-medium text-black dark:text-white">{label}</span>
+      <div className="text-lg text-bioGreen dark:text-white">{icon}</div>
+      <span className="font-medium text-black dark:text-[#E6F4E6]">{label}</span>
     </div>
   );
 }

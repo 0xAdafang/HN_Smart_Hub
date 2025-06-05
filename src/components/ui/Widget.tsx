@@ -13,7 +13,7 @@ export default function Widget({ title, children, className }: WidgetProps) {
     <motion.div
       whileHover={{ scale: 1.015 }}
       className={cn(
-        "z-0 bg-white/90 dark:bg-nightblue/90 p-5 rounded-xl border border-zinc-300 dark:border-zinc-700 transition-colors",
+        "z-0 bg-white/90 dark:bg-widgetDarkNature/90 p-5 rounded-xl border border-zinc-300 dark:border-zinc-700 transition-colors",
         className
       )}
     >

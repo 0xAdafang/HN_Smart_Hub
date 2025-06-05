@@ -4,7 +4,8 @@
 
 html,
 body {
-  @apply min-h-screen bg-white dark:bg-nightblue text-black dark:text-white;
+  @apply min-h-screen bg-white dark:bg-natureDark text-black dark:text-[#E6F4E6];
+
 }
 .logo.vite:hover {
   filter: drop-shadow(0 0 2em #747bff);
@@ -141,4 +142,21 @@ button {
 .rdp-nav_button {
   @apply bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 
          rounded-full text-black dark:text-white p-2 transition;
+}
+
+/* Style custom pour input time */
+input[type="time"] {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+}
+
+.dark input[type="time"] {
+  background-color: #1e293b;
+  color: #f9fafb;
+  border-color: #475569;
 }
