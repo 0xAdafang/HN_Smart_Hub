@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "react-toastify";
+import { CalendarDays, Inbox, PlaneTakeoff, SendHorizontal, SortAsc, SortDesc } from "lucide-react";
 
 // Structure d'un congé
 interface Conge {
@@ -90,13 +91,23 @@ export default function MesConges() {
 
   return (
     <div style={{ padding: 20 }}>
-      <h2>Mes congés</h2>
+      <h2 className="text-2xl font-bold text-bioGreen dark:text-bioGreenLight mb-4 flex items-center gap-2">
+        <PlaneTakeoff size={24} /> Mes congés
+      </h2>
 
       {/* Formulaire de demande */}
-      <div style={{ marginBottom: 30 }}>
-        <h3>Faire une demande</h3>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-          <select name="type_conge" value={form.type_conge} onChange={handleChange} required>
+      <div className="bg-white dark:bg-zinc-800 p-4 rounded shadow mb-6 border border-zinc-200 dark:border-zinc-700">
+        <h3 className="text-lg font-semibold mb-3 text-zinc-800 dark:text-white flex items-center gap-2">
+          <PlaneTakeoff size={18} /> Faire une demande
+        </h3>
+        <div className="flex flex-wrap gap-4">
+          <select
+            name="type_conge"
+            value={form.type_conge}
+            onChange={handleChange}
+            className="px-4 py-2 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-black dark:text-white text-sm"
+            required
+          >
             <option value="">-- Type de congé --</option>
             <option value="Vacances">Vacances</option>
             <option value="Maladie">Maladie</option>
@@ -108,6 +119,7 @@ export default function MesConges() {
             name="date_debut"
             value={form.date_debut}
             onChange={handleChange}
+            className="px-4 py-2 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-black dark:text-white text-sm"
             required
           />
 
@@ -116,18 +128,27 @@ export default function MesConges() {
             name="date_fin"
             value={form.date_fin}
             onChange={handleChange}
+            className="px-4 py-2 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-black dark:text-white text-sm"
             required
           />
 
-          <button onClick={handleSubmit}>📩 Envoyer</button>
+          <button
+            onClick={handleSubmit}
+            className="px-4 py-2 bg-bioGreen hover:bg-green-700 text-white rounded-md text-sm flex items-center gap-2"
+          >
+            <SendHorizontal size={16} /> Envoyer
+          </button>
         </div>
       </div>
+
 
       {/* Liste des congés */}
       {erreur && <p style={{ color: "red" }}>{erreur}</p>}
 
       {conges.length === 0 ? (
-        <p>📭 Aucun congé trouvé.</p>
+        <p className="flex items-center gap-2 text-zinc-600 dark:text-zinc-300">
+          <Inbox size={18} /> Aucun congé trouvé.
+        </p>
       ) : (
         <>
         <div style={{ marginBottom: 10, display: "flex", gap: 10 }}>
@@ -142,8 +163,20 @@ export default function MesConges() {
             </select>
         </div>
           <div style={{ marginBottom: 10 }}>
-            <button onClick={() => setTriAscendant((prev) => !prev)}>
-              Trier par date : {triAscendant ? "Ancien → Récent" : "Récent → Ancien"}
+            <button
+              onClick={() => setTriAscendant((prev) => !prev)}
+              className="flex items-center gap-2 px-3 py-1 bg-zinc-100 dark:bg-zinc-700 rounded hover:bg-zinc-200 dark:hover:bg-zinc-600 text-sm text-zinc-800 dark:text-white"
+            >
+              <CalendarDays size={16} />
+              {triAscendant ? (
+                <>
+                  Ancien → Récent <SortAsc size={14} />
+                </>
+              ) : (
+                <>
+                  Récent → Ancien <SortDesc size={14} />
+                </>
+              )}
             </button>
           </div>
 

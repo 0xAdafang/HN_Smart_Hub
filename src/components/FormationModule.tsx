@@ -1,5 +1,15 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import {
+  ChevronLeft,
+  FileText,
+  ListChecks,
+  SendHorizontal,
+  XCircle,
+  Flag,
+  StickyNote,
+  Check,
+} from "lucide-react";
 
 type QuizQuestion = {
   id: number;
@@ -71,18 +81,30 @@ export default function FormationModule({
     alert("❌ Erreur lors de l’envoi du score.");
   }
 };
+  const renderFormattedContent = (raw: string) => {
+    const withBold = raw.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    return <div dangerouslySetInnerHTML={{ __html: withBold }} />;
+  };
+
   return (
     <div className="p-6">
-      <button onClick={onBack} className="mb-4">
-        ⬅ Retour
+      <button
+        onClick={onBack}
+        className="mb-4 flex items-center gap-2 px-3 py-1 bg-white dark:bg-zinc-700 border border-zinc-300 dark:border-zinc-600 rounded text-sm text-zinc-800 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-600 transition"
+      >
+        <ChevronLeft size={16} /> Retour
       </button>
 
-      <h2 className="text-2xl font-bold mb-2">{module.titre}</h2>
-      <div className="prose bg-white p-4 rounded shadow mb-6 whitespace-pre-wrap">
-        {module.contenu}
+      <h2 className="text-2xl font-bold mb-4 text-bioGreen dark:text-bioGreenLight flex items-center gap-2">
+        <FileText size={22} /> {module.titre}
+      </h2>
+      <div className="bg-white dark:bg-zinc-800 p-4 rounded shadow mb-6 border border-zinc-200 dark:border-zinc-700 whitespace-pre-wrap text-sm text-zinc-800 dark:text-zinc-100">
+        {renderFormattedContent(module.contenu)}
       </div>
 
-      <h3 className="text-xl font-semibold mb-4">📝 Quiz</h3>
+      <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 text-zinc-700 dark:text-zinc-200">
+        <ListChecks size={20} /> Quiz
+      </h3>
       {questions.map((q) => (
         <div key={q.id} className="mb-6">
           <p className="font-medium">{q.question}</p>
@@ -90,18 +112,21 @@ export default function FormationModule({
             const label = q[`option_${key.toLowerCase()}` as keyof QuizQuestion];
             if (!label) return null;
             return (
-              <label key={key} className="block">
-                <input
-                  type="radio"
-                  name={`q${q.id}`}
-                  value={key}
-                  checked={answers[q.id] === key}
-                  onChange={() =>
-                    setAnswers((prev) => ({ ...prev, [q.id]: key }))
-                  }
-                />
-                {" "}{key}. {label}
-              </label>
+              <button
+                key={key}
+                type="button"
+                onClick={() =>
+                  setAnswers((prev) => ({ ...prev, [q.id]: key }))
+                }
+                className={`flex items-center justify-between w-full px-4 py-2 border rounded text-left text-sm transition
+                  ${answers[q.id] === key
+                    ? "bg-bioGreen text-white border-bioGreen"
+                    : "bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 border-zinc-300 dark:border-zinc-600"}
+                  hover:border-bioGreen`}
+              >
+                <span>{key}. {label}</span>
+                {answers[q.id] === key && <Check size={16} />}
+              </button>
             );
           })}
         </div>
@@ -109,20 +134,22 @@ export default function FormationModule({
 
       <button
         onClick={handleSubmit}
-        className="bg-green-600 text-white px-4 py-2 rounded"
+        className="flex items-center gap-2 bg-bioGreen hover:bg-green-700 text-white px-4 py-2 rounded text-sm"
       >
-        ✅ Valider mes réponses
+        <SendHorizontal size={16} /> Valider mes réponses
       </button>
 
       {score !== null && (
-        <p className="mt-4 text-lg">
-          🏁 Score : <strong>{score}%</strong>
-        </p> 
+        <p className="mt-4 text-lg text-zinc-700 dark:text-zinc-200 flex items-center gap-2">
+          <Flag size={18} /> Score : <strong>{score}%</strong>
+        </p>
       )}
       {wrongQuestions.length > 0 && (
-        <div className="mt-6 bg-yellow-100 p-4 rounded shadow">
-          <h4 className="font-semibold mb-2">📌 Questions à revoir :</h4>
-          <ul className="list-disc list-inside">
+        <div className="mt-6 bg-yellow-100 dark:bg-yellow-900 p-4 rounded shadow">
+          <h4 className="font-semibold mb-2 flex items-center gap-2 text-zinc-800 dark:text-zinc-100">
+            <StickyNote size={16} /> Questions à revoir :
+          </h4>
+          <ul className="list-disc list-inside text-sm text-zinc-800 dark:text-zinc-200">
             {wrongQuestions.map((q) => (
               <li key={q.id}>
                 <strong>Question {q.id}</strong> : {q.question}
