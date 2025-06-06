@@ -8,7 +8,7 @@ export default function CalendarWidget() {
   const [range, setRange] = useState<DateRange | undefined>();
 
   return (
-    <Widget title="Calendrier" className="col-span-2 h-[430px] overflow-hidden">
+    <Widget title="Calendrier" className="col-span-2 h-[450px] overflow-hidden">
       <div className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
         <DayPicker 
           mode="range"

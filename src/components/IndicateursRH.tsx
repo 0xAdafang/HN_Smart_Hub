@@ -1,6 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "react-toastify";
+import {
+  Clock,
+  CalendarCheck,
+  Headphones,
+  Wrench,
+  ClipboardList,
+  Gauge,
+  StickyNote,
+  AlertCircle,
+  Printer,
+  FileDown,
+  Trash2,
+  Search,
+} from "lucide-react";
+
 
 type Employe = {
   id: number;
@@ -162,46 +177,75 @@ function calculerMoyenne(e: Evaluation): number | null {
 }
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Évaluation RH</h2>
+    <div className="px-4 py-6 sm:px-8 sm:py-4 max-w-5xl mx-auto">
+      <h2 className="text-3xl font-bold text-bioGreen dark:text-bioGreenLight mb-4 text-center">
+        Évaluation RH
+      </h2>
 
       {/* Navigation entre formulaire / liste */}
-      <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
-        <button onClick={() => setMode("form")}>➕ Nouvelle évaluation</button>
-        <button onClick={() => setMode("list")}>📋 Voir les évaluations</button>
+      <div className="flex justify-center gap-4 mb-6">
+        <button
+          onClick={() => setMode("form")}
+          className="bg-bioGreen hover:bg-green-700 text-white font-medium px-4 py-2 rounded shadow"
+        >
+          Nouvelle Évaluation
+        </button>
+        <button
+          onClick={() => setMode("list")}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded shadow"
+        >
+          Voir les Évaluations
+        </button>
       </div>
 
       {mode === "form" && (
         <>
-          <label>Choisir un employé :</label>
-          <select onChange={(e) => setSelectedId(Number(e.target.value))} value={selectedId ?? ""}>
-            <option value="">-- Sélectionner --</option>
-            {employes.map((e) => (
-              <option key={e.id} value={e.id}>
-                {e.prenom ?? "??"} {e.nom ?? ""}
-              </option>
-            ))}
-          </select>
+          <div className="mb-6 max-w-sm mx-auto">
+            <label className="block text-sm font-medium mb-2 text-zinc-800 dark:text-zinc-200">
+              Choisir un employé :
+            </label>
+            <select
+              onChange={(e) => setSelectedId(Number(e.target.value))}
+              value={selectedId ?? ""}
+              className="w-full px-4 py-2 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-bioGreen transition"
+            >
+              <option value="">-- Sélectionner --</option>
+              {employes.map((e) => (
+                <option key={e.id} value={e.id}>
+                  {e.prenom ?? "??"} {e.nom ?? ""}
+                </option>
+              ))}
+            </select>
+          </div>
+
 
           <div style={{ marginTop: 20 }}>
-            {Object.entries(notes)
-              .filter(([key]) => typeof notes[key as keyof typeof notes] === "number")
-              .map(([critere, value]) => (
-                <div key={critere} style={{ marginBottom: 10 }}>
-                  <label style={{ marginRight: 10 }}>{critere.replace(/_/g, " ")} :</label>
-                  <input
-                    type="number"
-                    min={0}
-                    max={10}
-                    value={value as number}
-                    onChange={(e) => handleChangeNote(critere as keyof typeof notes, Number(e.target.value))}
-                  />
-                </div>
-              ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 max-w-3xl mx-auto">
+              {Object.entries(notes)
+                .filter(([key]) => typeof notes[key as keyof typeof notes] === "number")
+                .map(([critere, value]) => (
+                  <div key={critere}>
+                    <label className="block text-sm font-medium mb-1 text-zinc-800 dark:text-zinc-200">
+                      {critere.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={10}
+                      value={value as number}
+                      onChange={(e) =>
+                        handleChangeNote(critere as keyof typeof notes, Number(e.target.value))
+                      }
+                      className="w-full px-4 py-2 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-bioGreen"
+                    />
+                  </div>
+                ))}
+            </div>
 
             <div style={{ marginTop: 10 }}>
               <label>Redressements :</label>
               <textarea
+                className="w-full h-[60px] resize-y border rounded-md px-3 py-2 bg-white dark:bg-zinc-800 text-black dark:text-white"
                 placeholder="Redressements"
                 value={notes.redressements}
                 onChange={(e) => handleChangeNote("redressements", e.target.value)}
@@ -210,8 +254,10 @@ function calculerMoyenne(e: Evaluation): number | null {
             </div>
 
             <div style={{ marginTop: 10 }}>
+              
               <label>Conséquences :</label>
               <textarea
+                className="w-full h-[60px] resize-y border rounded-md px-3 py-2 bg-white dark:bg-zinc-800 text-black dark:text-white"
                 placeholder="Conséquences"
                 value={notes.consequences}
                 onChange={(e) => handleChangeNote("consequences", e.target.value)}
@@ -220,22 +266,32 @@ function calculerMoyenne(e: Evaluation): number | null {
             </div>
           </div>
 
-          <button onClick={handleSubmit} style={{ marginTop: 20 }}>
-            Soumettre l’évaluation
-          </button>
+          <div className="flex justify-center mt-6">
+            <button
+              onClick={handleSubmit}
+              className="bg-bioGreen hover:bg-green-700 text-white font-semibold px-6 py-2 rounded shadow"
+            >
+              Enregistrer l’évaluation
+            </button>
+          </div>
         </>
       )}
 
       {mode === "list" && (
         <>
-          <h3>Évaluations enregistrées</h3>
-          <input
-            type="text"
-            placeholder="🔍 Rechercher un employé..."
-            value={rechercheNom}
-            onChange={(e) => setRechercheNom(e.target.value)}
-            style={{ marginBottom: 10, padding: 5, width: "100%" }}
-          />
+         <h3 className="text-xl font-semibold text-center mb-4 text-zinc-800 dark:text-zinc-200">
+          Évaluations enregistrées
+        </h3>
+          <div className="mb-4 flex justify-center items-center gap-2">
+            <Search size={18} className="text-zinc-500" />
+            <input
+              type="text"
+              placeholder="Rechercher un employé..."
+              value={rechercheNom}
+              onChange={(e) => setRechercheNom(e.target.value)}
+              className="px-4 py-2 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-black dark:text-white w-64 focus:outline-none focus:ring-2 focus:ring-bioGreen"
+            />
+          </div>
           <table border={1} cellPadding={5} style={{ width: "100%", marginTop: 10 }}>
             <thead>
               <tr>
@@ -249,9 +305,13 @@ function calculerMoyenne(e: Evaluation): number | null {
             <tbody>
               {evaluationsFiltrees.map((evaluation) => (
                 <tr key={evaluation.id}>
-                  <td>{evaluation.prenom ?? "?"} {evaluation.nom ?? ""}</td>
-                  <td>{new Date(evaluation.date_evaluation).toLocaleDateString("fr-FR")}</td>
-                        <td>
+                  <td className="text-center px-4 py-3">
+                    {evaluation.prenom ?? "?"} {evaluation.nom ?? ""}
+                  </td>
+                  <td className="text-center px-4 py-3">
+                    {new Date(evaluation.date_evaluation).toLocaleDateString("fr-FR")}
+                  </td>
+                      <td className="text-center px-4 py-3">
                       {(() => {
                         const moyenne = calculerMoyenne(evaluation);
                         if (moyenne === null) return "—";
@@ -263,39 +323,45 @@ function calculerMoyenne(e: Evaluation): number | null {
 
                         return (
                           <span
-                            style={{
-                              backgroundColor: couleur,
-                              color: "white",
-                              padding: "4px 8px",
-                              borderRadius: "8px",
-                              fontWeight: "bold",
-                            }}
+                            className={`px-3 py-1 rounded-full text-white font-semibold text-sm ${
+                              moyenne >= 7
+                                ? "bg-green-600"
+                                : moyenne >= 4
+                                ? "bg-orange-500"
+                                : "bg-red-600"
+                            }`}
                           >
                             {moyenne}/10
                           </span>
                         );
                       })()}
                     </td>
-                  <td>
+                  <td className="text-sm text-center align-top px-4 py-3">
                     {[
-                      ["ponctualité", evaluation.ponctualite],
-                      ["assiduité", evaluation.assiduite],
-                      ["service", evaluation.service_client],
-                      ["outils", evaluation.outils],
-                      ["consignes", evaluation.respect_consignes],
-                      ["rendement", evaluation.rendement],
-                    ].map(([label, score]) => (
-                      <div key={label}>
-                        {label} : {score ?? "-"}
+                      [<Clock size={16} className="inline-block mr-1" />, "Ponctualité", evaluation.ponctualite],
+                      [<CalendarCheck size={16} className="inline-block mr-1" />, "Assiduité", evaluation.assiduite],
+                      [<Headphones size={16} className="inline-block mr-1" />, "Service", evaluation.service_client],
+                      [<Wrench size={16} className="inline-block mr-1" />, "Outils", evaluation.outils],
+                      [<ClipboardList size={16} className="inline-block mr-1" />, "Consignes", evaluation.respect_consignes],
+                      [<Gauge size={16} className="inline-block mr-1" />, "Rendement", evaluation.rendement],
+                    ].map(([icon, label, score], i) => (
+                      <div key={i} className="flex items-center gap-1 justify-start">
+                        {icon} <strong>{label}</strong>: {score ?? "—"}
                       </div>
                     ))}
                   </td>
-                  <td>
-                    <strong>Redressements :</strong><br />
-                    {evaluation.redressements || "—"}
-                    <br />
-                    <strong>Conséquences :</strong><br />
-                    {evaluation.consequences || "—"}
+                  <td className="text-sm text-left align-top px-4 py-3">
+                    <div className="mb-2 flex items-center gap-1">
+                      <StickyNote size={16} className="text-zinc-600 dark:text-zinc-300" />
+                      <span className="font-semibold">Redressements :</span>
+                    </div>
+                      <p className="ml-5">{evaluation.redressements || "—"}</p>
+
+                    <div className="mt-3 flex items-center gap-1">
+                      <AlertCircle size={16} className="text-orange-500" />
+                      <span className="font-semibold">Conséquences :</span>
+                    </div>
+                      <p className="ml-5">{evaluation.consequences || "—"}</p>
 
                     <div id={`grille-eval-${evaluation.id}`} style={{ display: "none" }}>
                       <h3>Grille RH de {evaluation.prenom ?? "?"} {evaluation.nom ?? ""}</h3>
@@ -327,14 +393,18 @@ function calculerMoyenne(e: Evaluation): number | null {
                       <p><strong>Conséquences :</strong> {evaluation.consequences || "—"}</p>
                     </div>
 
-                    <div style={{ marginTop: 10, display: "flex", gap: "5px", flexWrap: "wrap" }}>
-                      <button onClick={() => printGrille(evaluation.id)}>🖨️ Imprimer</button>
-                      <button onClick={() => exportPDFGrille(evaluation.id)}>📥 PDF</button>
-                      <button
-                        onClick={() => handleDelete(evaluation.id)}
-                        style={{ backgroundColor: "#f44336", color: "white" }}
-                      >
-                        🗑️ Supprimer
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button className="...">
+                        <Printer size={16} className="inline-block mr-1" />
+                        Imprimer
+                      </button>
+                      <button className="...">
+                        <FileDown size={16} className="inline-block mr-1" />
+                        PDF
+                      </button>
+                      <button className="...">
+                        <Trash2 size={16} className="inline-block mr-1" />
+                        Supprimer
                       </button>
                     </div>
                   </td>

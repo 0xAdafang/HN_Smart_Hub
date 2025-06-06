@@ -11,6 +11,7 @@ import {
   CheckCircle,
   UserX,
 } from "lucide-react";
+import TodoWidget from "../components/TodoWidget";
 
 interface TeleventeEntry {
   employee_id: number;
@@ -125,6 +126,7 @@ export default function DashboardAdminView() {
             )
           )}
         </Widget>
+        <TodoWidget />
       </div>
     </div>
   );
