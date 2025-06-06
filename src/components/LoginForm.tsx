@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { useUser } from "../contexts/UserContext";
+import { motion } from "framer-motion";
 
 type Props = {
   onSuccess: (role: "Admin" | "User") => void;
@@ -41,6 +42,7 @@ export default function LoginForm({onSuccess }: Props) {
       onSuccess(result.role);
     } catch (err) {
       console.error("❌ Erreur login :", err);
+      setError("Nom d'utilisateur ou mot de passe incorrect.");
     } finally {
       setLoading(false);
     }
@@ -75,7 +77,16 @@ export default function LoginForm({onSuccess }: Props) {
       />
     </div>
 
-    {error && <p className="text-red-500 text-sm">{error}</p>}
+    {error && (
+      <motion.div
+        className="bg-red-100 text-red-700 px-3 py-2 rounded text-sm border border-red-300"
+        initial={{ x: 0 }}
+        animate={{ x: [0, -8, 8, -6, 6, -4, 4, 0] }}
+        transition={{ duration: 0.5 }}
+      >
+        {error}
+      </motion.div>
+    )}
 
     <button
       type="submit"
