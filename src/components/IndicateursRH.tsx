@@ -14,6 +14,7 @@ import {
   FileDown,
   Trash2,
   Search,
+  FileText,
 } from "lucide-react";
 
 
@@ -279,10 +280,12 @@ function calculerMoyenne(e: Evaluation): number | null {
 
       {mode === "list" && (
         <>
-         <h3 className="text-xl font-semibold text-center mb-4 text-zinc-800 dark:text-zinc-200">
-          Évaluations enregistrées
-        </h3>
-          <div className="mb-4 flex justify-center items-center gap-2">
+          <h3 className="text-xl font-semibold text-center mb-4 text-zinc-800 dark:text-zinc-200">
+            <FileText size={20} className="inline-block mr-2 text-bioGreen" />
+            Évaluations enregistrées
+          </h3>
+
+          <div className="mb-6 flex justify-center items-center gap-2">
             <Search size={18} className="text-zinc-500" />
             <input
               type="text"
@@ -292,126 +295,124 @@ function calculerMoyenne(e: Evaluation): number | null {
               className="px-4 py-2 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-black dark:text-white w-64 focus:outline-none focus:ring-2 focus:ring-bioGreen"
             />
           </div>
-          <table border={1} cellPadding={5} style={{ width: "100%", marginTop: 10 }}>
-            <thead>
-              <tr>
-                <th>Employé</th>
-                <th>Date</th>
-                <th>Moyenne</th>
-                <th>Scores</th>
-                <th>Commentaires</th>
-              </tr>
-            </thead>
-            <tbody>
-              {evaluationsFiltrees.map((evaluation) => (
-                <tr key={evaluation.id}>
-                  <td className="text-center px-4 py-3">
-                    {evaluation.prenom ?? "?"} {evaluation.nom ?? ""}
-                  </td>
-                  <td className="text-center px-4 py-3">
+
+          <div className="space-y-6">
+            {evaluationsFiltrees.map((evaluation) => {
+              const moyenne = calculerMoyenne(evaluation);
+              const couleur =
+                moyenne === null
+                  ? "bg-zinc-400"
+                  : moyenne >= 7
+                  ? "bg-green-600"
+                  : moyenne >= 4
+                  ? "bg-orange-500"
+                  : "bg-red-600";
+
+              return (
+                <div
+                  key={evaluation.id}
+                  className="bg-white dark:bg-zinc-800 shadow rounded-lg p-4 border border-zinc-200 dark:border-zinc-700"
+                >
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="text-lg font-semibold">
+                      {evaluation.prenom} {evaluation.nom}
+                    </h4>
+                    <span className={`px-3 py-1 rounded-full text-white text-sm font-semibold ${couleur}`}>
+                      {moyenne ?? "—"}/10
+                    </span>
+                  </div>
+
+                  <p className="text-sm text-zinc-600 dark:text-zinc-300 mb-3 flex items-center gap-1">
+                    <CalendarCheck size={14} />
                     {new Date(evaluation.date_evaluation).toLocaleDateString("fr-FR")}
-                  </td>
-                      <td className="text-center px-4 py-3">
-                      {(() => {
-                        const moyenne = calculerMoyenne(evaluation);
-                        if (moyenne === null) return "—";
+                  </p>
 
-                        let couleur = "gray";
-                        if (moyenne >= 7) couleur = "green";
-                        else if (moyenne >= 4) couleur = "orange";
-                        else couleur = "red";
-
-                        return (
-                          <span
-                            className={`px-3 py-1 rounded-full text-white font-semibold text-sm ${
-                              moyenne >= 7
-                                ? "bg-green-600"
-                                : moyenne >= 4
-                                ? "bg-orange-500"
-                                : "bg-red-600"
-                            }`}
-                          >
-                            {moyenne}/10
-                          </span>
-                        );
-                      })()}
-                    </td>
-                  <td className="text-sm text-center align-top px-4 py-3">
+                  <div className="grid sm:grid-cols-2 gap-3 text-sm mb-3">
                     {[
-                      [<Clock size={16} className="inline-block mr-1" />, "Ponctualité", evaluation.ponctualite],
-                      [<CalendarCheck size={16} className="inline-block mr-1" />, "Assiduité", evaluation.assiduite],
-                      [<Headphones size={16} className="inline-block mr-1" />, "Service", evaluation.service_client],
-                      [<Wrench size={16} className="inline-block mr-1" />, "Outils", evaluation.outils],
-                      [<ClipboardList size={16} className="inline-block mr-1" />, "Consignes", evaluation.respect_consignes],
-                      [<Gauge size={16} className="inline-block mr-1" />, "Rendement", evaluation.rendement],
+                      [<Clock size={16} />, "Ponctualité", evaluation.ponctualite],
+                      [<CalendarCheck size={16} />, "Assiduité", evaluation.assiduite],
+                      [<Headphones size={16} />, "Service", evaluation.service_client],
+                      [<Wrench size={16} />, "Outils", evaluation.outils],
+                      [<ClipboardList size={16} />, "Consignes", evaluation.respect_consignes],
+                      [<Gauge size={16} />, "Rendement", evaluation.rendement],
                     ].map(([icon, label, score], i) => (
-                      <div key={i} className="flex items-center gap-1 justify-start">
-                        {icon} <strong>{label}</strong>: {score ?? "—"}
+                      <div key={i} className="flex items-center gap-2">
+                        {icon}
+                        <strong>{label}</strong>: {score ?? "—"}
                       </div>
                     ))}
-                  </td>
-                  <td className="text-sm text-left align-top px-4 py-3">
-                    <div className="mb-2 flex items-center gap-1">
-                      <StickyNote size={16} className="text-zinc-600 dark:text-zinc-300" />
-                      <span className="font-semibold">Redressements :</span>
-                    </div>
-                      <p className="ml-5">{evaluation.redressements || "—"}</p>
+                  </div>
 
-                    <div className="mt-3 flex items-center gap-1">
-                      <AlertCircle size={16} className="text-orange-500" />
-                      <span className="font-semibold">Conséquences :</span>
+                  <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <div className="flex items-center gap-1 font-semibold mb-1">
+                        <StickyNote size={16} /> Redressements :
+                      </div>
+                      <p>{evaluation.redressements || "—"}</p>
                     </div>
-                      <p className="ml-5">{evaluation.consequences || "—"}</p>
+                    <div>
+                      <div className="flex items-center gap-1 font-semibold text-orange-500 mb-1">
+                        <AlertCircle size={16} /> Conséquences :
+                      </div>
+                      <p>{evaluation.consequences || "—"}</p>
+                    </div>
+                  </div>
 
-                    <div id={`grille-eval-${evaluation.id}`} style={{ display: "none" }}>
-                      <h3>Grille RH de {evaluation.prenom ?? "?"} {evaluation.nom ?? ""}</h3>
-                      <p>Date : {new Date(evaluation.date_evaluation).toLocaleDateString("fr-FR")}</p>
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>Critère</th>
-                            <th>Note</th>
+                  {/* Grille RH invisible pour PDF/Impression */}
+                  <div id={`grille-eval-${evaluation.id}`} style={{ display: "none" }}>
+                    <h3>Grille RH de {evaluation.prenom ?? "?"} {evaluation.nom ?? ""}</h3>
+                    <p>Date : {new Date(evaluation.date_evaluation).toLocaleDateString("fr-FR")}</p>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Critère</th>
+                          <th>Note</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          ["Ponctualité", evaluation.ponctualite],
+                          ["Assiduité", evaluation.assiduite],
+                          ["Service client", evaluation.service_client],
+                          ["Outils", evaluation.outils],
+                          ["Respect des consignes", evaluation.respect_consignes],
+                          ["Rendement", evaluation.rendement],
+                        ].map(([label, score]) => (
+                          <tr key={label}>
+                            <td>{label}</td>
+                            <td>{score ?? "-"}</td>
                           </tr>
-                        </thead>
-                        <tbody>
-                          {[
-                            ["Ponctualité", evaluation.ponctualite],
-                            ["Assiduité", evaluation.assiduite],
-                            ["Service client", evaluation.service_client],
-                            ["Outils", evaluation.outils],
-                            ["Respect des consignes", evaluation.respect_consignes],
-                            ["Rendement", evaluation.rendement],
-                          ].map(([label, score]) => (
-                            <tr key={label}>
-                              <td>{label}</td>
-                              <td>{score ?? "-"}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                      <p><strong>Redressements :</strong> {evaluation.redressements || "—"}</p>
-                      <p><strong>Conséquences :</strong> {evaluation.consequences || "—"}</p>
-                    </div>
+                        ))}
+                      </tbody>
+                    </table>
+                    <p><strong>Redressements :</strong> {evaluation.redressements || "—"}</p>
+                    <p><strong>Conséquences :</strong> {evaluation.consequences || "—"}</p>
+                  </div>
 
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <button className="...">
-                        <Printer size={16} className="inline-block mr-1" />
-                        Imprimer
-                      </button>
-                      <button className="...">
-                        <FileDown size={16} className="inline-block mr-1" />
-                        PDF
-                      </button>
-                      <button className="...">
-                        <Trash2 size={16} className="inline-block mr-1" />
-                        Supprimer
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      onClick={() => printGrille(evaluation.id)}
+                      className="flex items-center gap-1 px-3 py-1 bg-zinc-200 dark:bg-zinc-700 rounded hover:bg-zinc-300 dark:hover:bg-zinc-600 text-sm"
+                    >
+                      <Printer size={16} /> Imprimer
+                    </button>
+                    <button
+                      onClick={() => exportPDFGrille(evaluation.id)}
+                      className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                    >
+                      <FileDown size={16} /> PDF
+                    </button>
+                    <button
+                      onClick={() => handleDelete(evaluation.id)}
+                      className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+                    >
+                      <Trash2 size={16} /> Supprimer
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </>
       )}
     </div>
