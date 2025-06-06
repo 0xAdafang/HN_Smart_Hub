@@ -93,7 +93,11 @@ function AppContent() {
             );
 
           case "adminFormation":
-            return <AdminFormation onBack={() => setSection("dashboard")} />;
+            return isAdmin ? (
+              <AdminFormation onBack={() => setSection("dashboard")} />
+            ) : (
+              <DashboardPage onNavigate={setSection} />
+            );
 
           case "televente":
           case "adminTelevente":

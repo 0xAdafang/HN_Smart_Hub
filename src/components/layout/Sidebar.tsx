@@ -32,13 +32,21 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
         <SidebarLink icon={<Package />} label="Produits" section="produits" onClick={onNavigate} />
         <SidebarLink icon={<PhoneCall />} label="Télévente" section="televente" onClick={onNavigate} />
         {user?.role === "Admin" && (
-        <SidebarLink
-          icon={<Users />}
-          label="Comptes"
-          section="gestionComptes"
-          onClick={onNavigate}
-        />
-)}
+          <>
+            <SidebarLink
+              icon={<Users />}
+              label="Comptes"
+              section="gestionComptes"
+              onClick={onNavigate}
+            />
+            <SidebarLink
+              icon={<GraduationCap />}
+              label="Suivi Formation"
+              section="adminFormation"
+              onClick={onNavigate}
+            />
+          </>
+        )}
       </nav>
     </aside>
   );
