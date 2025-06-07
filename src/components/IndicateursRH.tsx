@@ -57,14 +57,18 @@ export default function IndicateursRH() {
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const [rechercheNom, setRechercheNom] = useState("");
 
+  const chargerEvaluations = () => {
+    invoke("get_all_evaluations")
+      .then((res) => setEvaluations(res as Evaluation[]))
+      .catch(console.error);
+  };
+
   useEffect(() => {
     invoke("get_employes_non_admins")
       .then((res) => setEmployes(res as Employe[]))
       .catch(console.error);
 
-    invoke("get_all_evaluations")
-      .then((res) => setEvaluations(res as Evaluation[]))
-      .catch(console.error);
+    chargerEvaluations();
   }, []);
 
   const handleChangeNote = (field: keyof typeof notes, value: number | string) => {
@@ -80,6 +84,7 @@ export default function IndicateursRH() {
         return (
           dateEval.getFullYear() === maintenant.getFullYear() &&
           dateEval.getMonth() === maintenant.getMonth()
+          
         );
       });
     }
@@ -105,7 +110,8 @@ export default function IndicateursRH() {
         },
       });
 
-      toast.success("Évaluation enregistrée !");
+      toast.success("✅ Évaluation enregistrée avec succès !");
+      chargerEvaluations();
     } catch (err) {
       console.error(err);
       toast.error("Erreur lors de l'enregistrement");

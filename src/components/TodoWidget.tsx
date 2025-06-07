@@ -65,7 +65,7 @@ export default function TodoWidget() {
           <span className="text-sm text-zinc-500 dark:text-zinc-300">:</span>
 
           <select
-            value={heure.split(":"[1])}
+            value={heure.split(":")[1]}
             onChange={(e) =>
               setHeure(`${heure.split(":")[0]}:${e.target.value.padStart(2, "0")}`)
             }

@@ -9,18 +9,28 @@ interface Props {
 export default function AjoutProduit({ onBack }: Props) {
   const [nom, setNom] = useState("");
   const [description, setDescription] = useState("");
+  const [confirmation, setConfirmation] = useState(false);
 
   const enregistrer = async () => {
     if (!nom.trim()) return alert("Le nom est obligatoire");
     try {
       await invoke("ajouter_produit", { nom, description: description || null });
-      alert("✅ Produit ajouté !");
-      onBack();
+        setConfirmation(true);
+        setTimeout(() => {
+        setConfirmation(false);
+        onBack();
+        }, 2000); 
     } catch (e) {
       console.error("Erreur ajout :", e);
       alert("❌ Erreur lors de l'ajout");
     }
   };
+  
+  {confirmation && (
+    <div className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg z-50 animate-fade-in-out">
+        ✅ Produit ajouté avec succès !
+    </div>
+    )}
 
   return (
     <div className="p-4">

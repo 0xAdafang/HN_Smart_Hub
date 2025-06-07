@@ -14,8 +14,8 @@ pub async fn add_televente_entry(payload: TeleventePayload, state: State<'_, App
         r#"
         INSERT INTO televente_entries (
             employee_id, date, client_number, client_name, 
-            product_code, product_name, quantity, hit_click
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            product_code, product_name, category, quantity, hit_click
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         "#,
         payload.employee_id,
         date,
@@ -23,6 +23,7 @@ pub async fn add_televente_entry(payload: TeleventePayload, state: State<'_, App
         payload.client_name,
         payload.product_code,
         payload.product_name,
+        payload.category,
         payload.quantity,
         payload.hit_click,
     );
@@ -52,6 +53,7 @@ pub async fn get_televente_entries_by_date(date: String,state: State<'_, AppStat
             t.client_name,
             t.product_code,
             t.product_name,
+            t.category,
             t.quantity,
             t.hit_click
         FROM televente_entries t
@@ -75,6 +77,7 @@ pub async fn get_televente_entries_by_date(date: String,state: State<'_, AppStat
             client_name: row.client_name,
             product_code: row.product_code,
             product_name: row.product_name,
+            category: row.category,
             quantity: row.quantity,
             hit_click: row.hit_click,
         })
@@ -161,6 +164,7 @@ pub async fn get_all_televente_entries(state: State<'_, AppState>) -> Result<Vec
             t.client_name,
             t.product_code,
             t.product_name,
+            t.category,
             t.quantity,
             t.hit_click
         FROM televente_entries t
@@ -180,6 +184,7 @@ pub async fn get_all_televente_entries(state: State<'_, AppState>) -> Result<Vec
         client_name: r.client_name,
         product_code: r.product_code,
         product_name: r.product_name,
+        category: r.category,
         quantity: r.quantity,
         hit_click: r.hit_click,
     }).collect();
@@ -187,3 +192,4 @@ pub async fn get_all_televente_entries(state: State<'_, AppState>) -> Result<Vec
     Ok(result)
 
 }
+

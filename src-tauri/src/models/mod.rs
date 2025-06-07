@@ -128,6 +128,7 @@ pub struct TeleventePayload {
     pub client_name: String,
     pub product_code: String,
     pub product_name: String,
+    pub category: Option<String>,
     pub quantity: i32,
     pub hit_click: bool,
 }
@@ -141,6 +142,7 @@ pub struct TeleventeEntry {
     pub client_name: String,
     pub product_code: String,
     pub product_name: String,
+    pub category: Option<String>,
     pub quantity: i32,
     pub hit_click: bool,
 }
@@ -166,6 +168,7 @@ pub struct AdminTeleventeEntry {
     pub client_name: String,
     pub product_code: String,
     pub product_name: String,
+    pub category: Option<String>,
     pub quantity: i32,
     pub hit_click: bool,
 }

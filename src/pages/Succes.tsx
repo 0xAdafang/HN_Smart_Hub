@@ -1,5 +1,20 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import {
+  Award,
+  Phone,
+  Target,
+  CalendarCheck,
+  Flame,
+  Lock,
+  CheckCircle,
+  Sparkles,
+  Repeat,
+  RefreshCw,
+  Crown
+} from "lucide-react";
+import { toast } from "react-toastify";
+
 
 type Vente = {
   hit_click: boolean;
@@ -47,6 +62,7 @@ export default function Succes({ employeeId }: { employeeId: number }) {
                 achievement_code: "first_call",
             },
             });
+            toast.success('🎉 Succès "Premier appel" débloqué !');
         }
 
         if (ventes.length >= 10) {
@@ -56,6 +72,7 @@ export default function Succes({ employeeId }: { employeeId: number }) {
                 achievement_code: "ten_calls_day",
             },
             });
+            toast.success('🎉 Succès "Appels en rafale (10/jour)" débloqué !');
         }
 
         const hits = ventes.filter((v) => v.hit_click).length;
@@ -66,6 +83,7 @@ export default function Succes({ employeeId }: { employeeId: number }) {
                 achievement_code: "five_hit",
             },
             });
+            toast.success('🎉 Succès "100% Hit (5 ventes)" débloqué !');
         }
         const total = ventes.length;
 
@@ -78,6 +96,7 @@ export default function Succes({ employeeId }: { employeeId: number }) {
             achievement_code: "thirty_total",
           },
         });
+        toast.success('🎉 Succès "30 ventes cumulées" débloqué !');
       }
 
       // Journée sans Hit
@@ -88,6 +107,7 @@ export default function Succes({ employeeId }: { employeeId: number }) {
             achievement_code: "no_hit_day",
           },
         });
+        toast.success('🎉 Succès "Journée sans Hit" débloqué !');
       }
 
       // Combo de 3 Hit d'affilée (simplifié)
@@ -100,6 +120,7 @@ export default function Succes({ employeeId }: { employeeId: number }) {
           combo = 0;
         }
       }
+      
       if (combo >= 3) {
         await invoke("unlock_achievement", {
           payload: {
@@ -107,18 +128,32 @@ export default function Succes({ employeeId }: { employeeId: number }) {
             achievement_code: "combo_hit",
           },
         });
+        toast.success('🎉 Succès "Combo 3 Hits" débloqué !');
       }
+
       if (ventes.length >= 100) {
         await invoke("unlock_achievement", {
           payload: { employee_id: employeeId, achievement_code: "hundred_total" },
         });
+        toast.success('🎉 Succès "100 ventes totales" débloqué !');
       }
+
+      const totalHits = ventes.filter((v) => v.hit_click).length;
+        if (totalHits >= 1000) {
+          await invoke("unlock_achievement", {
+            payload: { employee_id: employeeId, achievement_code: "televendeur_master" },
+          });
+          toast.success('🎉 Succès "Maître télévendeur" débloqué !');
+        }
+
       const daysSet = new Set(ventes.map((v) => v.date));
       if (daysSet.size >= 3) {
         await invoke("unlock_achievement", {
           payload: { employee_id: employeeId, achievement_code: "weekly_active" },
         });
+        toast.success('🎉 Succès "3 jours/semaine" débloqué !');
       }
+
       const sortedDates = [...daysSet].sort();
       let streak = 1;
 
@@ -137,17 +172,16 @@ export default function Succes({ employeeId }: { employeeId: number }) {
         await invoke("unlock_achievement", {
           payload : { employee_id: employeeId, achievement_code: "five_day_streak" },
         });
+        toast.success('🎉 Succès "5 jours consécutifs" et "Série de feu" débloqués !');
       }
-
-
 
         } catch (err) {
         console.error("Erreur déblocage succès :", err);
         }
     };
 
-  unlockSuccesses();
-}, [ventes]);
+    unlockSuccesses();
+  }, [ventes]);
 
 
     const getDate = (code: string) => {
@@ -156,78 +190,121 @@ export default function Succes({ employeeId }: { employeeId: number }) {
     };
 
     const unlocked = {
-      premierAppel: !!getDate("first_call"),
-      appelsEnRafale: !!getDate("ten_calls_day"),
-      fullHit: !!getDate("five_hit"),
-      trenteTotal: !!getDate("thirty_total"),
-      noHitDay: !!getDate("no_hit_day"),
-      comboHit: !!getDate("combo_hit"),
-      fiveDaysRow: !!getDate("five_days_row"),
-      weeklyActive: !!getDate("weekly_active"),
-      hundredTotal: !!getDate("hundred_total"),
-      fiveDayStreak: !!getDate("five_day_streak"),
-      firstFlip: !!getDate("first_flip"), 
+      first_call: !!getDate("first_call"),
+      ten_calls_day: !!getDate("ten_calls_day"),
+      five_hit: !!getDate("five_hit"),
+      thirty_total: !!getDate("thirty_total"),
+      no_hit_day: !!getDate("no_hit_day"),
+      combo_hit: !!getDate("combo_hit"),
+      five_days_row: !!getDate("five_days_row"),
+      weekly_active: !!getDate("weekly_active"),
+      hundred_total: !!getDate("hundred_total"),
+      five_day_streak: !!getDate("five_day_streak"),
+      first_flip: !!getDate("first_flip"),
+      televendeur_master: !!getDate("televendeur_master"),
     };
 
   return (
-    <div className="p-6 bg-white rounded shadow max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">🏆 Succès débloqués</h2>
-      <ul className="space-y-4">
-        <li className={`p-3 rounded ${unlocked.premierAppel ? "bg-green-100" : "bg-gray-100"}`}>
-          🥇 <strong>Premier appel :</strong> faire une première vente {unlocked.premierAppel ? "✅" : "🔒"}
-          {unlocked.premierAppel ? ` ✅ (débloqué le ${getDate("first_call")})` : " 🔒"}
-        </li>
-        <li className={`p-3 rounded ${unlocked.appelsEnRafale ? "bg-green-100" : "bg-gray-100"}`}>
-          🔟 <strong>Appels en rafale :</strong> 10 ventes dans la journée {unlocked.appelsEnRafale ? "✅" : "🔒"}
-          {unlocked.appelsEnRafale ? ` ✅ (débloqué le ${getDate("ten_calls_day")})` : " 🔒"}
-        </li>
-        <li className={`p-3 rounded ${unlocked.fullHit ? "bg-green-100" : "bg-gray-100"}`}>
-          🎯 <strong>100% Hit :</strong> 5 ventes réussies {unlocked.fullHit ? "✅" : "🔒"}
-            {unlocked.fullHit ? ` ✅ (débloqué le ${getDate("five_hit")})` : " 🔒"}
-        </li>
-        <li className="p-3 rounded bg-yellow-50">
-          📆 <strong>Semaine active :</strong> en cours de développement...
-        
-        </li>
-        <li className={`p-3 rounded ${unlocked.trenteTotal ? "bg-green-100" : "bg-gray-100"}`}>
-          ☎️ <strong>Trente appels :</strong> 30 ventes cumulées
-          {unlocked.trenteTotal ? ` ✅ (débloqué le ${getDate("thirty_total")})` : " 🔒"}
-        </li>
+    <div className="p-6 bg-white dark:bg-zinc-800 rounded shadow max-w-6xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6 text-zinc-800 dark:text-white flex items-center gap-2">
+        <Award size={24} /> Succès débloqués
+      </h2>
 
-        <li className={`p-3 rounded ${unlocked.noHitDay ? "bg-green-100" : "bg-gray-100"}`}>
-          😓 <strong>Journée difficile :</strong> 0 vente réussie
-          {unlocked.noHitDay ? ` ✅ (débloqué le ${getDate("no_hit_day")})` : " 🔒"}
-        </li>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {[
+          {
+            label: "Premier appel",
+            code: "first_call",
+            icon: <Phone size={28} />,
+          },
+          {
+            label: "Appels en rafale (10/jour)",
+            code: "ten_calls_day",
+            icon: <Repeat size={28} />,
+          },
+          {
+            label: "100% Hit (5 ventes)",
+            code: "five_hit",
+            icon: <Target size={28} />,
+          },
+          {
+            label: "30 ventes cumulées",
+            code: "thirty_total",
+            icon: <CalendarCheck size={28} />,
+          },
+          {
+            label: "Journée sans Hit",
+            code: "no_hit_day",
+            icon: <RefreshCw size={28} />,
+          },
+          {
+            label: "Combo 3 Hits",
+            code: "combo_hit",
+            icon: <Sparkles size={28} />,
+          },
+          {
+            label: "3 jours/semaine",
+            code: "weekly_active",
+            icon: <CalendarCheck size={28} />,
+          },
+          {
+            label: "5 jours consécutifs",
+            code: "five_days_row",
+            icon: <Flame size={28} />,
+          },
+          {
+            label: "Série de feu",
+            code: "five_day_streak",
+            icon: <Flame size={28} />,
+          },
+          {
+            label: "Retour du destin",
+            code: "first_flip",
+            icon: <RefreshCw size={28} />,
+          },
+          {
+            label: "100 ventes totales",
+            code: "hundred_total",
+            icon: <Target size={28} />,
+          },
+         {
+          label: "Maître télévendeur",
+          code: "televendeur_master",
+          icon: <Crown size={28} />,
+        },
+        ].map((s, i) => {
+          const isUnlocked = s.code ? unlocked[s.code as keyof typeof unlocked] : false;
+          const date = s.code ? getDate(s.code) : null;
 
-        <li className={`p-3 rounded ${unlocked.comboHit ? "bg-green-100" : "bg-gray-100"}`}>
-          ⚡ <strong>Combo !</strong> 3 ventes Hit d’affilée
-          {unlocked.comboHit ? ` ✅ (débloqué le ${getDate("combo_hit")})` : " 🔒"}
-        </li>
-        <li className={`p-3 rounded ${unlocked.weeklyActive ? "bg-green-100" : "bg-gray-100"}`}>
-          📆 <strong>Agent assidu :</strong> 3 jours de vente dans la même semaine
-          {unlocked.weeklyActive ? ` ✅ (débloqué le ${getDate("weekly_active")})` : " 🔒"}
-        </li>
-
-        <li className={`p-3 rounded ${unlocked.fiveDaysRow ? "bg-green-100" : "bg-gray-100"}`}>
-          🗓️ <strong>Semaine active :</strong> 5 jours consécutifs avec au moins 1 vente
-          {unlocked.fiveDaysRow ? ` ✅ (débloqué le ${getDate("five_days_row")})` : " 🔒"}
-        </li>
-
-        <li className={`p-3 rounded ${unlocked.fiveDayStreak ? "bg-green-100" : "bg-gray-100"}`}>
-          🔥 <strong>Série de feu :</strong> 5 jours consécutifs de vente
-          {unlocked.fiveDayStreak ? ` ✅ (débloqué le ${getDate("five_day_streak")})` : " 🔒"}
-        </li>
-
-        <li className={`p-3 rounded ${unlocked.firstFlip ? "bg-green-100" : "bg-gray-100"}`}>
-          🎲 <strong>Le destin :</strong> Vendre à un client déjà refusé une fois avant
-          {unlocked.firstFlip ? ` ✅ (débloqué le ${getDate("first_flip")})` : " 🔒"}
-        </li>
-        <li className="p-3 rounded bg-yellow-50">
-          👑 <strong>Maître télévendeur :</strong> bientôt disponible...
-        </li>
-      </ul>
+          return (
+            <div
+              key={i}
+              className={`rounded-xl p-4 h-full text-center border ${
+                isUnlocked
+                  ? "bg-green-100 dark:bg-green-800/30 border-green-400 dark:border-green-600 text-green-800 dark:text-green-200"
+                  : "bg-zinc-100 dark:bg-zinc-700 border-zinc-300 dark:border-zinc-600 text-zinc-400 dark:text-zinc-400 opacity-60"
+              }`}
+            >
+              <div className="mb-2 flex justify-center">
+                {isUnlocked ? (
+                  <CheckCircle size={32} className="text-green-600 mb-2" />
+                ) : (
+                  <Lock size={32} className="mb-2" />
+                )}
+              </div>
+              <div className="text-lg font-semibold mb-1">{s.label}</div>
+              {date && (
+                <div className="text-xs italic">
+                  Débloqué le {date}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
-  );
+);
+
 }
 
 
