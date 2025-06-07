@@ -24,6 +24,7 @@ import EditProduit from "./pages/EditProduit";
 import Layout from "./components/layout/Layout";
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
+import AjoutProduit from "./pages/AjoutProduit";
 
 export type AppSection =
   | "dashboard"
@@ -41,6 +42,7 @@ export type AppSection =
   | "adminFormation"
   | "produitsAdmin"     
   | "editProduit"
+  | "ajouterProduit"
   | "options"; 
 
 
@@ -126,6 +128,9 @@ function AppContent() {
             ) : (
               <DashboardPage key={renderKey} onNavigate={setSection} />
             );
+            
+          case "ajouterProduit":
+            return <AjoutProduit onBack={() => setSection("produitsAdmin")} />;
 
           case "gestionComptes":
             return <GestionComptes />;

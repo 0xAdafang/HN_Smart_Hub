@@ -4,6 +4,7 @@ import { useUser } from "../contexts/UserContext";
 import { Produit } from "../components/ProductForm";
 import EditProduit from "./EditProduit"; 
 import { ChevronLeft, Search, Plus, Pencil, Boxes } from "lucide-react";
+import AjoutProduit from "./AjoutProduit";
 
 
 interface Props {
@@ -14,6 +15,7 @@ export default function ProduitsPage({ onBack }: Props) {
   const [produits, setProduits] = useState<Produit[]>([]);
   const [recherche, setRecherche] = useState("");
   const [produitEnEdition, setProduitEnEdition] = useState<Produit | null>(null);
+  const [ajoutProduitMode, setAjoutProduitMode] = useState(false);
   const { user } = useUser();
   const isAdmin = user?.role === "Admin";
   const [produitSelectionne, setProduitSelectionne] = useState<Produit | null>(null);
@@ -49,6 +51,16 @@ export default function ProduitsPage({ onBack }: Props) {
       />
     );
   }
+  if (ajoutProduitMode) {
+  return (
+    <AjoutProduit
+      onBack={() => {
+        setAjoutProduitMode(false);
+        chargerProduits(); // rafraîchir la liste après ajout
+      }}
+    />
+  );
+}
 
   return (
     <div className="p-4">
@@ -78,7 +90,7 @@ export default function ProduitsPage({ onBack }: Props) {
 
       {isAdmin && (
         <button
-          onClick={() => setProduitEnEdition({ id: 0, nom: "", description: "" })}
+          onClick={() => setAjoutProduitMode(true)}
           className="mb-4 flex items-center gap-2 bg-bioGreen hover:bg-green-700 text-white px-4 py-2 rounded text-sm"
         >
           <Plus size={16} /> Ajouter un produit
