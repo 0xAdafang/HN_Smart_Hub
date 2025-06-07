@@ -46,7 +46,7 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
       client_number: "",
       product_code: "",
       product_name: "",
-      category: "Catégorie du produit",
+      category: "autres",
       quantity: 1,
       hit_click: false,
     });
