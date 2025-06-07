@@ -21,7 +21,7 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
     client_number: "",
     product_code: "",
     product_name: "",
-    category: "Catégorie du produit",
+    category: "autres",
     quantity: 1,
     hit_click: false,
   });
@@ -63,7 +63,7 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
           category: vente.category,
         },
       });
-      toast.success("✅ Vente envoyée !");
+      toast.success("Vente envoyée !");
       const newList = [...pendingList];
       newList.splice(index, 1);
       setPendingList(newList);
@@ -150,9 +150,12 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
             <div><strong><PhoneCall size={14} className="inline-block mr-1" /> Client :</strong> {item.client_name} ({item.client_number})</div>
             <div><strong><Package size={14} className="inline-block mr-1" /> Produit :</strong> {item.product_name} ({item.product_code}) — Qté : {item.quantity}</div>
             <div className="text-sm text-zinc-600 dark:text-zinc-300">
-              💰 Bonus estimé : {["inewa", "abenakis"].some((m) => item.product_name.toLowerCase().includes(m)) ? `${(item.quantity * 1).toFixed(2)} $` : `${(item.quantity * 0.5).toFixed(2)} $`}
-              <span className="italic text-xs"> (⚠️ Le client n'a pas/jamais commandé le produit depuis 6 mois)</span>
-            
+              <DollarSign size={14} className="inline-block mr-1" />
+              Bonus estimé :
+              {item.category?.toLowerCase() === "inewa" || item.category?.toLowerCase() === "abenakis"
+                ? "1.00 $"
+                : "0.50 $"}
+              <span className="italic text-xs"> (⚠️ Boni appliquable si le client n’a jamais ou pas commandé le produit depuis 6 mois)</span>
             </div>
             <div><CalendarDays size={14} className="inline-block mr-1" /> <strong>Date :</strong> {item.date}</div>
             <label className="flex items-center gap-2 mt-2">

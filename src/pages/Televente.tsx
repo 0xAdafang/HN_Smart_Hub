@@ -3,10 +3,12 @@ import TeleventeForm from "../components/TeleventeForm";
 import MesVentes from "../pages/MesVentes";
 import Succes from "../pages/Succes";
 import { PhoneCall, BarChart3, Trophy } from "lucide-react";
+import { useUser } from "../contexts/UserContext";
 
 
 export default function TeleventePage() {
-  const employeeId = 5; 
+  const { user } = useUser();
+  const employeeId = user?.id; 
 
   const [subSection, setSubSection] = useState<"form" | "ventes" | "succes">("form");
 
@@ -48,12 +50,13 @@ export default function TeleventePage() {
     </div>
 
     <div className="flex justify-center">
-      {subSection === "form" && <TeleventeForm employeeId={employeeId} />}
-      {subSection === "ventes" && <MesVentes employeeId={employeeId} />}
-      {subSection === "succes" && <Succes employeeId={employeeId} />}
+      {subSection === "form" && employeeId !== undefined && <TeleventeForm employeeId={employeeId} />}
+      {subSection === "ventes" && employeeId !== undefined && <MesVentes employeeId={employeeId} />}
+      {subSection === "succes" && employeeId !== undefined && <Succes employeeId={employeeId} />}
     </div>
   </div>
 );
 
 
 }
+
