@@ -26,6 +26,15 @@ export default function GestionComptes() {
     const [modal, setModal] = useState<{ open: boolean; user: Compte | null }>({ open: false, user: null });
     const [pw1, setPw1] = useState('');
     const [pw2, setPw2] = useState('');
+    const [modalAjout, setModalAjout] = useState(false);
+    const [nouvelUser, setNouvelUser] = useState({
+      nom: "",
+      prenom: "",
+      username: "",
+      poste: "",
+      role: "User",
+      motDePasse: "",
+    });
 
     function openPwdModal(user: Compte) {
       setModal({ open: true, user });
@@ -116,6 +125,14 @@ export default function GestionComptes() {
       <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-zinc-800 dark:text-white">
         <Users2 size={24} /> Gestion des comptes
       </h2>
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={() => setModalAjout(true)}
+          className="flex items-center gap-2 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+        >
+          ➕ <UserCog size={16} /> Créer un utilisateur
+        </button>
+      </div>
 
       {erreur && (
         <p className="text-red-500 font-semibold mb-4">{erreur}</p>
@@ -225,6 +242,73 @@ export default function GestionComptes() {
                 className="px-3 py-1 rounded bg-bioGreen text-white disabled:opacity-50"
               >
                 Confirmer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {modalAjout && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white rounded-lg p-6 w-96 shadow-xl">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <UserCog size={20} />
+              Création d’un nouvel utilisateur
+            </h3>
+
+            {["nom", "prenom", "username", "poste", "motDePasse"].map((champ) => (
+              <input
+                key={champ}
+                type={champ === "motDePasse" ? "password" : "text"}
+                placeholder={champ.charAt(0).toUpperCase() + champ.slice(1)}
+                value={nouvelUser[champ as keyof typeof nouvelUser]}
+                onChange={(e) =>
+                  setNouvelUser({ ...nouvelUser, [champ]: e.target.value })
+                }
+                className="w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 rounded p-2 mb-2 text-zinc-900 dark:text-white"
+              />
+            ))}
+
+            <select
+              value={nouvelUser.role}
+              onChange={(e) => setNouvelUser({ ...nouvelUser, role: e.target.value })}
+              className="w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 rounded p-2 mb-2 text-zinc-900 dark:text-white">
+              <option value="User">User</option>
+              <option value="Admin">Admin</option>
+            </select>
+
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setModalAjout(false)}
+                className="px-3 py-1 rounded bg-zinc-300 text-zinc-800"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    await invoke("create_user_and_employee", {
+                      payload: {
+                        username: nouvelUser.username,
+                        password: nouvelUser.motDePasse,
+                        role: nouvelUser.role,
+                        nom: nouvelUser.nom,
+                        prenom: nouvelUser.prenom,
+                        poste: nouvelUser.poste,
+                      }
+                    });
+                    toast.success("Utilisateur créé !");
+                    setModalAjout(false);
+                    setNouvelUser({ nom: "", prenom: "", username: "", poste: "", role: "User", motDePasse: "" });
+                    const updated = await invoke("get_all_users");
+                    setComptes(updated as Compte[]);
+                  } catch (err) {
+                    console.error("Erreur création utilisateur :", err);
+                    toast.error("Erreur lors de la création.");
+                  }
+                }}
+                className="px-3 py-1 rounded bg-bioGreen text-white"
+              >
+                Créer
               </button>
             </div>
           </div>

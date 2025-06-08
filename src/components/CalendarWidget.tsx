@@ -56,8 +56,8 @@ export default function CalendarWidget() {
   const ajouterEvenement = async () => {
     if (!range?.from || !nouvelEvenement.trim() || !user?.id) return;
 
-    const date_debut = range.from.toISOString().split("T")[0];
-    const date_fin = range.to ? range.to.toISOString().split("T")[0] : null;
+    const date_debut = range.from.toLocaleDateString("fr-CA");
+    const date_fin = range.to ? range.to.toLocaleDateString("fr-CA") : null;
 
     try {
       await invoke("ajouter_evenement", {
@@ -171,10 +171,10 @@ export default function CalendarWidget() {
                     <span className="font-semibold text-xs text-zinc-800 dark:text-white flex items-center gap-1">
                       <CalendarIcon size={12} />
                       {e.date_fin && e.date_fin !== e.date_debut
-                        ? `${new Date(e.date_debut).toLocaleDateString()} → ${new Date(
-                            e.date_fin
+                        ? `${new Date(e.date_debut + "T12:00:00").toLocaleDateString()} → ${new Date(
+                            e.date_fin + "T12:00:00"
                           ).toLocaleDateString()}`
-                        : new Date(e.date_debut).toLocaleDateString()}
+                        : new Date(e.date_debut + "T12:00:00").toLocaleDateString()}
                     </span>
                     <br />
                     {editionId === e.id ? (
