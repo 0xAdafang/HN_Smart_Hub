@@ -64,7 +64,7 @@ export default function DashboardAdminView() {
       </div>
 
       {/* Colonne droite : widgets empilés en grille 2 colonnes */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 flex-1">
+      <div className="flex flex-col sm:grid sm:grid-cols-2 gap-6 flex-1 auto-rows-min">
         <Widget title="Évaluations RH" className="min-h-[100px]">
           <div className="flex items-center gap-2">
             <ClipboardList size={16} />

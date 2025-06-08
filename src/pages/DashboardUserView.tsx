@@ -61,7 +61,8 @@ export default function DashboardUserView({ onNavigate }: DashboardUserViewProps
         </div>
 
         {/* Colonne droite : widgets + todo */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 flex-1 self-start">
+        <div className="flex flex-col sm:grid sm:grid-cols-2 gap-6 flex-1 auto-rows-min">
+
           <Widget title="Évaluation RH" className="min-h-[100px]">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               {aNouvelleEvaluation ? (

@@ -227,3 +227,32 @@ pub struct InfosEmploye {
     pub nom: String,
 }
 
+#[derive(serde::Deserialize)]
+pub struct EmployeIdArgs {
+    pub employee_id: i32,
+}
+
+#[derive(Debug, Serialize)]
+pub struct Evenement {
+    pub id: i32,
+    pub titre: String,
+    pub date_debut: String,
+    pub date_fin: Option<String>,
+    pub created_at: String,
+}
+
+#[derive(Deserialize)]
+pub struct NouvelEvenement {
+    pub employee_id: i32,
+    pub titre: String,
+    pub date_debut: NaiveDate,
+    pub date_fin: NaiveDate,
+}
+
+#[derive(serde::Deserialize)]
+pub struct ModifierEvenementArgs {
+    pub id: i32,
+    pub titre: String,
+    pub date_debut: String,
+    pub date_fin: Option<String>,
+}

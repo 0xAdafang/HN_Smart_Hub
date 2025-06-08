@@ -11,7 +11,7 @@ use sqlx::PgPool;
 use std::env;
 use std::sync::Arc;
 
-use commands::{comptes::*, indicateurs::*, conges::*, televente::*, formation::*, produits::*};
+use commands::{comptes::*, indicateurs::*, conges::*, televente::*, formation::*, produits::*, evenements::*};
 use commands::conges::demande_conge;
 
 
@@ -74,6 +74,11 @@ async fn main() {
             ajouter_produit,
             modifier_produit,
             supprimer_produit,
+            // Evenements
+            ajouter_evenement,
+            supprimer_evenement,
+            get_evenements_par_employe,
+            modifier_evenement,
         ])
         .run(tauri::generate_context!())
         .expect("Erreur lors du lancement de l'application");

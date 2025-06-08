@@ -29,7 +29,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
             <SidebarLink icon={<Users />} label="Mes congés" section="mesConges" onClick={onNavigate} />
           )}
         <SidebarLink icon={<GraduationCap />} label="Formation" section="formation" onClick={onNavigate} />
-        <SidebarLink icon={<Package />} label="Produits" section="produits" onClick={onNavigate} />
+        <SidebarLink icon={<Package />} label="Répertoire Alimentaire" section="produits" onClick={onNavigate} />
         <SidebarLink icon={<PhoneCall />} label="Télévente" section="televente" onClick={onNavigate} />
         {user?.role === "Admin" && (
           <>
