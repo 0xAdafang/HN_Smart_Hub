@@ -11,8 +11,10 @@ use sqlx::PgPool;
 use std::env;
 use std::sync::Arc;
 
-use commands::{comptes::*, indicateurs::*, conges::*, televente::*, formation::*, produits::*, evenements::*};
+use commands::{comptes::*, indicateurs::*, conges::*, televente::*, formation::*, produits::*, evenements::*, chatbot::*};
 use commands::conges::demande_conge;
+
+use crate::commands::chatbot;
 
 
 pub struct AppState {
@@ -79,6 +81,9 @@ async fn main() {
             supprimer_evenement,
             get_evenements_par_employe,
             modifier_evenement,
+            // Chatbot
+            chatbot::chatbot_query,
+
         ])
         .run(tauri::generate_context!())
         .expect("Erreur lors du lancement de l'application");

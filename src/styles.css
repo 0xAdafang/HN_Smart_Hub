@@ -181,3 +181,4 @@ input[type="time"] {
 .input-style {
   @apply w-full px-4 py-2 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-black dark:text-white mb-2 focus:outline-none focus:ring-2 focus:ring-bioGreen;
 }
+

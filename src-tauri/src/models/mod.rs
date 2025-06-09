@@ -238,15 +238,20 @@ pub struct Evenement {
     pub titre: String,
     pub date_debut: String,
     pub date_fin: Option<String>,
+    pub heure_debut: Option<String>, 
+    pub heure_fin: Option<String>,   
     pub created_at: String,
+
 }
 
 #[derive(Deserialize)]
 pub struct NouvelEvenement {
     pub employee_id: i32,
     pub titre: String,
-    pub date_debut: NaiveDate,
-    pub date_fin: NaiveDate,
+    pub date_debut: String,
+    pub date_fin: Option<String>,
+    pub heure_debut: Option<String>,
+    pub heure_fin: Option<String>,
 }
 
 #[derive(serde::Deserialize)]
@@ -255,4 +260,6 @@ pub struct ModifierEvenementArgs {
     pub titre: String,
     pub date_debut: String,
     pub date_fin: Option<String>,
+    pub heure_debut: Option<String>, 
+    pub heure_fin: Option<String>,   
 }

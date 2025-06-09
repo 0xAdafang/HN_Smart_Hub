@@ -5,4 +5,5 @@ pub mod televente;
 pub mod formation;
 pub mod produits;
 pub mod evenements;
+pub mod chatbot;
 

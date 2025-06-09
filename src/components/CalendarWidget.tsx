@@ -12,6 +12,7 @@ import {
   Pencil,
   XCircle,
   Save,
+  Clock,
 } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
 import { useUser } from "../contexts/UserContext"; 
@@ -22,6 +23,8 @@ interface Evenement {
   date_debut: string;
   date_fin?: string | null;
   created_at: string;
+  heure_debut?: string | null;
+  heure_fin?: string | null;
 }
 
 export default function CalendarWidget() {
@@ -31,7 +34,8 @@ export default function CalendarWidget() {
   const [nouvelEvenement, setNouvelEvenement] = useState("");
   const [afficherEvenements, setAfficherEvenements] = useState(true);
   const [editionId, setEditionId] = useState<number | null>(null);
-  const [editionTitre, setEditionTitre] = useState("");
+  const [editionTitre, setEditionTitre] = useState("");const [heureDebut, setHeureDebut] = useState("");
+  const [heureFin, setHeureFin] = useState("");
 
   const fetchEvenements = async () => {
     if (!user?.employe_id) return;
@@ -53,6 +57,10 @@ export default function CalendarWidget() {
     fetchEvenements();
   }, [user]);
 
+  const joursAvecEvenements = evenements.map((e) =>
+    new Date(e.date_debut + "T12:00:00")
+  );
+
   const ajouterEvenement = async () => {
     if (!range?.from || !nouvelEvenement.trim() || !user?.id) return;
 
@@ -66,6 +74,8 @@ export default function CalendarWidget() {
           titre: nouvelEvenement,
           date_debut,
           date_fin,
+          heure_debut: heureDebut || null,
+          heure_fin: heureFin || null,
         },
       });
       setNouvelEvenement("");
@@ -87,6 +97,8 @@ export default function CalendarWidget() {
           titre: editionTitre,
           date_debut: evenement.date_debut,
           date_fin: evenement.date_fin,
+          heure_debut: heureDebut || null,
+          heure_fin: heureFin || null,
         },
       });
       setEditionId(null);
@@ -105,6 +117,15 @@ export default function CalendarWidget() {
       console.error("Erreur suppression :", err);
     }
   };
+
+  const heures: string[] = [];
+  for (let h = 8; h <= 20; h++) {
+    for (let m = 0; m < 60; m += 15) {
+      const hh = String(h).padStart(2, "0");
+      const mm = String(m).padStart(2, "0");
+      heures.push(`${hh}:${mm}`);
+    }
+  }
 
 
   return (
@@ -135,22 +156,47 @@ export default function CalendarWidget() {
         />
 
         {range?.from && (
-          <div className="mt-3">
-            <input
-              type="text"
-              placeholder="Ajouter un événement..."
-              className="w-full px-3 py-2 mb-2 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-black dark:text-white"
-              value={nouvelEvenement}
-              onChange={(e) => setNouvelEvenement(e.target.value)}
-            />
-            <button
-              onClick={ajouterEvenement}
-              className="w-full bg-bioGreen text-white rounded py-1 hover:bg-green-700 text-sm flex items-center justify-center gap-2"
-            >
-              <PlusCircle size={16} /> Ajouter l’événement
-            </button>
-          </div>
-        )}
+            <div className="mt-3 space-y-2">
+              <input
+                type="text"
+                placeholder="Ajouter un événement..."
+                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-black dark:text-white"
+                value={nouvelEvenement}
+                onChange={(e) => setNouvelEvenement(e.target.value)}
+              />
+
+              <div className="flex gap-2">
+                <select
+                  value={heureDebut}
+                  onChange={(e) => setHeureDebut(e.target.value)}
+                  className="w-1/2 px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-black dark:text-white text-sm"
+                >
+                  <option value="">Début</option>
+                  {heures.map((h) => (
+                    <option key={h} value={h}>{h}</option>
+                  ))}
+                </select>
+
+                <select
+                  value={heureFin}
+                  onChange={(e) => setHeureFin(e.target.value)}
+                  className="w-1/2 px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-black dark:text-white text-sm"
+                >
+                  <option value="">Fin</option>
+                  {heures.map((h) => (
+                    <option key={h} value={h}>{h}</option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                onClick={ajouterEvenement}
+                className="w-full bg-bioGreen text-white rounded py-1 hover:bg-green-700 text-sm flex items-center justify-center gap-2"
+              >
+                <PlusCircle size={16} /> Ajouter l’événement
+              </button>
+            </div>
+          )}
 
         <div className="mt-4">
           <button
@@ -175,7 +221,15 @@ export default function CalendarWidget() {
                             e.date_fin + "T12:00:00"
                           ).toLocaleDateString()}`
                         : new Date(e.date_debut + "T12:00:00").toLocaleDateString()}
+                      {e.heure_debut && (
+                      <span className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1 mt-1">
+                        <Clock size={12} />
+                        {e.heure_debut}
+                        {e.heure_fin && `→ ${e.heure_fin}`}
+                      </span>
+                    )}
                     </span>
+
                     <br />
                     {editionId === e.id ? (
                       <div className="flex flex-col gap-1 mt-1">
@@ -185,7 +239,31 @@ export default function CalendarWidget() {
                           onChange={(e) => setEditionTitre(e.target.value)}
                           className="px-2 py-1 rounded bg-white dark:bg-zinc-700 border border-zinc-300 dark:border-zinc-600 text-sm text-black dark:text-white"
                         />
+
                         <div className="flex gap-2">
+                            <select
+                              value={heureDebut}
+                              onChange={(e) => setHeureDebut(e.target.value)}
+                              className="w-1/2 px-2 py-1 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-sm text-black dark:text-white"
+                            >
+                              <option value="">Début</option>
+                              {heures.map((h) => (
+                                <option key={h} value={h}>{h}</option>
+                              ))}
+                            </select>
+
+                            <select
+                              value={heureFin}
+                              onChange={(e) => setHeureFin(e.target.value)}
+                              className="w-1/2 px-2 py-1 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-sm text-black dark:text-white"
+                            >
+                              <option value="">Fin</option>
+                              {heures.map((h) => (
+                                <option key={h} value={h}>{h}</option>
+                              ))}
+                            </select>
+                          </div>
+                        <div className="flex gap-2 mt-1">
                           <button
                             onClick={() => modifierEvenement(e.id)}
                             className="bg-blue-600 text-white rounded px-2 py-1 text-xs hover:bg-blue-700 flex items-center gap-1"
@@ -204,8 +282,7 @@ export default function CalendarWidget() {
                         </div>
                       </div>
                     ) : (
-                      <span
-                        className="text-zinc-600 dark:text-zinc-300 italic text-base cursor-pointer hover:underline flex items-center gap-1">
+                      <span className="text-zinc-600 dark:text-zinc-300 italic text-base cursor-pointer hover:underline flex items-center gap-1">
                         {e.titre}
                         <button
                           className="text-blue-500 hover:text-blue-700 ml-1"
