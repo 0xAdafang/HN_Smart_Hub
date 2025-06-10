@@ -263,3 +263,17 @@ pub struct ModifierEvenementArgs {
     pub heure_debut: Option<String>, 
     pub heure_fin: Option<String>,   
 }
+
+#[derive(Deserialize)]
+pub struct IntentResult {
+    pub intent: &'static str,
+    pub entity: Option<String>,
+}
+
+#[derive(Deserialize, Serialize, Debug, FromRow)]
+pub struct ChatbotLog {
+    pub user_id: i32,
+    pub message: String,
+    pub response: String,
+}
+pub mod chatbot;
