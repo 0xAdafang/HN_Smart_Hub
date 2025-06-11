@@ -277,3 +277,4 @@ pub struct ChatbotLog {
     pub response: String,
 }
 pub mod chatbot;
+pub mod intent;

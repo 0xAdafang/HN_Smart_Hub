@@ -1,9 +1,8 @@
 use sqlx::PgPool;
-use crate::{models::chatbot::log_interaction, AppState};
-use regex::Regex;
-use crate::models::IntentResult;
+use crate::{models::{chatbot::log_interaction, intent::analyze_intent}, AppState};
 
-fn extract_last_word(message: &str) -> String {
+
+pub(crate) fn extract_last_word(message: &str) -> String {
 
     let cleaned = message.trim().trim_matches(|c: char| !c.is_alphanumeric());
 
@@ -14,123 +13,26 @@ fn extract_last_word(message: &str) -> String {
         .to_string()
 }
 
-fn analyze_intent(message: &str) -> IntentResult {
+pub async fn extract_entity_from_phrase(phrase: &str, pool: &PgPool) -> Option<String> {
+    let produits = sqlx::query!(
+        "SELECT nom FROM produits_alimentaires"
+    )
+    .fetch_all(pool)
+    .await
+    .ok()?;
 
-    let q = message.to_lowercase();
+    let lower_phrase = phrase.to_lowercase();
 
-    let map =  vec![
-        ("congé", "conges"),
-        ("jours de repos", "conges"),
-        ("absences", "conges"),
-        ("événement", "evenements"),
-        ("agenda", "evenements"),
-        ("formation", "formation_contenu"),
-        ("soumission", "formation_contenu"),
-        ("commande manuelle", "formation_contenu"),
-        ("produit", "produit_unique"),
-        ("c'est quoi", "produit_unique"),
-        ("définition", "produit_unique"),
-    ];
-
-    for (mot, intent) in map {
-        if q.contains(mot) {
-            return IntentResult {
-                intent,
-                entity: Some(extract_last_word(&q)),
-            }
+    for produit in produits {
+        let nom = produit.nom;
+        if lower_phrase.contains(&nom.to_lowercase()) {
+            return Some(nom);
         }
     }
-
-    let produit_re = Regex::new(r"c['e]st quoi (le|la) produit (\w+)").unwrap();
-        if let Some(caps) = produit_re.captures(&q) {
-            return IntentResult {
-                intent: "produit_unique",
-                entity: Some(caps[2].to_string()),
-            };
-        }
-
-    
-    let route_re = Regex::new(r"route du (\w+)").unwrap();
-    if let Some(caps) = route_re.captures(&q) {
-        return IntentResult {
-            intent: "routes",
-            entity: Some(caps[1].to_string()),
-        };
-    }
-
-    
-    if q.contains("mes ventes") || q.contains("combien j'ai vendu") {
-        return IntentResult {
-            intent: "mes_ventes",
-            entity: None,
-        };
-    }
-
-    
-    if q.contains("congés") && (q.contains("en attente") || q.contains("refus")) {
-        return IntentResult {
-            intent: "conges_en_attente",
-            entity: None,
-        };
-    }
-
-    
-    if q.contains("meilleure évaluation") || q.contains("ma meilleure note") {
-        return IntentResult {
-            intent: "meilleure_eval",
-            entity: None,
-        };
-    }
-
-    
-    if q.contains("conges") {
-        return IntentResult {
-            intent: "conges",
-            entity: None,
-        };
-    }
-
-    if q.contains("événements") || q.contains("calendrier") {
-        return IntentResult {
-            intent: "evenements",
-            entity: None,
-        };
-    }
-
-    if q.contains("formation") || q.contains("comment") || q.contains("procédure") {
-        return IntentResult {
-            intent: "formation_contenu",
-            entity: None,
-        };
-    }
-
-    if q.contains("succès") {
-        return IntentResult {
-            intent: "succès",
-            entity: None,
-        };
-    }
-
-    if q.contains("vente") {
-        return IntentResult {
-            intent: "ventes",
-            entity: None,
-        };
-    }
-
-    let gluten_regex = Regex::new(r"(sans|faible en|éviter le|ne contient pas de) gluten").unwrap();
-        if gluten_regex.is_match(&q) {
-            return IntentResult {
-                intent: "produits_sans_gluten",
-                entity: None,
-            };
-        }
- 
-    IntentResult {
-        intent: "unknown",
-        entity: None,
-    }
+    None
 }
+
+
 
 
 #[tauri::command]
@@ -421,8 +323,12 @@ pub async fn chatbot_query(message: String, user_id: i32, role: String, state: t
             }
         }
 
-        
         "produit_unique" => {
+            
+            let mut entity = entity;
+            if intent == "produit_unique" && entity.is_none() {
+                entity = extract_entity_from_phrase(&message, pool).await;
+            }
             if let Some(nom) = entity {
                 let row = sqlx::query!(
                     "SELECT nom, description FROM produits_alimentaires WHERE LOWER(nom) ILIKE $1",
