@@ -3,19 +3,53 @@ use crate::{models::chatbot::log_interaction, AppState};
 use regex::Regex;
 use crate::models::IntentResult;
 
+fn extract_last_word(message: &str) -> String {
+
+    let cleaned = message.trim().trim_matches(|c: char| !c.is_alphanumeric());
+
+    cleaned
+        .split_whitespace()
+        .last()
+        .unwrap_or("inconnu")
+        .to_string()
+}
+
 fn analyze_intent(message: &str) -> IntentResult {
+
     let q = message.to_lowercase();
 
-    // Regex Produit
-    let produit_re = Regex::new(r"c['e]st quoi (le|la) produit (\w+)").unwrap();
-    if let Some(caps) = produit_re.captures(&q) {
-        return IntentResult {
-            intent: "produit_unique",
-            entity: Some(caps[2].to_string()),
-        };
+    let map =  vec![
+        ("congé", "conges"),
+        ("jours de repos", "conges"),
+        ("absences", "conges"),
+        ("événement", "evenements"),
+        ("agenda", "evenements"),
+        ("formation", "formation_contenu"),
+        ("soumission", "formation_contenu"),
+        ("commande manuelle", "formation_contenu"),
+        ("produit", "produit_unique"),
+        ("c'est quoi", "produit_unique"),
+        ("définition", "produit_unique"),
+    ];
+
+    for (mot, intent) in map {
+        if q.contains(mot) {
+            return IntentResult {
+                intent,
+                entity: Some(extract_last_word(&q)),
+            }
+        }
     }
 
-    // Regex route du jour
+    let produit_re = Regex::new(r"c['e]st quoi (le|la) produit (\w+)").unwrap();
+        if let Some(caps) = produit_re.captures(&q) {
+            return IntentResult {
+                intent: "produit_unique",
+                entity: Some(caps[2].to_string()),
+            };
+        }
+
+    
     let route_re = Regex::new(r"route du (\w+)").unwrap();
     if let Some(caps) = route_re.captures(&q) {
         return IntentResult {
@@ -24,7 +58,7 @@ fn analyze_intent(message: &str) -> IntentResult {
         };
     }
 
-    // Mes ventes
+    
     if q.contains("mes ventes") || q.contains("combien j'ai vendu") {
         return IntentResult {
             intent: "mes_ventes",
@@ -32,7 +66,7 @@ fn analyze_intent(message: &str) -> IntentResult {
         };
     }
 
-    // Congés en attente/refusé
+    
     if q.contains("congés") && (q.contains("en attente") || q.contains("refus")) {
         return IntentResult {
             intent: "conges_en_attente",
@@ -40,7 +74,7 @@ fn analyze_intent(message: &str) -> IntentResult {
         };
     }
 
-    // Meilleure évaluation
+    
     if q.contains("meilleure évaluation") || q.contains("ma meilleure note") {
         return IntentResult {
             intent: "meilleure_eval",
@@ -48,7 +82,7 @@ fn analyze_intent(message: &str) -> IntentResult {
         };
     }
 
-    //Fallbacks
+    
     if q.contains("conges") {
         return IntentResult {
             intent: "conges",
@@ -84,12 +118,13 @@ fn analyze_intent(message: &str) -> IntentResult {
         };
     }
 
-    if q.contains("sans gluten") {
-        return IntentResult {
-            intent: "produits_sans_gluten",
-            entity: None,
-        };
-    }
+    let gluten_regex = Regex::new(r"(sans|faible en|éviter le|ne contient pas de) gluten").unwrap();
+        if gluten_regex.is_match(&q) {
+            return IntentResult {
+                intent: "produits_sans_gluten",
+                entity: None,
+            };
+        }
  
     IntentResult {
         intent: "unknown",
@@ -349,21 +384,44 @@ pub async fn chatbot_query(message: String, user_id: i32, role: String, state: t
             .await
             .map_err(|e| e.to_string())?;
 
-            let response = if rows.is_empty() {
-                "😕 Aucun produit sans gluten trouvé dans la base.".to_string()
+            if rows.is_empty() {
+                let alternatifs = sqlx::query!(
+                    "SELECT nom FROM produits_alimentaires WHERE description ILIKE '%faible en gluten%'"
+                )
+                .fetch_all(pool)
+                .await
+                .map_err(|e| e.to_string())?;
+                
+                if alternatifs.is_empty() {
+                    let response = "😕 Aucun produit sans gluten trouvé dans la base.".to_string();
+                    log_interaction(user_id, &message, &response, pool).await;
+                    Ok(response)
+                } else {
+                    let liste = alternatifs
+                        .into_iter()
+                        .map(|p| format!("⚠️ {}", p.nom))
+                        .collect::<Vec<_>>()
+                        .join("\n");
+                    let response = format!(
+                        "❌ Aucun produit strictement sans gluten trouvé. Voici des produits faibles en gluten :\n{}",
+                        liste
+                    );
+                    log_interaction(user_id, &message, &response, pool).await;
+                    Ok(response)
+                }
             } else {
-                rows.into_iter()
+                let liste = rows
+                    .into_iter()
                     .map(|p| format!("✅ {}", p.nom))
                     .collect::<Vec<_>>()
-                    .join("\n")
-            };
-
-            log_interaction(user_id, &message, &response, pool).await;
-            Ok(response)
+                    .join("\n");
+                let response = format!("Voici les produits sans gluten :\n{}", liste);
+                log_interaction(user_id, &message, &response, pool).await;
+                Ok(response)
+            }
         }
 
         
-
         "produit_unique" => {
             if let Some(nom) = entity {
                 let row = sqlx::query!(
