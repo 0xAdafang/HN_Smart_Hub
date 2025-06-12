@@ -3,7 +3,7 @@ use sqlx::query_as;
 use crate::models::{
     InfosEmploye, LoginPayload, LoginResponse, RegisterPayload, UserWithEmploye
 };
-use crate::AppState;
+use crate::models::AppState;
 
 #[tauri::command]
 pub async fn login_user(payload: LoginPayload, state: State<'_, AppState>) -> Result<LoginResponse, String> {

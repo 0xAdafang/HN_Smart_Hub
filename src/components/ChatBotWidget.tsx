@@ -8,12 +8,15 @@ export default function ChatBotWidget({ userId, role }: { userId: number; role: 
   const [loading, setLoading] = useState(false);
 
   const sendMessage = async () => {
+    
     if (!message.trim()) return;
 
     const userMessage: { from: "user"; text: string } = { from: "user", text: message };
     setHistory((prev) => [...prev, userMessage]);
     setMessage("");
     setLoading(true);
+
+    await new Promise((res) => setTimeout(res, 500 + Math.random() * 800));
 
     try {
       const response = await invoke<string>("chatbot_query", {
@@ -38,6 +41,15 @@ export default function ChatBotWidget({ userId, role }: { userId: number; role: 
       >
         💬
       </button>
+
+      {loading && (
+        <div className="text-xs italic text-zinc-500 dark:text-zinc-300">
+          Le bot réfléchit
+          <span className="inline-block animate-bounce delay-0">.</span>
+          <span className="inline-block animate-bounce delay-100">.</span>
+          <span className="inline-block animate-bounce delay-200">.</span>
+        </div>
+      )}
 
       {open && (
         <div className="fixed bottom-20 right-4 w-80 bg-white text-black dark:bg-zinc-800 dark:text-white border dark:border-zinc-700 rounded-xl shadow-xl p-4 flex flex-col gap-2 z-50">

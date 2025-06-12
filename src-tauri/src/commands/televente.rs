@@ -1,7 +1,7 @@
 use tauri::State;
 use sqlx::FromRow;
 use chrono::NaiveDate;
-use crate::AppState;
+use crate::models::AppState;
 use crate::models::{TeleventeEntry, TeleventePayload, UnlockAchievementPayload, UnlockedAchievement, AdminTeleventeEntry};
 
 

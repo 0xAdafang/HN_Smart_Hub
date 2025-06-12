@@ -1,6 +1,13 @@
+use std::sync::Arc;
+
 use serde::{Deserialize, Serialize};
 use chrono::{NaiveDate, NaiveDateTime};
-use sqlx::FromRow;
+use sqlx::{FromRow, PgPool};
+
+
+pub struct AppState {
+    pub db: Arc<PgPool>,
+}
 
 #[derive(Deserialize)]
 pub struct LoginPayload {
@@ -276,5 +283,13 @@ pub struct ChatbotLog {
     pub message: String,
     pub response: String,
 }
-pub mod chatbot;
+
 pub mod intent;
+pub mod static_infos;
+
+
+
+
+
+
+

@@ -5,6 +5,44 @@ use crate::models::IntentResult;
 use crate::commands::chatbot::extract_last_word;
 
 
+pub fn normalize_entity(word: &str) -> String {
+    let mut w = word.to_lowercase();
+
+    // Supprimer les préfixes d'articles courants
+    let prefixes = ["l'", "d'", "qu'", "j'", "c'", "t'"];
+    for prefix in prefixes {
+        if w.starts_with(prefix) {
+            w = w.replacen(prefix, "", 1);
+            break;
+        }
+    }
+
+    // Supprimer les ponctuations & parenthèses
+    w = w
+        .replace(['(', ')', '[', ']', '{', '}', ',', '.', '?', '!', '\'', '"', '-', '_'], "")
+        .trim()
+        .to_string();
+
+    // Supprimer les pluriels simples
+    if w.ends_with('s') && w.len() > 4 {
+        w.pop();
+    }
+
+    // Corrections manuelles
+    let corrections = HashMap::from([
+        ("tofou", "tofu"),
+        ("soumisson", "soumission"),
+        ("evenement", "événement"),
+        ("evenements", "événement"),
+    ]);
+
+    if let Some(corr) = corrections.get(w.as_str()) {
+        return corr.to_string();
+    }
+
+    w
+}
+
 pub fn analyze_intent(message: &str) -> IntentResult {
 
     let q = message.to_lowercase();
@@ -30,6 +68,7 @@ pub fn analyze_intent(message: &str) -> IntentResult {
         ("absence", "conges"),
         ("agenda", "evenements"),
         ("événement", "evenements"),
+        ("evenements", "evenements"),
         ("formation", "formation_contenu"),
         ("soumission", "formation_contenu"),
         ("vendeur", "mes_ventes"),
@@ -69,7 +108,7 @@ pub fn analyze_intent(message: &str) -> IntentResult {
     }
 
     for (mot, intent) in map {
-        if q.contains(mot) {
+        if q.contains(mot) || q.contains(&normalize_entity(mot)) {
             return IntentResult {
                 intent,
                 entity: Some(extract_last_word(&q)),
@@ -174,3 +213,4 @@ pub fn analyze_intent(message: &str) -> IntentResult {
         entity: None,
     }
 }
+

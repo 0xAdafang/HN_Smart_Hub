@@ -1,4 +1,4 @@
-use crate::{models::{Formation, QuizQuestion, QuizResult, QuizResultWithNames}, AppState};
+use crate::models::{Formation, QuizQuestion, QuizResult, QuizResultWithNames, AppState};
 use sqlx::FromRow;
 
 #[tauri::command]

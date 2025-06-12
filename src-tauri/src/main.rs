@@ -5,7 +5,7 @@ mod commands;
 
 
 
-use tauri::{Builder, State};
+use tauri::{Builder};
 use dotenvy::dotenv;
 use sqlx::PgPool;
 use std::env;
@@ -15,16 +15,16 @@ use commands::{comptes::*, indicateurs::*, conges::*, televente::*, formation::*
 use commands::conges::demande_conge;
 
 use crate::commands::chatbot;
+use crate::models::AppState;
 
-
-pub struct AppState {
-    pub db: Arc<PgPool>,
-}
 
 #[tokio::main]
 async fn main() {
+    
+    
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL manquant dans .env");
+
 
     let db = PgPool::connect(&database_url)
         .await
@@ -82,7 +82,8 @@ async fn main() {
             get_evenements_par_employe,
             modifier_evenement,
             // Chatbot
-            chatbot::chatbot_query,
+            chatbot_query,
+            
 
         ])
         .run(tauri::generate_context!())

@@ -1,4 +1,4 @@
-use crate::{models::ProduitAlimentaire, AppState};
+use crate::models::{ProduitAlimentaire, AppState};
 use sqlx::FromRow;
 
 #[tauri::command]

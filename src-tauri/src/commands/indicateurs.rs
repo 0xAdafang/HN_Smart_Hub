@@ -1,5 +1,5 @@
 use tauri::State;
-use crate::AppState;
+use crate::models::AppState;
 use crate::models::{EmployeLite, EvaluationCheck, EvaluationDetail, EvaluationPayload, UserEvalQuery};
 
 #[tauri::command]

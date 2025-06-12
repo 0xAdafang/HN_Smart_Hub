@@ -1,5 +1,9 @@
 use sqlx::PgPool;
-use crate::{models::{chatbot::log_interaction, intent::analyze_intent}, AppState};
+use crate::commands::chatbot_logs::log_interaction;
+use crate::models::intent::{analyze_intent, normalize_entity};
+use crate::models::static_infos::get_static_knowledge;
+use crate::{AppState};
+
 
 
 pub(crate) fn extract_last_word(message: &str) -> String {
@@ -324,15 +328,19 @@ pub async fn chatbot_query(message: String, user_id: i32, role: String, state: t
         }
 
         "produit_unique" => {
-            
             let mut entity = entity;
             if intent == "produit_unique" && entity.is_none() {
                 entity = extract_entity_from_phrase(&message, pool).await;
             }
-            if let Some(nom) = entity {
+
+            if let Some(entite) = entity {
+                let cle = normalize_entity(&entite);
+
                 let row = sqlx::query!(
-                    "SELECT nom, description FROM produits_alimentaires WHERE LOWER(nom) ILIKE $1",
-                    format!("%{}%", nom)
+                    "SELECT nom, description FROM produits_alimentaires
+                    WHERE LOWER(nom) ILIKE $1
+                    LIMIT 1",
+                    format!("%{}%", cle.trim().to_lowercase())
                 )
                 .fetch_optional(pool)
                 .await
@@ -340,7 +348,7 @@ pub async fn chatbot_query(message: String, user_id: i32, role: String, state: t
 
                 let response = match row {
                     Some(p) => format!("📦 **{}**\n\n{}", p.nom, p.description.unwrap_or("Pas de description disponible.".to_string())),
-                    None => format!("🤖 Désolé, je ne trouve aucun produit nommé \"{}\".", nom),
+                    None => format!("🤖 Désolé, je ne trouve aucun produit nommé \"{}\".", cle),
                 };
 
                 log_interaction(user_id, &message, &response, pool).await;
@@ -352,8 +360,27 @@ pub async fn chatbot_query(message: String, user_id: i32, role: String, state: t
             }
         }
 
+        "unknown" => {
+            let infos_locales = get_static_knowledge();
+
+            let cle = if let Some(entite) = &entity {
+                normalize_entity(entite)
+            } else {
+                normalize_entity(&extract_last_word(&message))
+            };
+
+            if let Some(definition) = infos_locales.get(cle.as_str()) {
+                let response = definition.to_string();
+                log_interaction(user_id, &message, &response, pool).await;
+                return Ok(response);
+            }
+
+            let response = "Je n’ai pas compris votre question. Essayez par exemple : \"Combien de congés me reste-t-il ?\"".to_string();
+            log_interaction(user_id, &message, &response, pool).await;
+            Ok(response)
+        }
+
 
         _ => Ok("Je n’ai pas compris votre question. Essayez avec : 'Combien de congés me reste-t-il ?'".to_string()),
     }
 }
-    

@@ -1,6 +1,6 @@
 use chrono::{NaiveDate, NaiveTime};
 use tauri::State;
-use crate::{models::{EmployeIdArgs, Evenement, ModifierEvenementArgs, NouvelEvenement}, AppState};
+use crate::models::{EmployeIdArgs, Evenement, ModifierEvenementArgs, NouvelEvenement, AppState};
 
 #[tauri::command]
 pub async fn ajouter_evenement(evt: NouvelEvenement,state: tauri::State<'_, AppState>,) -> Result<(), String> {
