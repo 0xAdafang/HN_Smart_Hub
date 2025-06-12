@@ -1,7 +1,7 @@
 use sqlx::PgPool;
 use crate::commands::chatbot_logs::log_interaction;
 use crate::models::intent::{analyze_intent, normalize_entity};
-use crate::models::static_infos::get_static_knowledge;
+use crate::models::static_infos::{get_static_knowledge};
 use crate::{AppState};
 
 
@@ -153,7 +153,7 @@ pub async fn chatbot_query(message: String, user_id: i32, role: String, state: t
                     .into_iter()
                     .map(|e| {
                         let heure = e.heure_debut.map(|h| h.format("%Hh%M").to_string()).unwrap_or("Heure inconnue".to_string());
-                        format!("📅 {} à {} : {}", e.date_debut, heure, e.titre)
+                        format!("Voici ce que j'ai trouvé -> 📅 {} à {} : {}", e.date_debut, heure, e.titre)
                     })
                     .collect::<Vec<_>>()
                     .join("\n");
@@ -271,7 +271,7 @@ pub async fn chatbot_query(message: String, user_id: i32, role: String, state: t
                 "Vous n'avez effectué aucune vente récemment.".to_string()
             } else {
                 rows.into_iter()
-                    .map(|r| format!("📆 {} : {} vente(s), {} hit(s)", r.date, r.total.unwrap_or(0), r.hits.unwrap_or(0)))
+                    .map(|r| format!(" Voici ce que j'ai trouvé -> 📆 {} : {} vente(s), {} hit(s)", r.date, r.total.unwrap_or(0), r.hits.unwrap_or(0)))
                     .collect::<Vec<_>>()
                     .join("\n")
             };
@@ -360,6 +360,7 @@ pub async fn chatbot_query(message: String, user_id: i32, role: String, state: t
             }
         }
 
+
         "unknown" => {
             let infos_locales = get_static_knowledge();
 
@@ -381,6 +382,6 @@ pub async fn chatbot_query(message: String, user_id: i32, role: String, state: t
         }
 
 
-        _ => Ok("Je n’ai pas compris votre question. Essayez avec : 'Combien de congés me reste-t-il ?'".to_string()),
+        _ => Ok("Je n’ai pas compris votre question. Essayez avec : 'Combien de congés me reste-t-il ? C'est quoi ... ? ou qu'est ce que ?'".to_string()),
     }
 }

@@ -34,6 +34,11 @@ pub fn normalize_entity(word: &str) -> String {
         ("soumisson", "soumission"),
         ("evenement", "événement"),
         ("evenements", "événement"),
+        ("sauces", "sauce"),
+        ("sauce", "sauce"),
+        ("sauces végétaliennes", "sauce"),
+        ("végétaliennes", "végétalien"),
+        ("végétariennes", "végétarien"),
     ]);
 
     if let Some(corr) = corrections.get(w.as_str()) {
@@ -59,6 +64,9 @@ pub fn analyze_intent(message: &str) -> IntentResult {
         ("produit", "produit_unique"),
         ("c'est quoi", "produit_unique"),
         ("définition", "produit_unique"),
+        ("sauce", "recherche_produit_par_categorie"),
+        ("protéine", "recherche_produit_par_categorie"),
+        ("édulcorant", "recherche_produit_par_categorie"),
     ];
 
     let synonymes = std::collections::HashMap::from([

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 
 export default function ChatBotWidget({ userId, role }: { userId: number; role: string }) {
@@ -6,6 +6,7 @@ export default function ChatBotWidget({ userId, role }: { userId: number; role: 
   const [message, setMessage] = useState("");
   const [history, setHistory] = useState<{ from: "user" | "bot"; text: string }[]>([]);
   const [loading, setLoading] = useState(false);
+  const chatRef = useRef<HTMLDivElement>(null);
 
   const sendMessage = async () => {
     
@@ -33,6 +34,12 @@ export default function ChatBotWidget({ userId, role }: { userId: number; role: 
     }
   };
 
+    useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [history, loading]);
+
   return (
     <>
       <button
@@ -58,7 +65,10 @@ export default function ChatBotWidget({ userId, role }: { userId: number; role: 
             <button onClick={() => setOpen(false)}>✖</button>
           </div>
 
-          <div className="flex flex-col gap-1 overflow-y-auto max-h-64 text-sm">
+          <div
+            ref={chatRef}
+            className="flex flex-col gap-1 overflow-y-auto max-h-64 text-sm pr-1 scroll-smooth"
+          >
             {history.map((msg, i) => (
               <div
                 key={i}
@@ -77,7 +87,7 @@ export default function ChatBotWidget({ userId, role }: { userId: number; role: 
           <div className="flex mt-2 gap-2">
             <input
             className="flex-1 p-2 text-sm border rounded 
-                        bg-white text-black placeholder:text-black 
+                        bg-white text-black placeholder:text-zinc-400
                         dark:bg-zinc-700 dark:text-white dark:placeholder:text-zinc-400 
                         dark:border-zinc-600"
             placeholder="Posez une question..."
