@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+/*use std::collections::HashMap;
 
 use sqlx::PgPool;
 
@@ -91,5 +91,5 @@ pub fn get_static_categories() -> HashMap<&'static str, Vec<&'static str>> {
     ])
 }
 
-
+*/
 

@@ -20,14 +20,14 @@ export default function ChatBotWidget({ userId, role }: { userId: number; role: 
     await new Promise((res) => setTimeout(res, 500 + Math.random() * 800));
 
     try {
-      const response = await invoke<string>("chatbot_query", {
+      const response = await invoke<string>("ask_chatbot", {
         message,
-        userId,
+        userId: String(userId),
         role,
       });
       setHistory((prev) => [...prev, { from: "bot", text: response }]);
     } catch (err) {
-        console.error("Erreur chatbot_query :", err);
+        console.error("Erreur ask_chatbot :", err);
       setHistory((prev) => [...prev, { from: "bot", text: "❌ Erreur lors de la requête." }]);
     } finally {
       setLoading(false);
