@@ -22,7 +22,7 @@ export default function ChatBotWidget({ userId, role }: { userId: number; role: 
     try {
       const response = await invoke<string>("ask_chatbot", {
         message,
-        userId: String(userId),
+        userId,
         role,
       });
       setHistory((prev) => [...prev, { from: "bot", text: response }]);

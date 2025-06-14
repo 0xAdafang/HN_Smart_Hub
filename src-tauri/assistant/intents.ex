@@ -18,5 +18,6 @@ defmodule Intents do
     Enum.find_value(@intent_keywords, fn {intent, keywords} ->
       if Enum.any?(keywords, &String.contains?(downcased, &1)), do: intent
     end) || "inconnu"
+
   end
 end
