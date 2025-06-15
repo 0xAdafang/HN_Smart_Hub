@@ -1,9 +1,9 @@
-/*use std::collections::HashMap;
+use std::collections::HashMap;
 
-use sqlx::PgPool;
+
 
 /// Base locale de définitions manuelles, accessibles même sans base de données
-pub fn get_static_knowledge() -> HashMap<&'static str, &'static str> {
+pub fn produits() -> HashMap<&'static str, &'static str> {
     HashMap::from([
         ("ail noir", "L’ail noir est de l’ail blanc vieilli. Il a un goût doux et umami, riche en antioxydants."),
         ("argousier", "L’argousier est une baie très riche en vitamine C, antioxydants et oméga-7."),
@@ -78,18 +78,99 @@ pub fn get_static_knowledge() -> HashMap<&'static str, &'static str> {
     ])
 }
 
-pub fn get_static_categories() -> HashMap<&'static str, Vec<&'static str>> {
-    HashMap::from([
-        ("édulcorants", vec!["aspartame", "érythritol", "stevia", "xylitol", "sucre de coco", "sucre de panela", "sans aspartame"]),
-        ("protéines végétales", vec!["tofu", "tempeh", "seitan", "chanvre", "spiruline", "fauxmage", "protéine de pois"]),
-        ("régimes & restrictions", vec!["végétarien", "végétalien", "kéto", "sans gluten", "sans allergènes", "sans OGM", "microbiote"]),
-        ("labels & certifications", vec!["écocert", "biologique", "équitable"]),
-        ("méthodes de préparation", vec!["germination", "germoir", "pousses", "graines à germer", "non pasteurisé", "lactofermentation"]),
-        ("superaliments & extraits", vec!["goji", "guayusa", "maca", "moringa", "chaga", "chlorelle", "cameline", "baobab", "topinambour", "collagène"]),
-        ("produits fermentés", vec!["kéfir", "kombucha", "levain", "miso", "tempeh"]),
-        ("sauces & tartinades", vec!["houmous", "chimichurri", "tzatziki"])
-    ])
+pub fn routes() -> HashMap<String, String> {
+    let mut map = HashMap::new();
+    map.insert("Route 1000".to_string(), "Cette route est prévue pour le **lundi** 1999 est pour pick up.".to_string());
+    map.insert("Route 2000".to_string(), "Cette route est prévue pour le **mardi** 2999 est pour pick up.".to_string());
+    map.insert("Route 3000".to_string(), "Cette route est prévue pour le **mercredi** 3999 est pour pick up.".to_string());
+    map.insert("Route 4000".to_string(), "Cette route est prévue pour le **jeudi** 4999 est pour pick up.".to_string());
+    map.insert("Route 5000".to_string(), "Cette route est prévue pour le **vendredi** 5999 est pour pick up.".to_string());
+    map
 }
 
-*/
 
+pub fn succes() -> HashMap<String, String> {
+    let mut map = HashMap::new();
+    map.insert("premier appel".to_string(), "Faire une première vente.".to_string());
+    map.insert("appels en rafale".to_string(), "Réaliser 10 ventes dans la même journée.".to_string());
+    map.insert("100% hit".to_string(), "Effectuer 5 ventes réussies.".to_string());
+    map.insert("semaine active".to_string(), "Vendre au moins une fois pendant 5 jours consécutifs.".to_string());
+    map.insert("maître télévendeur".to_string(), "Atteindre un total de 100 ventes.".to_string());
+    map.insert("agent assidu".to_string(), "Vendre 3 jours dans la même semaine.".to_string());
+    map.insert("trente appels".to_string(), "Atteindre 30 ventes cumulées.".to_string());
+    map.insert("journée difficile".to_string(), "Aucune vente réussie dans la journée.".to_string());
+    map.insert("le destin".to_string(), "Vendre à un client déjà refusé une fois avant.".to_string());
+    map.insert("série de feu".to_string(), "Vendre 5 jours consécutifs.".to_string());
+    map.insert("combo".to_string(), "3 ventes Hit d’affilée sans échec.".to_string());
+    map
+}
+
+fn sanitize(text: &str) -> String {
+    text.to_lowercase()
+        .replace(['é','è','ê','ë'], "e")
+        .replace(['à','â','ä'], "a")
+        .replace(['î','ï'], "i")
+        .replace(['ô','ö'], "o")
+        .replace(['ù','ü','û'], "u")
+        .replace(['ç'], "c")
+        .chars()
+        .map(|c| if c.is_alphanumeric() || c.is_whitespace() { c } else { ' ' })
+        .collect::<String>()
+}
+
+pub fn chercher_reponse_statique(message: &str) -> Option<String> {
+    let msg = sanitize(message);   
+    println!("[DEBUG-STATIQUE] sanitize(message) -> «{}»", msg);            
+    let words: Vec<&str> = msg.split_whitespace().collect();
+    println!("[DEBUG-STATIQUE] words = {:?}", words);
+
+   
+    let jours = [("lundi", "1000 à 1999 (1999 = pickup)"),
+                 ("mardi", "2000 à 2999"),
+                 ("mercredi", "3000 à 3999"),
+                 ("jeudi", "4000 à 4999"),
+                 ("vendredi", "5000 à 5999")];
+
+    for (jour, plage) in &jours {
+        if words.contains(jour) {
+            return Some(format!("🛣️ Les routes du **{}** vont de {}.", jour, plage));
+        }
+    }
+
+    if msg.contains("routes") && msg.contains("quelles") {
+        return Some("🛣️ Répartition des routes :\n\
+                     • Lundi : 1000-1999\n\
+                     • Mardi : 2000-2999\n\
+                     • Mercredi : 3000-3999\n\
+                     • Jeudi : 4000-4999\n\
+                     • Vendredi : 5000-5999".to_string());
+    }
+
+    
+    for (nom, desc) in produits() {
+        let cle = sanitize(&nom); 
+        if words.contains(&cle.as_str()) {
+            return Some(format!("📦 **{}**\n\n{}", nom, desc));
+        }
+    }
+
+    if msg.contains("comment debloquer") && msg.contains("combo") {
+        return Some("🏆 **Combo**\n\n3 ventes Hit d’affilée sans échec.".to_string());
+    }
+        
+    for (nom, desc) in succes() {
+        let cle = sanitize(&nom); 
+        if msg.contains(&cle) {
+            return Some(format!("🏆 **{}**\n\n{}", nom, desc));
+        }
+    }
+
+    for (nom, desc) in routes() {
+        let cle = sanitize(&nom);               
+        if msg.contains(&cle) {
+            return Some(format!("🛣️ **{}**\n\n{}", nom, desc));
+        }
+    }
+
+    None
+}

@@ -15,7 +15,7 @@ impl ChatbotLog {
     }
 }
 
-/// Fonction utilitaire simple à appeler
+
 pub async fn log_interaction(user_id: i32, message: &str, response: &str, pool: &PgPool) {
     let _ = sqlx::query!(
         "INSERT INTO chatbot_logs (user_id, message, response) VALUES ($1, $2, $3)",

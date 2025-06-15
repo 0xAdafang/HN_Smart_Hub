@@ -1,4 +1,4 @@
-/* use regex::Regex;
+use regex::Regex;
 use std::collections::HashMap;
 
 use crate::models::IntentResult;
@@ -61,9 +61,6 @@ pub fn analyze_intent(message: &str) -> IntentResult {
         ("formation", "formation_contenu"),
         ("soumission", "formation_contenu"),
         ("commande manuelle", "formation_contenu"),
-        ("produit", "produit_unique"),
-        ("c'est quoi", "produit_unique"),
-        ("définition", "produit_unique"),
         ("sauce", "recherche_produit_par_categorie"),
         ("protéine", "recherche_produit_par_categorie"),
         ("édulcorant", "recherche_produit_par_categorie"),
@@ -82,10 +79,6 @@ pub fn analyze_intent(message: &str) -> IntentResult {
         ("vendeur", "mes_ventes"),
         ("télévente", "mes_ventes"),
         ("client", "mes_ventes"),
-        ("produit", "produit_unique"),
-        ("c’est quoi", "produit_unique"),
-        ("qu'est-ce que", "produit_unique"),
-        ("définition", "produit_unique"),
         ("vente", "ventes"),
         ("mes ventes", "mes_ventes"),
         ("congés en attente", "conges_en_attente"),
@@ -97,7 +90,6 @@ pub fn analyze_intent(message: &str) -> IntentResult {
         ("formation contenu", "formation_contenu"),
         ("comment faire", "formation_contenu"),
         ("procédure", "formation_contenu"),
-        ("succès", "succès"),
         ("ventes", "ventes"),
         ("produits sans gluten", "produits_sans_gluten"),
         ("sans gluten", "produits_sans_gluten"),
@@ -124,29 +116,6 @@ pub fn analyze_intent(message: &str) -> IntentResult {
         }
     }
 
-    let produit_re = Regex::new(r"c['e]st quoi (le|la) produit (\w+)").unwrap();
-        if let Some(caps) = produit_re.captures(&q) {
-            return IntentResult {
-                intent: "produit_unique",
-                entity: Some(caps[2].to_string()),
-            };
-        }
-
-    
-    let route_re = Regex::new(r"route du (\w+)").unwrap();
-    if let Some(caps) = route_re.captures(&q) {
-        return IntentResult {
-            intent: "routes",
-            entity: Some(caps[1].to_string()),
-        };
-    }
-
-    if q.contains("produits") || q.contains("définition") || q.contains("c'est quoi") {
-        return IntentResult {
-            intent: "produit_unique",
-            entity: None,
-        }
-    }
 
     
     if q.contains("mes ventes") || q.contains("combien j'ai vendu") {
@@ -187,19 +156,13 @@ pub fn analyze_intent(message: &str) -> IntentResult {
         };
     }
 
-    if q.contains("formation") || q.contains("comment") || q.contains("procédure") {
+    if q.contains("formation") || q.contains("module") {
         return IntentResult {
             intent: "formation_contenu",
             entity: None,
         };
     }
 
-    if q.contains("succès") {
-        return IntentResult {
-            intent: "succès",
-            entity: None,
-        };
-    }
 
     if q.contains("vente") {
         return IntentResult {
@@ -221,4 +184,3 @@ pub fn analyze_intent(message: &str) -> IntentResult {
         entity: None,
     }
 }
-*/

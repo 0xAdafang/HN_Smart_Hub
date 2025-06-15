@@ -11,7 +11,7 @@ use sqlx::PgPool;
 use std::env;
 use std::sync::Arc;
 
-use commands::{comptes::*, indicateurs::*, conges::*, televente::*, formation::*, produits::*, evenements::*, chatbot_1::*, chatbot::*};
+use commands::{comptes::*, indicateurs::*, conges::*, televente::*, formation::*, produits::*, evenements::*, chatbot::*, chatbot::*};
 use commands::conges::demande_conge;
 
 use crate::models::AppState;
@@ -81,7 +81,7 @@ async fn main() {
             get_evenements_par_employe,
             modifier_evenement,
             // Chatbot
-            ask_chatbot,
+            chatbot_query,
             
 
         ])
