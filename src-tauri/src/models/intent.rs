@@ -68,6 +68,7 @@ pub fn analyze_intent(message: &str) -> IntentResult {
 
     let synonymes = std::collections::HashMap::from([
         ("off", "conges"),
+        ("ca va","ça va"),
         ("vacances", "conges"),
         ("jours de repos", "conges"),
         ("absence", "conges"),

@@ -1,5 +1,5 @@
 use crate::models::{ProduitAlimentaire, AppState};
-use sqlx::FromRow;
+
 
 #[tauri::command]
 pub async fn get_all_produits(state: tauri::State<'_, AppState>) -> Result<Vec<ProduitAlimentaire>, String> {

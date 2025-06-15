@@ -1,11 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { useUser } from "../contexts/UserContext";
 
 export default function ChatBotWidget({ userId, role }: { userId: number; role: string }) {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [history, setHistory] = useState<{ from: "user" | "bot"; text: string }[]>([]);
   const [loading, setLoading] = useState(false);
+  const { user } = useUser();
+
+  const [hasWelcomed, setHasWelcomed] = useState(false);
+
   const chatRef = useRef<HTMLDivElement>(null);
 
   const sendMessage = async () => {
@@ -40,6 +45,18 @@ export default function ChatBotWidget({ userId, role }: { userId: number; role: 
     }
   }, [history, loading]);
 
+  
+  useEffect(() => {
+    if (open && user && !hasWelcomed) {
+      const welcome: { from: "bot"; text: string } = {
+        from: "bot",
+        text: `Bonjour ${user.prenom}, comment puis-je vous aider ?`,
+      };
+      setHistory([welcome]);
+      setHasWelcomed(true);
+    }
+  }, [open, user, hasWelcomed]);
+
   return (
     <>
       <button
@@ -48,8 +65,6 @@ export default function ChatBotWidget({ userId, role }: { userId: number; role: 
       >
         💬
       </button>
-
-      
 
       {open && (
         <div className="fixed bottom-20 right-4 w-80 bg-white text-black dark:bg-zinc-800 dark:text-white border dark:border-zinc-700 rounded-xl shadow-xl p-4 flex flex-col gap-2 z-50">

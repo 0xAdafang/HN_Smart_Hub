@@ -5,6 +5,7 @@ use std::collections::HashMap;
 /// Base locale de définitions manuelles, accessibles même sans base de données
 pub fn produits() -> HashMap<&'static str, &'static str> {
     HashMap::from([
+        ("agave", "L’agave est une plante dont la sève est utilisée comme édulcorant naturel, à indice glycémique modéré."),
         ("ail noir", "L’ail noir est de l’ail blanc vieilli. Il a un goût doux et umami, riche en antioxydants."),
         ("argousier", "L’argousier est une baie très riche en vitamine C, antioxydants et oméga-7."),
         ("baobab", "Le baobab est riche en vitamine C et participe au bon fonctionnement immunitaire."),
@@ -73,7 +74,35 @@ pub fn produits() -> HashMap<&'static str, &'static str> {
         ("germination", "La germination est le processus par lequel une graine devient une jeune pousse, riche en nutriments."),
         ("germoir", "Un germoir est un récipient conçu pour faire germer des graines à la maison."),
         ("pousses", "Les micropousses sont de jeunes pousses de légumes ou herbes très concentrées en nutriments."),
+        ("seitan", "Le seitan est une pâte riche en protéines, fabriquée à partir de gluten de blé. C’est un substitut de viande populaire chez les végétariens."),
         ("graines à germer", "Les graines à germer se cultivent dans un germoir et offrent un concentré de vitamines et enzymes."),
+        ("argousier", "L’argousier est une baie riche en vitamine C, cultivée pour ses bienfaits antioxydants."),
+        ("biodégradable", "Un produit biodégradable se décompose naturellement sans polluer l’environnement."),
+        ("biologique", "Un produit biologique est cultivé sans pesticides chimiques ni OGM."),
+        ("camerise", "La camerise est une baie nordique riche en antioxydants, proche du bleuet."),
+        ("casher", "Un aliment casher respecte les lois alimentaires juives traditionnelles."),
+        ("chia", "Les graines de chia sont riches en fibres et oméga-3, utiles pour la digestion."),
+        ("chimichurri", "Le chimichurri est une sauce argentine à base de persil, ail et vinaigre."),
+        ("cire d’abeille", "La cire d’abeille est utilisée en cosmétique, bougies et emballages réutilisables."),
+        ("collagène", "Le collagène est une protéine essentielle pour la peau, les articulations et les os."),
+        ("faible en glucides", "Un produit faible en glucides contient peu de sucres et convient aux régimes cétogènes."),
+        ("faible en gluten", "Contient moins de gluten, adapté aux personnes sensibles (mais pas cœliaques)."),
+        ("fauxmage", "Le fauxmage est une alternative végétalienne au fromage, souvent à base de noix."),
+        ("fodmaps", "Les FODMAPs sont des sucres fermentescibles pouvant causer des troubles digestifs."),
+        ("germination", "La germination transforme les graines en jeunes pousses riches en nutriments."),
+        ("germoir", "Un germoir est un récipient pour faire germer des graines à la maison."),
+        ("graines à germer", "Les graines à germer permettent de cultiver facilement des pousses comestibles."),
+        ("herbe de blé", "L’herbe de blé est une jeune pousse détoxifiante riche en chlorophylle et vitamines."),
+        ("reishi", "Le reishi est un champignon médicinal reconnu pour ses effets relaxants et immunostimulants."),
+        ("ashwagandha", "L’ashwagandha est une plante adaptogène utilisée pour réduire le stress et soutenir l’énergie."),
+        ("curcuma", "Le curcuma est une racine aux propriétés anti-inflammatoires, souvent utilisée en cuisine et en santé."),
+        ("hydromel", "L’hydromel est une boisson fermentée à base de miel, consommée depuis l’Antiquité."),
+        ("amarante", "L’amarante est une pseudo-céréale riche en protéines, sans gluten."),
+        ("cresson", "Le cresson est une plante aquatique très riche en vitamines A, C et K."),
+        ("katsuobushi", "Le katsuobushi est du poisson séché et fermenté, utilisé dans la cuisine japonaise."),
+        ("tamarin", "Le tamarin est un fruit tropical au goût acidulé, utilisé comme condiment ou laxatif doux."),
+        ("caroube", "La caroube est une alternative au cacao, naturellement sucrée et sans caféine."),
+        ("shiso", "Le shiso est une herbe aromatique japonaise au goût unique, utilisée en garniture ou en infusion."),
         ("non pasteurisé", "Un produit non pasteurisé n’a pas été chauffé, ce qui conserve ses bactéries bénéfiques et enzymes actives."),
     ])
 }
@@ -105,24 +134,62 @@ pub fn succes() -> HashMap<String, String> {
     map
 }
 
-fn sanitize(text: &str) -> String {
-    text.to_lowercase()
-        .replace(['é','è','ê','ë'], "e")
-        .replace(['à','â','ä'], "a")
-        .replace(['î','ï'], "i")
-        .replace(['ô','ö'], "o")
-        .replace(['ù','ü','û'], "u")
-        .replace(['ç'], "c")
-        .chars()
-        .map(|c| if c.is_alphanumeric() || c.is_whitespace() { c } else { ' ' })
-        .collect::<String>()
+pub fn sanitize(text: &str) -> String {
+    text
+        .to_lowercase()
+        .replace(['?', '.', '!', ',', ';', ':', '\n', '\r'], "") 
+        .replace("’", "'")  
+        .replace("é", "e")
+        .replace("è", "e")
+        .replace("ê", "e")
+        .replace("à", "a")
+        .replace("ç", "c")
 }
 
 pub fn chercher_reponse_statique(message: &str) -> Option<String> {
+
+   
+
     let msg = sanitize(message);   
-    println!("[DEBUG-STATIQUE] sanitize(message) -> «{}»", msg);            
+
+    let lower = msg.to_lowercase();
+         
     let words: Vec<&str> = msg.split_whitespace().collect();
-    println!("[DEBUG-STATIQUE] words = {:?}", words);
+    
+    let phrases_courtoisie = [
+        ("bonjour", "👋 Bonjour à toi aussi ! Comment puis-je t’aider ?"),
+        ("salut", "👋 Salut ! Dis-moi ce que tu veux savoir."),
+        ("ça va", "😊 Je suis un bot, donc toujours au top ! Et toi ?"),
+        ("merci beaucoup", "🙏 C’est toujours un plaisir d’aider."),
+        ("merci", "🙏 Avec plaisir !"),
+        ("au revoir", "👋 À bientôt !"),
+        ("bye", "👋 Bye bye !"),
+        ("hello", "👋 Hello ! Tu veux un renseignement ?"),
+    ];
+
+    
+
+    for (mot, reponse) in phrases_courtoisie.iter() {
+        if lower.contains(mot) {
+            return Some(reponse.to_string());
+        }
+    }
+
+    
+    let relances = [
+        ("peux-tu m'aider", "Bien sûr ! Tu veux des infos sur un produit, un événement, une route, une vente ?"),
+        ("tu peux m’aider", "Avec plaisir ! Tu cherches quelque chose en particulier ? Produit, vente, événement, route ?"),
+        ("aide moi", "Je suis là pour ça ! Tu as besoin d'aide sur un sujet précis ?"),
+        ("oui", "Oui mais... sur quoi exactement ? Je ne lis pas encore dans les pensées 😄"),
+        ("non", "Pas de souci ! Si je peux faire autre chose, n’hésite pas."),
+        ("je sais pas", "Pas de problème. Tu veux que je te parle d’un produit, d’un événement ou d’une route peut-être ?"),
+    ];
+
+    for (mot, reponse) in relances.iter() {
+        if lower.contains(mot) {
+            return Some(reponse.to_string());
+        }
+    }
 
    
     let jours = [("lundi", "1000 à 1999 (1999 = pickup)"),
@@ -172,5 +239,62 @@ pub fn chercher_reponse_statique(message: &str) -> Option<String> {
         }
     }
 
+    let lower = msg.to_lowercase();
+
+    if lower.contains("bonjour") || lower.contains("salut") || lower.contains("yo") {
+        return Some("👋 Bonjour à toi aussi ! Comment puis-je t’aider ?".to_string());
+    }
+    if lower.contains("bonjour")
+        || lower.contains("salut")
+        || lower.contains("yo")
+        || lower.contains("coucou")
+        || lower.contains("hello")
+        || lower.contains("hey")
+        || lower.contains("ça va")
+        || lower.contains("comment tu vas")
+        || lower.contains("tu vas bien")
+    {
+        return Some("👋 Bonjour ! Je vais très bien, et toi ? Comment puis-je t’assister aujourd’hui ?".to_string());
+    }
+
+    if lower.contains("blague") {
+        let blagues = [
+            "Pourquoi les devs aiment le café ? Parce que c’est le Java de la vie ☕",
+            "Je suis un bot, donc mes blagues sont codées en dur ! 🤖",
+            "Pourquoi le bot a été licencié ? Il manquait d’émotion… 😅",
+        ];
+        return Some(blagues[rand::random::<usize>() % blagues.len()].to_string());
+    }
+
+    if lower.contains("fatigué")
+        || lower.contains("épuisé")
+        || lower.contains("difficile")
+        || lower.contains("compliqué")
+        || lower.contains("marre")
+        || lower.contains("j’y arrive pas")
+        || lower.contains("je suis à bout")
+        || lower.contains("j’en peux plus")
+    {
+        let boosts = [
+            "🌱 Respire un bon coup, tu fais de ton mieux et c’est déjà énorme.",
+            "🫶 Chaque jour compte, même les petits pas sont des avancées.",
+            "☀️ Ce que tu fais a de la valeur. Prends soin de toi aussi.",
+            "💚 Tu aides des gens chaque jour. Garde confiance, tu n’es pas seul(e).",
+            "🌿 Même un arbre robuste a besoin de repos. Courage, ça ira mieux bientôt.",
+        ];
+        return Some(boosts[rand::random::<usize>() % boosts.len()].to_string());
+    }
+
+    if lower.contains("motive moi") || lower.contains("motivation") || lower.contains("besoin de force") {
+        let boosts = [
+            "💪 Tu es capable de grandes choses, même dans les journées plus grises.",
+            "🔋 Garde le cap, l’impact que tu as est réel, même s’il ne se voit pas tout de suite.",
+            "🌟 Ta bienveillance et ton travail font une vraie différence chaque jour.",
+        ];
+        return Some(boosts[rand::random::<usize>() % boosts.len()].to_string());
+    }
+
     None
 }
+
+

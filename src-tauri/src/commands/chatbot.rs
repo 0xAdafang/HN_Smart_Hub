@@ -1,8 +1,12 @@
 use sqlx::PgPool;
 use crate::commands::chatbot_logs::log_interaction;
-use crate::models::intent::{analyze_intent, normalize_entity};
-use crate::models::static_infos::{self, produits};
+use crate::models::intent::{analyze_intent};
+use crate::models::static_infos::{self};
 use crate::{AppState};
+use std::collections::HashMap;
+use std::sync::Mutex;
+use lazy_static::lazy_static;
+
 
 
 
@@ -17,7 +21,7 @@ pub(crate) fn extract_last_word(message: &str) -> String {
         .to_string()
 }
 
-pub async fn extract_entity_from_phrase(phrase: &str, pool: &PgPool) -> Option<String> {
+/* pub async fn extract_entity_from_phrase(phrase: &str, pool: &PgPool) -> Option<String> {
     let produits = sqlx::query!(
         "SELECT nom FROM produits_alimentaires"
     )
@@ -34,9 +38,7 @@ pub async fn extract_entity_from_phrase(phrase: &str, pool: &PgPool) -> Option<S
         }
     }
     None
-}
-
-
+} */
 
 
 #[tauri::command]
@@ -46,6 +48,7 @@ pub async fn chatbot_query(message: String, user_id: i32, role: String, state: t
     let intent = result.intent;
     let entity = result.entity;
 
+    
     match intent {
 
         // SECTION RH
@@ -327,11 +330,10 @@ pub async fn chatbot_query(message: String, user_id: i32, role: String, state: t
             }
         }
 
-
         _ => {
-             println!("[DEBUG] question reçue : {}", message);     
+             
             let response = if let Some(reponse) = static_infos::chercher_reponse_statique(&message) {
-                println!("[DEBUG] réponse statique trouvée"); 
+                
                 reponse
             } else {
                 println!("[DEBUG] aucune réponse statique trouvée");
@@ -341,6 +343,6 @@ pub async fn chatbot_query(message: String, user_id: i32, role: String, state: t
             log_interaction(user_id, &message, &response, pool).await;
             Ok(response)
         }
-
     }
 }
+

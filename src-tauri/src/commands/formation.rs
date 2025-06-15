@@ -1,5 +1,5 @@
 use crate::models::{Formation, QuizQuestion, QuizResult, QuizResultWithNames, AppState};
-use sqlx::FromRow;
+
 
 #[tauri::command]
 pub async fn get_all_formations(state: tauri::State<'_, AppState>) -> Result<Vec<Formation>, String> {
