@@ -51,7 +51,7 @@ export default function TodoWidget() {
       <div className="space-y-2">
         <div className="flex items-center gap-2 flex-wrap">
           <select
-            value={heure.split(":"[0])}
+            value={heure.split(":")[0]}
             onChange={(e) =>
               setHeure(`${e.target.value.padStart(2, "0")}:${heure.split(":")[1]}`)
             }

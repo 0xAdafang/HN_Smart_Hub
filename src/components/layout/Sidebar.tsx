@@ -34,15 +34,15 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
         {user?.role === "Admin" && (
           <>
             <SidebarLink
-              icon={<Users />}
-              label="Comptes"
-              section="gestionComptes"
-              onClick={onNavigate}
-            />
-            <SidebarLink
               icon={<GraduationCap />}
               label="Suivi Formation"
               section="adminFormation"
+              onClick={onNavigate}
+            />
+             <SidebarLink
+              icon={<Users />}
+              label="Comptes"
+              section="gestionComptes"
               onClick={onNavigate}
             />
           </>

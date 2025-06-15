@@ -49,14 +49,7 @@ export default function ChatBotWidget({ userId, role }: { userId: number; role: 
         💬
       </button>
 
-      {loading && (
-        <div className="text-xs italic text-zinc-500 dark:text-zinc-300">
-          Le bot réfléchit
-          <span className="inline-block animate-bounce delay-0">.</span>
-          <span className="inline-block animate-bounce delay-100">.</span>
-          <span className="inline-block animate-bounce delay-200">.</span>
-        </div>
-      )}
+      
 
       {open && (
         <div className="fixed bottom-20 right-4 w-80 bg-white text-black dark:bg-zinc-800 dark:text-white border dark:border-zinc-700 rounded-xl shadow-xl p-4 flex flex-col gap-2 z-50">
@@ -77,23 +70,23 @@ export default function ChatBotWidget({ userId, role }: { userId: number; role: 
                     ? "bg-green-100 dark:bg-green-900 self-end"
                     : "bg-zinc-200 dark:bg-zinc-700 self-start"
                 }`}
-                >
+              >
                 {msg.text}
-                </div>
+              </div>
             ))}
-            {loading && <div className="text-xs italic">Le bot réfléchit...</div>}
+            {loading && <div className="text-xs italic text-zinc-500 dark:text-zinc-300">Le bot réfléchit...</div>}
           </div>
 
           <div className="flex mt-2 gap-2">
             <input
-            className="flex-1 p-2 text-sm border rounded 
+              className="flex-1 p-2 text-sm border rounded 
                         bg-white text-black placeholder:text-zinc-400
                         dark:bg-zinc-700 dark:text-white dark:placeholder:text-zinc-400 
                         dark:border-zinc-600"
-            placeholder="Posez une question..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+              placeholder="Posez une question..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
             />
             <button
               onClick={sendMessage}
@@ -104,6 +97,7 @@ export default function ChatBotWidget({ userId, role }: { userId: number; role: 
           </div>
         </div>
       )}
+
     </>
   );
 }
