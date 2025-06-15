@@ -24,8 +24,7 @@ type Vente = {
 export default function AdminTelevente() {
   const [ventes, setVentes] = useState<Vente[]>([]);
   const [filtreEmploye, setFiltreEmploye] = useState<string>("all");
-  const [filtreDate, setFiltreDate] = useState<"jour" | "semaine" | "mois">("jour");
-  const [employeSelectionnes, setEmployesSelectionnes] = useState<string[]>([]);
+  const [filtreDate, setFiltreDate] = useState<"jour" | "semaine" | "mois"| "total">("jour");
 
   useEffect(() => {
     invoke("get_all_televente_entries")
@@ -34,11 +33,16 @@ export default function AdminTelevente() {
   }, []);
 
   const filtreVentes = (liste: Vente[]) => {
+
     const now = new Date();
+
     let dateMin = new Date();
+
     if (filtreDate === "jour") dateMin.setDate(now.getDate() - 1);
     if (filtreDate === "semaine") dateMin.setDate(now.getDate() - 7);
     if (filtreDate === "mois") dateMin.setMonth(now.getMonth() - 1);
+    if (filtreDate === "total") dateMin = new Date("01-01-1970");
+
     return liste.filter((v) => {
       const dateVente = new Date(v.date);
       const matchDate = dateVente >= dateMin;
@@ -137,6 +141,8 @@ export default function AdminTelevente() {
             <option value="jour">Aujourd'hui</option>
             <option value="semaine">7 jours</option>
             <option value="mois">30 jours</option>
+            <option value="total">Total</option>
+            
           </select>
         </label>
 

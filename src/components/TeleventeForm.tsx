@@ -71,6 +71,12 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
       toast.error("❌ Erreur : " + err);
     }
   };
+  const handleRemoveFromList = (index: number) => {
+    const newList = [...pendingList];
+    newList.splice(index, 1);
+    setPendingList(newList)
+  };
+
     const [salesToday, setSalesToday] = useState(0);
     const calculerBonusTotal = () => {
       return pendingList.reduce((total, item) => {
@@ -135,7 +141,7 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
     </button>
 
     {pendingList.length > 0 && (
-      <div className="mt-6">
+      <div className="mt-8">
         <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
           <ClipboardList size={18} /> Liste des appels
         </h3>
@@ -146,9 +152,18 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
         </div>
 
         {pendingList.map((item, index) => (
-          <div key={index} className="bg-zinc-100 dark:bg-zinc-700 p-4 rounded-lg mb-3 shadow">
+          <div key={index} className="relative bg-zinc-100 dark:bg-zinc-700 p-4 rounded-lg mb-3 shadow">
+            
+            <button
+              onClick={() => handleRemoveFromList(index)}
+              className="absolute top-2 right-2 text-zinc-500 hover:text-red-600"
+              title="Supprimer cette vente"
+            >
+              ❌
+            </button>
             <div><strong><PhoneCall size={14} className="inline-block mr-1" /> Client :</strong> {item.client_name} ({item.client_number})</div>
             <div><strong><Package size={14} className="inline-block mr-1" /> Produit :</strong> {item.product_name} ({item.product_code}) — Qté : {item.quantity}</div>
+            
             <div className="text-sm text-zinc-600 dark:text-zinc-300">
               <DollarSign size={14} className="inline-block mr-1" />
               Bonus estimé :
@@ -157,7 +172,9 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
                 : "0.50 $"}
               <span className="italic text-xs"> (⚠️ Boni appliquable si le client n’a jamais ou pas commandé le produit depuis 6 mois)</span>
             </div>
+
             <div><CalendarDays size={14} className="inline-block mr-1" /> <strong>Date :</strong> {item.date}</div>
+
             <label className="flex items-center gap-2 mt-2">
               <input
                 type="checkbox"

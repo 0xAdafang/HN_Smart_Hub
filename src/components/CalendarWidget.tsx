@@ -57,9 +57,6 @@ export default function CalendarWidget() {
     fetchEvenements();
   }, [user]);
 
-  const joursAvecEvenements = evenements.map((e) =>
-    new Date(e.date_debut + "T12:00:00")
-  );
 
   const ajouterEvenement = async () => {
     if (!range?.from || !nouvelEvenement.trim() || !user?.id) return;
@@ -117,6 +114,21 @@ export default function CalendarWidget() {
       console.error("Erreur suppression :", err);
     }
   };
+  const normalizeDate = (dateStr: string) => {
+    const [year, month, day] = dateStr.split("-");
+    return new Date(Number(year), Number(month) - 1, Number(day)); 
+  };
+
+  const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+  const evenementsAvenir = evenements.filter(e =>
+    normalizeDate(e.date_fin || e.date_debut) >= today
+  );
+
+  const evenementsTermines = evenements.filter(e =>
+    normalizeDate(e.date_fin || e.date_debut) < today
+  );
 
   const heures: string[] = [];
   for (let h = 8; h <= 20; h++) {
@@ -127,6 +139,9 @@ export default function CalendarWidget() {
     }
   }
 
+  const heuresFinValides = heureDebut 
+  ? heures.filter((h) => h > heureDebut)
+  : [];
 
   return (
     <Widget title="Calendrier" className="col-span-2 h-auto overflow-hidden">
@@ -180,10 +195,11 @@ export default function CalendarWidget() {
                 <select
                   value={heureFin}
                   onChange={(e) => setHeureFin(e.target.value)}
-                  className="w-1/2 px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-black dark:text-white text-sm"
+                  disabled={!heureDebut}
+                  className="w-1/2 px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-black dark:text-white text-sm disabled:opacity-50"
                 >
                   <option value="">Fin</option>
-                  {heures.map((h) => (
+                  {heuresFinValides.map((h) => (
                     <option key={h} value={h}>{h}</option>
                   ))}
                 </select>
@@ -209,7 +225,7 @@ export default function CalendarWidget() {
 
           {afficherEvenements && (
             <ul className="text-xs space-y-1 max-h-[140px] overflow-auto">
-              {evenements.map((e) => (
+              {evenementsAvenir.map((e) => (
                 <li
                   key={e.id}
                   className="bg-zinc-100 dark:bg-zinc-800 px-3 py-3 rounded flex justify-between items-start">
@@ -255,10 +271,11 @@ export default function CalendarWidget() {
                             <select
                               value={heureFin}
                               onChange={(e) => setHeureFin(e.target.value)}
-                              className="w-1/2 px-2 py-1 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-sm text-black dark:text-white"
+                              disabled={!heureDebut}
+                              className="w-1/2 px-2 py-1 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-sm text-black dark:text-white disabled:opacity-50"
                             >
                               <option value="">Fin</option>
-                              {heures.map((h) => (
+                              {heuresFinValides.map((h) => (
                                 <option key={h} value={h}>{h}</option>
                               ))}
                             </select>
@@ -304,10 +321,42 @@ export default function CalendarWidget() {
                   </button>
                 </li>
               ))}
-              {evenements.length === 0 && (
-                <li className="text-zinc-400">Aucun événement</li>
+              {evenementsAvenir.length === 0 && (
+                <li className="text-zinc-400">Aucun événement à venir</li>
               )}
             </ul>
+          )}
+          {evenementsTermines.length > 0 && (
+            <>
+              <div className="mt-3 text-sm font-semibold flex items-center gap-1">
+                <StickyNote size={16} /> Événements terminés
+              </div>
+              <ul className="text-xs space-y-1 max-h-[140px] overflow-auto mt-1">
+                {evenementsTermines.map((e) => (
+                  <li
+                    key={e.id}
+                    className="bg-zinc-200 dark:bg-zinc-900 px-3 py-2 rounded flex justify-between items-start opacity-60"
+                  >
+                    <div>
+                      <div className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                        {e.date_debut}
+                        {e.heure_debut && ` à ${e.heure_debut}`}
+                      </div>
+                      <div className="italic text-zinc-600 dark:text-zinc-400 flex items-center gap-2">
+                        {e.titre}
+                        <button
+                          className="text-red-500 hover:text-red-700"
+                          onClick={() => supprimerEvenement(e.id)}
+                          title="Supprimer"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </>
           )}
         </div>
       </div>
