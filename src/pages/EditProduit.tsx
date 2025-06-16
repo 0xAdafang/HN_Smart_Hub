@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { Produit } from "../components/ProductForm";
 import { ChevronLeft, Pencil, Trash2, Save } from "lucide-react";
+import { addToQueue } from "../utils/offlineQueue";
+import { toast } from "react-toastify";
 
 
 interface Props {
@@ -22,27 +24,39 @@ export default function EditProduit({ produit, onBack }: Props) {
         nom,
         description: description || null,
       });
-      alert("✅ Produit modifié avec succès");
+      toast("✅ Produit modifié avec succès");
       onBack();
     } catch (e) {
-      console.error("Erreur modification :", e);
-      alert("❌ Erreur lors de la modification");
+      console.warn("❌ Erreur réseau, fallback offline :", e);
+      await addToQueue({
+        type: "produit_modif",
+        id: produit.id,
+        nom,
+        description: description || null,
+      });
+      toast("⏳ Modification stockée pour plus tard.");
+      onBack();
     }
   };
 
   const supprimer = async () => {
   const confirm = window.confirm("Supprimer ce produit ?");
   if (!confirm) return;
+
   try {
     await invoke("supprimer_produit", { id: produit.id });
-    alert("✅ Produit supprimé");
+    toast("✅ Produit supprimé");
     onBack();
   } catch (e) {
-    console.error("Erreur suppression :", e);
-    alert("❌ Erreur suppression");
+    console.warn("❌ Erreur suppression, fallback offline :", e);
+    await addToQueue({
+      type: "produit_suppression",
+      id: produit.id,
+    });
+    toast("⏳ Suppression stockée pour plus tard.");
+    onBack();
   }
 };
-
   useEffect(() => {
   console.log("Produit reçu pour édition :", produit);
   if (produit) {

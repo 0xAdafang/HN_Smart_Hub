@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { Plus, Pencil, X, Save } from "lucide-react";
+import { addToQueue } from "../utils/offlineQueue";
+import { toast } from "react-toastify";
 
 
 interface Props {
@@ -30,26 +32,33 @@ export default function ProductForm({ produit, onSuccess, onCancel }: Props) {
   }, [produit]);
 
   const handleSubmit = async () => {
-    if (!nom.trim()) return alert("Le nom est obligatoire");
-    try {
-      if (produit) {
-        await invoke("modifier_produit", {
-          id: produit.id,
-          nom,
-          description: description || null,
-        });
-      } else {
-        await invoke("ajouter_produit", {
-          nom,
-          description: description || null,
-        });
-      }
-      onSuccess();
-    } catch (e) {
-      console.error("Erreur enregistrement produit :", e);
-      alert("Erreur lors de l'enregistrement");
-    }
+  if (!nom.trim()) return alert("Le nom est obligatoire");
+
+  const data = {
+    nom,
+    description: description || null,
   };
+
+  try {
+    if (produit) {
+      await invoke("modifier_produit", { id: produit.id, ...data });
+      toast.success("✅ Produit modifié !");
+    } else {
+      await invoke("ajouter_produit", data);
+      toast.success("✅ Produit ajouté !");
+    }
+    onSuccess();
+  } catch (e) {
+    console.warn("❌ Erreur réseau, fallback offline :", e);
+    await addToQueue({
+      type: produit ? "produit_modif" : "produit_ajout",
+      ...(produit ? { id: produit.id } : {}),
+      ...data,
+    });
+    toast.info("⏳ Action stockée pour synchro offline.");
+    onSuccess(); 
+  }
+};
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

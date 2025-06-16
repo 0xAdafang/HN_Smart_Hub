@@ -11,6 +11,7 @@ import {
   Save,
   DollarSign
 } from "lucide-react";
+import { addToQueue } from "../utils/offlineQueue";
 
 
 
@@ -64,11 +65,15 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
         },
       });
       toast.success("Vente envoyée !");
-      const newList = [...pendingList];
-      newList.splice(index, 1);
-      setPendingList(newList);
     } catch (err: any) {
-      toast.error("❌ Erreur : " + err);
+      console.warn("❌ Erreur réseau, ajout à la file offline :", err);
+      await addToQueue({
+        type: "televente",
+        ...vente,
+        quantity: Number(vente.quantity),
+        employee_id: employeeId,
+      });
+      toast.info("⏳ Vente stockée pour envoi différé (mode offline).");
     }
   };
   const handleRemoveFromList = (index: number) => {

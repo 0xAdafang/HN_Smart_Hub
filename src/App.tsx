@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import './styles.css';
 import { ThemeProvider } from "./lib/theme-provider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
 import IndicateursRH from "./components/IndicateursRH";
 import MaGrilleRH from "./components/MaGrilleRH";
@@ -25,6 +24,8 @@ import Layout from "./components/layout/Layout";
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
 import AjoutProduit from "./pages/AjoutProduit";
+import { getQueue, removeFromQueue } from "./utils/offlineQueue";
+import { invoke } from "@tauri-apps/api/core";
 
 export type AppSection =
   | "dashboard"
@@ -148,6 +149,7 @@ function AppContent() {
 
 
 export default function App() {
+  useOfflineSync();
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <UserProvider>
@@ -156,4 +158,36 @@ export default function App() {
       </UserProvider>
     </ThemeProvider>
   );
+}
+
+async function synchronizeQueue() {
+  const queue = await getQueue();
+  for (const item of queue) {
+    console.log("🛰️  invoke save_offline_action");
+    try {
+      const res = await invoke("save_offline_action", { payload: item });
+      if (res === "ok") {
+        console.log("✅ Action synchronisée :", item);
+        await removeFromQueue(item.id);
+      } else {
+        console.warn("⚠️ Erreur de synchro :", res);
+      }
+    } catch (e) {
+      console.error("❌ Échec d’envoi pour :", item, e);
+    }
+  }
+}
+
+export function useOfflineSync() {
+  useEffect(() => {
+    const handleOnline = () => {
+      console.log("🔌 Connexion restaurée, lancement de la synchro...");
+      synchronizeQueue();
+    };
+
+    window.addEventListener("online", handleOnline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
 }

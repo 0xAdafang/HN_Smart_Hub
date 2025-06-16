@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
 import { useUser } from "../contexts/UserContext"; 
+import { addToQueue, getQueue } from "../utils/offlineQueue";
 
 interface Evenement {
   id: number;
@@ -40,8 +41,6 @@ export default function CalendarWidget() {
   const fetchEvenements = async () => {
     if (!user?.employe_id) return;
     try {
-      console.log("user:", user); // debug ici
-      console.log("employe_id envoyé:", user?.employe_id);
       const data = await invoke<Evenement[]>("get_evenements_par_employe", {
         args: {
           employee_id: user.employe_id,
@@ -142,6 +141,7 @@ export default function CalendarWidget() {
   const heuresFinValides = heureDebut 
   ? heures.filter((h) => h > heureDebut)
   : [];
+
 
   return (
     <Widget title="Calendrier" className="col-span-2 h-auto overflow-hidden">

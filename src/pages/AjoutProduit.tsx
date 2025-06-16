@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { ChevronLeft, Plus, Save } from "lucide-react";
+import { addToQueue } from "../utils/offlineQueue";
+import { toast } from "react-toastify";
 
 interface Props {
   onBack: () => void;
@@ -15,14 +17,20 @@ export default function AjoutProduit({ onBack }: Props) {
     if (!nom.trim()) return alert("Le nom est obligatoire");
     try {
       await invoke("ajouter_produit", { nom, description: description || null });
-        setConfirmation(true);
-        setTimeout(() => {
+      setConfirmation(true);
+      setTimeout(() => {
         setConfirmation(false);
         onBack();
-        }, 2000); 
+      }, 2000);
     } catch (e) {
-      console.error("Erreur ajout :", e);
-      alert("❌ Erreur lors de l'ajout");
+      console.warn("❌ Erreur réseau, fallback offline :", e);
+      await addToQueue({
+        type: "produit_ajout",
+        nom,
+        description: description || null,
+      });
+      toast("⏳ Produit stocké pour ajout différé.");
+      onBack();
     }
   };
   

@@ -4,6 +4,7 @@ import DashboardAdminView from "./DashboardAdminView";
 import type { AppSection } from "../App"; 
 import ChatBotWidget from "../components/ChatBotWidget";
 
+
 type Props = {
   onNavigate: (section: AppSection) => void;
 };

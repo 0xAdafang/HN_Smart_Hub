@@ -1,4 +1,5 @@
 use crate::models::{ProduitAlimentaire, AppState};
+use tauri::State;
 
 
 #[tauri::command]

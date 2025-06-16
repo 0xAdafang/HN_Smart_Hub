@@ -3,9 +3,7 @@ use crate::commands::chatbot_logs::log_interaction;
 use crate::models::intent::{analyze_intent};
 use crate::models::static_infos::{self};
 use crate::{AppState};
-use std::collections::HashMap;
-use std::sync::Mutex;
-use lazy_static::lazy_static;
+
 
 
 

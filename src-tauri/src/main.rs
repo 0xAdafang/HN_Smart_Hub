@@ -2,6 +2,7 @@
 
 mod models;
 mod commands;
+mod offline;
 
 
 
@@ -11,10 +12,11 @@ use sqlx::PgPool;
 use std::env;
 use std::sync::Arc;
 
-use commands::{comptes::*, indicateurs::*, conges::*, televente::*, formation::*, produits::*, evenements::*, chatbot::*, chatbot::*};
+use commands::{comptes::*, indicateurs::*, conges::*, televente::*, formation::*, produits::*, evenements::*, chatbot::*};
 use commands::conges::demande_conge;
 
 use crate::models::AppState;
+use crate::offline::save_offline_action;
 
 
 #[tokio::main]
@@ -82,9 +84,13 @@ async fn main() {
             modifier_evenement,
             // Chatbot
             chatbot_query,
+            // Offline
+            save_offline_action,
+            
             
 
         ])
         .run(tauri::generate_context!())
         .expect("Erreur lors du lancement de l'application");
 }
+
