@@ -5,7 +5,6 @@ import {
   FileText,
   ListChecks,
   SendHorizontal,
-  XCircle,
   Flag,
   StickyNote,
   Check,

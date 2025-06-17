@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "react-toastify";
 import { CalendarDays, Inbox, PlaneTakeoff, SendHorizontal, SortAsc, SortDesc } from "lucide-react";
-import { addToQueue } from "../utils/offlineQueue";
+import { addToQueue } from "../../utils/offlineQueue";
 
 // Structure d'un congé
 interface Conge {

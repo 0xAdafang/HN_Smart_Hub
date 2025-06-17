@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import Widget from "../components/ui/Widget";
-import CalendarWidget from "../components/CalendarWidget";
+import Widget from "../../components/ui/Widget";
+import CalendarWidget from "../../components/ui/CalendarWidget";
 import "react-day-picker/dist/style.css";
 import {
   ClipboardList,
@@ -11,7 +11,7 @@ import {
   CheckCircle,
   UserX,
 } from "lucide-react";
-import TodoWidget from "../components/TodoWidget";
+import TodoWidget from "../../components/ui/TodoWidget";
 
 interface TeleventeEntry {
   employee_id: number;
@@ -38,9 +38,13 @@ export default function DashboardAdminView() {
   const [televentes, setTeleventes] = useState<TeleventeEntry[]>([]);
 
   useEffect(() => {
-    invoke<Evaluation[]>("get_all_evaluations").then(setEvaluations).catch(console.error);
+    invoke<Evaluation[]>("get_all_evaluations")
+      .then(setEvaluations)
+      .catch(console.error);
     invoke<Conge[]>("get_all_conges").then(setConges).catch(console.error);
-    invoke<TeleventeEntry[]>("get_all_televente_entries").then(setTeleventes).catch(console.error);
+    invoke<TeleventeEntry[]>("get_all_televente_entries")
+      .then(setTeleventes)
+      .catch(console.error);
   }, []);
 
   const evaluationsAFaire = evaluations.length;
@@ -58,9 +62,7 @@ export default function DashboardAdminView() {
     <div className="flex flex-col xl:flex-row gap-6">
       {/* Colonne gauche : calendrier ajusté */}
       <div className="w-full xl:w-[460px] flex-shrink-0 space-y-6">
-        
-          <CalendarWidget />
-        
+        <CalendarWidget />
       </div>
 
       {/* Colonne droite : widgets empilés en grille 2 colonnes */}
@@ -96,7 +98,9 @@ export default function DashboardAdminView() {
         <Widget title="Téléventes" className="min-h-[60px]">
           <div className="flex items-center gap-2">
             <TrendingUp size={16} />
-            <span>Total du jour : <strong>{totalVentes}</strong></span>
+            <span>
+              Total du jour : <strong>{totalVentes}</strong>
+            </span>
           </div>
           <div className="text-sm opacity-70 ml-6">
             Nombre d’entrées : {ventesAujourdHui.length}
@@ -114,7 +118,8 @@ export default function DashboardAdminView() {
             <div className="flex items-center gap-2 text-red-600 mt-2">
               <UserX size={16} />
               <span>
-                Employé critique : #{noteCritique.employee_id} (note : {noteCritique.rendement}/5)
+                Employé critique : #{noteCritique.employee_id} (note :{" "}
+                {noteCritique.rendement}/5)
               </span>
             </div>
           ) : (

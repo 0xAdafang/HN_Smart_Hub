@@ -1,69 +1,49 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { Produit } from "../components/ProductForm";
-import { ChevronLeft, Pencil, Trash2, Save } from "lucide-react";
-import { addToQueue } from "../utils/offlineQueue";
+import { ChevronLeft, Plus, Save } from "lucide-react";
+import { addToQueue } from "../../utils/offlineQueue";
 import { toast } from "react-toastify";
 
-
 interface Props {
-  produit: Produit;
   onBack: () => void;
 }
 
-export default function EditProduit({ produit, onBack }: Props) {
-    const [nom, setNom] = useState("");
-    const [description, setDescription] = useState("");
-  
+export default function AjoutProduit({ onBack }: Props) {
+  const [nom, setNom] = useState("");
+  const [description, setDescription] = useState("");
+  const [confirmation, setConfirmation] = useState(false);
 
   const enregistrer = async () => {
     if (!nom.trim()) return alert("Le nom est obligatoire");
     try {
-      await invoke("modifier_produit", {
-        id: produit.id,
+      await invoke("ajouter_produit", {
         nom,
         description: description || null,
       });
-      toast("✅ Produit modifié avec succès");
-      onBack();
+      setConfirmation(true);
+      setTimeout(() => {
+        setConfirmation(false);
+        onBack();
+      }, 2000);
     } catch (e) {
       console.warn("❌ Erreur réseau, fallback offline :", e);
       await addToQueue({
-        type: "produit_modif",
-        id: produit.id,
+        type: "produit_ajout",
         nom,
         description: description || null,
       });
-      toast("⏳ Modification stockée pour plus tard.");
+      toast("⏳ Produit stocké pour ajout différé.");
       onBack();
     }
   };
 
-  const supprimer = async () => {
-  const confirm = window.confirm("Supprimer ce produit ?");
-  if (!confirm) return;
-
-  try {
-    await invoke("supprimer_produit", { id: produit.id });
-    toast("✅ Produit supprimé");
-    onBack();
-  } catch (e) {
-    console.warn("❌ Erreur suppression, fallback offline :", e);
-    await addToQueue({
-      type: "produit_suppression",
-      id: produit.id,
-    });
-    toast("⏳ Suppression stockée pour plus tard.");
-    onBack();
+  {
+    confirmation && (
+      <div className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg z-50 animate-fade-in-out">
+        ✅ Produit ajouté avec succès !
+      </div>
+    );
   }
-};
-  useEffect(() => {
-  console.log("Produit reçu pour édition :", produit);
-  if (produit) {
-    setNom(produit.nom ?? "");
-    setDescription(produit.description ?? "");
-  }
-}, [produit]);
 
   return (
     <div className="p-4">
@@ -75,7 +55,7 @@ export default function EditProduit({ produit, onBack }: Props) {
       </button>
 
       <h1 className="text-2xl font-bold mb-6 text-bioGreen dark:text-bioGreenLight flex items-center gap-2">
-        <Pencil size={20} /> Modifier le produit
+        <Plus size={20} /> Ajouter un produit
       </h1>
 
       <label className="block mb-4 text-sm text-zinc-700 dark:text-zinc-200">
@@ -98,20 +78,12 @@ export default function EditProduit({ produit, onBack }: Props) {
         />
       </label>
 
-      <div className="flex gap-2">
-        <button
-          onClick={enregistrer}
-          className="px-4 py-2 bg-bioGreen hover:bg-green-700 text-white rounded transition flex items-center gap-1 text-sm"
-        >
-          <Save size={16} /> Enregistrer
-        </button>
-        <button
-          onClick={supprimer}
-          className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition flex items-center gap-1 text-sm"
-        >
-          <Trash2 size={16} /> Supprimer
-        </button>
-      </div>
+      <button
+        onClick={enregistrer}
+        className="px-4 py-2 bg-bioGreen hover:bg-green-700 text-white rounded transition flex items-center gap-1 text-sm"
+      >
+        <Save size={16} /> Enregistrer
+      </button>
     </div>
   );
 }

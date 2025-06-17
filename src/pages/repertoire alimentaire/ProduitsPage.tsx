@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { useUser } from "../contexts/UserContext";
-import { Produit } from "../components/ProductForm";
-import EditProduit from "./EditProduit"; 
+import { useUser } from "../../contexts/UserContext";
+import { Produit } from "../../components/forms/ProductForm";
+import EditProduit from "../repertoire alimentaire/EditProduit";
 import { ChevronLeft, Search, Plus, Pencil, Boxes } from "lucide-react";
 import AjoutProduit from "./AjoutProduit";
-
 
 interface Props {
   onBack: () => void;
@@ -14,11 +13,15 @@ interface Props {
 export default function ProduitsPage({ onBack }: Props) {
   const [produits, setProduits] = useState<Produit[]>([]);
   const [recherche, setRecherche] = useState("");
-  const [produitEnEdition, setProduitEnEdition] = useState<Produit | null>(null);
+  const [produitEnEdition, setProduitEnEdition] = useState<Produit | null>(
+    null
+  );
   const [ajoutProduitMode, setAjoutProduitMode] = useState(false);
   const { user } = useUser();
   const isAdmin = user?.role === "Admin";
-  const [produitSelectionne, setProduitSelectionne] = useState<Produit | null>(null);
+  const [produitSelectionne, setProduitSelectionne] = useState<Produit | null>(
+    null
+  );
 
   const chargerProduits = async () => {
     const data = await invoke<Produit[]>("get_all_produits");
@@ -52,15 +55,15 @@ export default function ProduitsPage({ onBack }: Props) {
     );
   }
   if (ajoutProduitMode) {
-  return (
-    <AjoutProduit
-      onBack={() => {
-        setAjoutProduitMode(false);
-        chargerProduits(); // rafraîchir la liste après ajout
-      }}
-    />
-  );
-}
+    return (
+      <AjoutProduit
+        onBack={() => {
+          setAjoutProduitMode(false);
+          chargerProduits(); // rafraîchir la liste après ajout
+        }}
+      />
+    );
+  }
 
   return (
     <div className="p-4">
@@ -99,23 +102,25 @@ export default function ProduitsPage({ onBack }: Props) {
 
       <ul className="space-y-4">
         {produits.map((p) => (
-         <li
-          key={p.id}
-          className={`bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4 rounded-md shadow-sm transition hover:shadow-md hover:scale-[1.01] ${
-            !isAdmin ? "cursor-pointer" : ""
-          }`}
+          <li
+            key={p.id}
+            className={`bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4 rounded-md shadow-sm transition hover:shadow-md hover:scale-[1.01] ${
+              !isAdmin ? "cursor-pointer" : ""
+            }`}
             onClick={() => {
               if (!isAdmin) {
                 setProduitSelectionne(p);
               }
-            }} 
+            }}
           >
             <div>
-              <h3 className="font-semibold text-zinc-800 dark:text-white">{p.nom}</h3>
+              <h3 className="font-semibold text-zinc-800 dark:text-white">
+                {p.nom}
+              </h3>
               {p.description && (
                 <p className="text-sm mt-1 text-zinc-600 dark:text-zinc-300 whitespace-pre-wrap">
-                {p.description}
-              </p>
+                  {p.description}
+                </p>
               )}
             </div>
 
@@ -142,9 +147,12 @@ export default function ProduitsPage({ onBack }: Props) {
         {produitSelectionne && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white dark:bg-zinc-800 p-6 rounded shadow-lg w-full max-w-lg border border-zinc-200 dark:border-zinc-700">
-              <h2 className="text-xl font-bold mb-4 text-bioGreen dark:text-bioGreenLight">{produitSelectionne.nom}</h2>
+              <h2 className="text-xl font-bold mb-4 text-bioGreen dark:text-bioGreenLight">
+                {produitSelectionne.nom}
+              </h2>
               <p className="text-sm text-zinc-700 dark:text-zinc-200 whitespace-pre-wrap">
-                {produitSelectionne.description || "Aucune description disponible."}
+                {produitSelectionne.description ||
+                  "Aucune description disponible."}
               </p>
 
               <div className="flex justify-end mt-6">

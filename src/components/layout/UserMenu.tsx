@@ -11,7 +11,7 @@ import { LogOut, Moon, Sun, Bell } from "lucide-react";
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { UploadCloud } from "lucide-react";
-import { OfflineQueueModal } from "../OfflineQueueStatus";
+import { OfflineQueueModal } from "../ui/OfflineQueueStatus";
 
 interface Props {
   employeeId: number;
@@ -26,8 +26,8 @@ type InfosEmploye = {
 
 export default function UserMenu({ employeeId, role, onLogout }: Props) {
   const { theme, setTheme } = useTheme();
-  const [notifications, setNotifications] = useState(() =>
-    localStorage.getItem("notifications") !== "off"
+  const [notifications, setNotifications] = useState(
+    () => localStorage.getItem("notifications") !== "off"
   );
   const [infos, setInfos] = useState<InfosEmploye | null>(null);
   const [offlineOpen, setOfflineOpen] = useState(false);
@@ -105,7 +105,10 @@ export default function UserMenu({ employeeId, role, onLogout }: Props) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <OfflineQueueModal open={offlineOpen} onClose={() => setOfflineOpen(false)} />
+      <OfflineQueueModal
+        open={offlineOpen}
+        onClose={() => setOfflineOpen(false)}
+      />
     </>
   );
 }

@@ -1,5 +1,3 @@
-// Nouveau composant AdminTelevente.tsx (version propre et finalisée)
-
 import { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import jsPDF from "jspdf";

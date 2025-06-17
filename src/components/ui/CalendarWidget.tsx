@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { DayPicker, DateRange } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import Widget from "./ui/Widget";
+import Widget from "./Widget";
 import {
   PlusCircle,
   StickyNote,
@@ -15,8 +15,8 @@ import {
   Clock,
 } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
-import { useUser } from "../contexts/UserContext"; 
-import { addToQueue, getQueue } from "../utils/offlineQueue";
+import { useUser } from "../../contexts/UserContext";
+import { addToQueue } from "../../utils/offlineQueue";
 
 interface Evenement {
   id: number;
@@ -29,13 +29,14 @@ interface Evenement {
 }
 
 export default function CalendarWidget() {
-  const { user } = useUser(); 
+  const { user } = useUser();
   const [range, setRange] = useState<DateRange | undefined>();
   const [evenements, setEvenements] = useState<Evenement[]>([]);
   const [nouvelEvenement, setNouvelEvenement] = useState("");
   const [afficherEvenements, setAfficherEvenements] = useState(true);
   const [editionId, setEditionId] = useState<number | null>(null);
-  const [editionTitre, setEditionTitre] = useState("");const [heureDebut, setHeureDebut] = useState("");
+  const [editionTitre, setEditionTitre] = useState("");
+  const [heureDebut, setHeureDebut] = useState("");
   const [heureFin, setHeureFin] = useState("");
 
   const fetchEvenements = async () => {
@@ -55,7 +56,6 @@ export default function CalendarWidget() {
   useEffect(() => {
     fetchEvenements();
   }, [user]);
-
 
   const ajouterEvenement = async () => {
     if (!range?.from || !nouvelEvenement.trim() || !user?.id) return;
@@ -151,18 +151,18 @@ export default function CalendarWidget() {
   };
   const normalizeDate = (dateStr: string) => {
     const [year, month, day] = dateStr.split("-");
-    return new Date(Number(year), Number(month) - 1, Number(day)); 
+    return new Date(Number(year), Number(month) - 1, Number(day));
   };
 
   const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
 
-  const evenementsAvenir = evenements.filter(e =>
-    normalizeDate(e.date_fin || e.date_debut) >= today
+  const evenementsAvenir = evenements.filter(
+    (e) => normalizeDate(e.date_fin || e.date_debut) >= today
   );
 
-  const evenementsTermines = evenements.filter(e =>
-    normalizeDate(e.date_fin || e.date_debut) < today
+  const evenementsTermines = evenements.filter(
+    (e) => normalizeDate(e.date_fin || e.date_debut) < today
   );
 
   const heures: string[] = [];
@@ -174,10 +174,9 @@ export default function CalendarWidget() {
     }
   }
 
-  const heuresFinValides = heureDebut 
-  ? heures.filter((h) => h > heureDebut)
-  : [];
-
+  const heuresFinValides = heureDebut
+    ? heures.filter((h) => h > heureDebut)
+    : [];
 
   return (
     <Widget title="Calendrier" className="col-span-2 h-auto overflow-hidden">
@@ -187,10 +186,14 @@ export default function CalendarWidget() {
           selected={range}
           onSelect={setRange}
           modifiersClassNames={{
-            selected: "ring-2 ring-green-600 text-black dark:text-white font-medium",
-            range_middle: "bg-green-100 dark:bg-green-900 text-black dark:text-white",
-            range_start: "ring-2 ring-green-600 text-black dark:text-white font-medium",
-            range_end: "ring-2 ring-green-600 text-black dark:text-white font-medium",
+            selected:
+              "ring-2 ring-green-600 text-black dark:text-white font-medium",
+            range_middle:
+              "bg-green-100 dark:bg-green-900 text-black dark:text-white",
+            range_start:
+              "ring-2 ring-green-600 text-black dark:text-white font-medium",
+            range_end:
+              "ring-2 ring-green-600 text-black dark:text-white font-medium",
             today: "ring-2 ring-green-600 text-black dark:text-white font-bold",
           }}
           className="rdp-custom-calendar rounded-xl"
@@ -207,48 +210,52 @@ export default function CalendarWidget() {
         />
 
         {range?.from && (
-            <div className="mt-3 space-y-2">
-              <input
-                type="text"
-                placeholder="Ajouter un événement..."
-                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-black dark:text-white"
-                value={nouvelEvenement}
-                onChange={(e) => setNouvelEvenement(e.target.value)}
-              />
+          <div className="mt-3 space-y-2">
+            <input
+              type="text"
+              placeholder="Ajouter un événement..."
+              className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-black dark:text-white"
+              value={nouvelEvenement}
+              onChange={(e) => setNouvelEvenement(e.target.value)}
+            />
 
-              <div className="flex gap-2">
-                <select
-                  value={heureDebut}
-                  onChange={(e) => setHeureDebut(e.target.value)}
-                  className="w-1/2 px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-black dark:text-white text-sm"
-                >
-                  <option value="">Début</option>
-                  {heures.map((h) => (
-                    <option key={h} value={h}>{h}</option>
-                  ))}
-                </select>
-
-                <select
-                  value={heureFin}
-                  onChange={(e) => setHeureFin(e.target.value)}
-                  disabled={!heureDebut}
-                  className="w-1/2 px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-black dark:text-white text-sm disabled:opacity-50"
-                >
-                  <option value="">Fin</option>
-                  {heuresFinValides.map((h) => (
-                    <option key={h} value={h}>{h}</option>
-                  ))}
-                </select>
-              </div>
-
-              <button
-                onClick={ajouterEvenement}
-                className="w-full bg-bioGreen text-white rounded py-1 hover:bg-green-700 text-sm flex items-center justify-center gap-2"
+            <div className="flex gap-2">
+              <select
+                value={heureDebut}
+                onChange={(e) => setHeureDebut(e.target.value)}
+                className="w-1/2 px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-black dark:text-white text-sm"
               >
-                <PlusCircle size={16} /> Ajouter l’événement
-              </button>
+                <option value="">Début</option>
+                {heures.map((h) => (
+                  <option key={h} value={h}>
+                    {h}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={heureFin}
+                onChange={(e) => setHeureFin(e.target.value)}
+                disabled={!heureDebut}
+                className="w-1/2 px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-black dark:text-white text-sm disabled:opacity-50"
+              >
+                <option value="">Fin</option>
+                {heuresFinValides.map((h) => (
+                  <option key={h} value={h}>
+                    {h}
+                  </option>
+                ))}
+              </select>
             </div>
-          )}
+
+            <button
+              onClick={ajouterEvenement}
+              className="w-full bg-bioGreen text-white rounded py-1 hover:bg-green-700 text-sm flex items-center justify-center gap-2"
+            >
+              <PlusCircle size={16} /> Ajouter l’événement
+            </button>
+          </div>
+        )}
 
         <div className="mt-4">
           <button
@@ -256,7 +263,11 @@ export default function CalendarWidget() {
             className="text-sm font-semibold mb-2 flex items-center gap-1"
           >
             <StickyNote size={16} /> Événements enregistrés
-            {afficherEvenements ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            {afficherEvenements ? (
+              <ChevronUp size={14} />
+            ) : (
+              <ChevronDown size={14} />
+            )}
           </button>
 
           {afficherEvenements && (
@@ -264,22 +275,27 @@ export default function CalendarWidget() {
               {evenementsAvenir.map((e) => (
                 <li
                   key={e.id}
-                  className="bg-zinc-100 dark:bg-zinc-800 px-3 py-3 rounded flex justify-between items-start">
+                  className="bg-zinc-100 dark:bg-zinc-800 px-3 py-3 rounded flex justify-between items-start"
+                >
                   <div>
                     <span className="font-semibold text-xs text-zinc-800 dark:text-white flex items-center gap-1">
                       <CalendarIcon size={12} />
                       {e.date_fin && e.date_fin !== e.date_debut
-                        ? `${new Date(e.date_debut + "T12:00:00").toLocaleDateString()} → ${new Date(
+                        ? `${new Date(
+                            e.date_debut + "T12:00:00"
+                          ).toLocaleDateString()} → ${new Date(
                             e.date_fin + "T12:00:00"
                           ).toLocaleDateString()}`
-                        : new Date(e.date_debut + "T12:00:00").toLocaleDateString()}
+                        : new Date(
+                            e.date_debut + "T12:00:00"
+                          ).toLocaleDateString()}
                       {e.heure_debut && (
-                      <span className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1 mt-1">
-                        <Clock size={12} />
-                        {e.heure_debut}
-                        {e.heure_fin && `→ ${e.heure_fin}`}
-                      </span>
-                    )}
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1 mt-1">
+                          <Clock size={12} />
+                          {e.heure_debut}
+                          {e.heure_fin && `→ ${e.heure_fin}`}
+                        </span>
+                      )}
                     </span>
 
                     <br />
@@ -293,29 +309,33 @@ export default function CalendarWidget() {
                         />
 
                         <div className="flex gap-2">
-                            <select
-                              value={heureDebut}
-                              onChange={(e) => setHeureDebut(e.target.value)}
-                              className="w-1/2 px-2 py-1 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-sm text-black dark:text-white"
-                            >
-                              <option value="">Début</option>
-                              {heures.map((h) => (
-                                <option key={h} value={h}>{h}</option>
-                              ))}
-                            </select>
+                          <select
+                            value={heureDebut}
+                            onChange={(e) => setHeureDebut(e.target.value)}
+                            className="w-1/2 px-2 py-1 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-sm text-black dark:text-white"
+                          >
+                            <option value="">Début</option>
+                            {heures.map((h) => (
+                              <option key={h} value={h}>
+                                {h}
+                              </option>
+                            ))}
+                          </select>
 
-                            <select
-                              value={heureFin}
-                              onChange={(e) => setHeureFin(e.target.value)}
-                              disabled={!heureDebut}
-                              className="w-1/2 px-2 py-1 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-sm text-black dark:text-white disabled:opacity-50"
-                            >
-                              <option value="">Fin</option>
-                              {heuresFinValides.map((h) => (
-                                <option key={h} value={h}>{h}</option>
-                              ))}
-                            </select>
-                          </div>
+                          <select
+                            value={heureFin}
+                            onChange={(e) => setHeureFin(e.target.value)}
+                            disabled={!heureDebut}
+                            className="w-1/2 px-2 py-1 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 text-sm text-black dark:text-white disabled:opacity-50"
+                          >
+                            <option value="">Fin</option>
+                            {heuresFinValides.map((h) => (
+                              <option key={h} value={h}>
+                                {h}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                         <div className="flex gap-2 mt-1">
                           <button
                             onClick={() => modifierEvenement(e.id)}

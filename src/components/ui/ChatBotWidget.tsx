@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { useUser } from "../contexts/UserContext";
+import { useUser } from "../../contexts/UserContext";
 
 export default function ChatBotWidget({ userId, role }: { userId: number; role: string }) {
   const [open, setOpen] = useState(false);

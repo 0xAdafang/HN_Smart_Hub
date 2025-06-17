@@ -1,29 +1,29 @@
 import React, { useEffect, useState } from "react";
-import './styles.css';
+import "./styles.css";
 import { ThemeProvider } from "./lib/theme-provider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import RegisterForm from "./components/RegisterForm";
-import IndicateursRH from "./components/IndicateursRH";
-import MaGrilleRH from "./components/MaGrilleRH";
-import GestionComptes from "./components/GestionComptes";
-import MesConges from "./components/MesConges";
-import GestionConges from "./components/GestionConges";
-import TeleventePage from "./pages/Televente";
+import RegisterForm from "./components/forms/RegisterForm";
+import IndicateursRH from "./components/rh/IndicateursRH";
+import MaGrilleRH from "./components/rh/MaGrilleRH";
+import GestionComptes from "./components/forms/GestionComptes";
+import MesConges from "./components/rh/MesConges";
+import GestionConges from "./components/forms/GestionConges";
+import TeleventePage from "./pages/televente/Televente";
 import { UserProvider, useUser } from "./contexts/UserContext";
-import AdminTelevente from "./pages/AdminTelevente";
-import FormationPage from "./pages/FormationPage";
-import FormationModule from "./components/FormationModule";
-import type { Module } from "./pages/FormationPage";
-import AdminFormation from "./components/AdminFormation";
-import ProduitsPage from "./pages/ProduitsPage";
-import { Produit } from "./components/ProductForm";
-import ProduitsAdmin from "./pages/ProduitsAdmin";
-import EditProduit from "./pages/EditProduit";
+import AdminTelevente from "./pages/televente/AdminTelevente";
+import FormationPage from "./pages/formation/FormationPage";
+import FormationModule from "./components/forms/FormationModule";
+import type { Module } from "./pages/formation/FormationPage";
+import AdminFormation from "./components/forms/AdminFormation";
+import ProduitsPage from "./pages/repertoire alimentaire/ProduitsPage";
+import { Produit } from "./components/forms/ProductForm";
+import ProduitsAdmin from "./pages/repertoire alimentaire/ProduitsAdmin";
+import EditProduit from "./pages/repertoire alimentaire/EditProduit";
 import Layout from "./components/layout/Layout";
-import DashboardPage from "./pages/DashboardPage";
-import LoginPage from "./pages/LoginPage";
-import AjoutProduit from "./pages/AjoutProduit";
+import DashboardPage from "./pages/dashboard/DashboardPage";
+import LoginPage from "./pages/login/LoginPage";
+import AjoutProduit from "./pages/repertoire alimentaire/AjoutProduit";
 import { getQueue, removeFromQueue } from "./utils/offlineQueue";
 import { invoke } from "@tauri-apps/api/core";
 
@@ -41,26 +41,23 @@ export type AppSection =
   | "gestionConges"
   | "adminTelevente"
   | "adminFormation"
-  | "produitsAdmin"     
+  | "produitsAdmin"
   | "editProduit"
   | "ajouterProduit"
-  | "options"; 
-
+  | "options";
 
 function AppContent() {
   const [section, setSection] = useState<AppSection>("dashboard");
   const { user, logout } = useUser();
   const [formationModule, setFormationModule] = useState<Module | null>(null);
-  const [produitAModifier, setProduitAModifier] = useState<Produit | null>(null);
+  const [produitAModifier, setProduitAModifier] = useState<Produit | null>(
+    null
+  );
   const [renderKey, setRenderKey] = useState(0);
 
- if (!user) {
-  return (
-    <LoginPage
-      onSuccess={() => setSection("dashboard")}
-    />
-  );
-}
+  if (!user) {
+    return <LoginPage onSuccess={() => setSection("dashboard")} />;
+  }
 
   const isAdmin = user.role === "Admin";
 
@@ -75,7 +72,12 @@ function AppContent() {
             return isAdmin ? (
               <IndicateursRH />
             ) : (
-              <MaGrilleRH onBack={() => { setRenderKey(k => k + 1); setSection("dashboard")}} />
+              <MaGrilleRH
+                onBack={() => {
+                  setRenderKey((k) => k + 1);
+                  setSection("dashboard");
+                }}
+              />
             );
 
           case "conges":
@@ -129,7 +131,7 @@ function AppContent() {
             ) : (
               <DashboardPage key={renderKey} onNavigate={setSection} />
             );
-            
+
           case "ajouterProduit":
             return <AjoutProduit onBack={() => setSection("produitsAdmin")} />;
 
@@ -146,7 +148,6 @@ function AppContent() {
     </Layout>
   );
 }
-
 
 export default function App() {
   useOfflineSync();

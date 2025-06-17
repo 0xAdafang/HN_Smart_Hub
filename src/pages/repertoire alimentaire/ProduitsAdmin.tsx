@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { Produit } from "../components/ProductForm";
-import { ChevronLeft, Search, Pencil, Trash2, Boxes } from "lucide-react";
 
+import { Produit } from "../../components/forms/ProductForm";
+
+import { ChevronLeft, Search, Pencil, Trash2, Boxes } from "lucide-react";
 
 interface Props {
   onBack: () => void;
@@ -66,7 +67,9 @@ export default function ProduitsAdmin({ onBack, onEdit }: Props) {
         <tbody className="divide-y divide-zinc-200 dark:divide-zinc-700">
           {filtrer.map((p) => (
             <tr key={p.id}>
-              <td className="px-4 py-2 text-zinc-800 dark:text-white">{p.nom}</td>
+              <td className="px-4 py-2 text-zinc-800 dark:text-white">
+                {p.nom}
+              </td>
               <td className="px-4 py-2 flex gap-2">
                 <button
                   onClick={() => onEdit(p)}

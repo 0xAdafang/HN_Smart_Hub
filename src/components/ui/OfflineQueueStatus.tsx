@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
-import { getQueue, removeFromQueue } from "../utils/offlineQueue";
+import { getQueue, removeFromQueue } from "../../utils/offlineQueue";
 import { invoke } from "@tauri-apps/api/core";
 import { RefreshCcw, X } from "lucide-react";
 
-export function OfflineQueueModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function OfflineQueueModal({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
   const [queue, setQueue] = useState<any[]>([]);
   const [syncing, setSyncing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -45,17 +51,21 @@ export function OfflineQueueModal({ open, onClose }: { open: boolean; onClose: (
   return (
     <div className="fixed bottom-24 right-4 z-50 bg-white dark:bg-zinc-800 text-sm text-black dark:text-white border border-zinc-300 dark:border-zinc-600 rounded p-4 shadow-lg w-72 transition-all">
       <div className="flex justify-between items-start mb-4">
-        <p className="font-semibold">
-            File offline : {queue.length} action(s)
-        </p>
-        <button onClick={onClose} className="text-zinc-400 hover:text-red-500 transition" title="Fermer">
-            <X size={18} />
+        <p className="font-semibold">File offline : {queue.length} action(s)</p>
+        <button
+          onClick={onClose}
+          className="text-zinc-400 hover:text-red-500 transition"
+          title="Fermer"
+        >
+          <X size={18} />
         </button>
       </div>
       {queue.length > 0 && (
         <ul className="list-disc pl-5 text-xs mb-2">
           {queue.map((item, i) => (
-            <li key={i}><code>{item.type}</code></li>
+            <li key={i}>
+              <code>{item.type}</code>
+            </li>
           ))}
         </ul>
       )}

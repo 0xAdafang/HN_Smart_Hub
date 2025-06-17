@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import Widget from "./ui/Widget";
+import Widget from "./Widget";
 import { PlusCircle, Trash2 } from "lucide-react";
-import { useUser } from "../contexts/UserContext";
+import { useUser } from "../../contexts/UserContext";
 
 interface Task {
   heure: string;
