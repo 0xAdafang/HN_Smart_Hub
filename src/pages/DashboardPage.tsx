@@ -3,7 +3,7 @@ import DashboardUserView from "./DashboardUserView";
 import DashboardAdminView from "./DashboardAdminView";
 import type { AppSection } from "../App"; 
 import ChatBotWidget from "../components/ChatBotWidget";
-import OfflineQueueStatus from "../components/OfflineQueueStatus";
+import { OfflineQueueModal } from "../components/OfflineQueueStatus"
 
 
 type Props = {
@@ -17,7 +17,6 @@ export default function DashboardPage({ onNavigate }: Props) {
 
   return (
     <div className="relative">
-      <OfflineQueueStatus />
       {user.role === "Admin" ? (
         <DashboardAdminView />
       ) : (

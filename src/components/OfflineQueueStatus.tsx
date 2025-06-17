@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { getQueue, removeFromQueue } from "../utils/offlineQueue";
 import { invoke } from "@tauri-apps/api/core";
-import { RefreshCcw, PackageOpen } from "lucide-react";
-import { UploadCloud } from "lucide-react";
+import { RefreshCcw, X } from "lucide-react";
 
-export default function OfflineQueueStatus() {
+export function OfflineQueueModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [queue, setQueue] = useState<any[]>([]);
   const [syncing, setSyncing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
 
   const fetchQueue = async () => {
     const q = await getQueue();
@@ -39,46 +37,39 @@ export default function OfflineQueueStatus() {
   };
 
   useEffect(() => {
-    fetchQueue();
-  }, []);
+    if (open) fetchQueue();
+  }, [open]);
+
+  if (!open) return null;
 
   return (
-    <div className="fixed bottom-24 right-4 z-50 flex flex-col items-end gap-2">
-      {open && (
-        <div className="bg-white dark:bg-zinc-800 text-sm text-black dark:text-white border border-zinc-300 dark:border-zinc-600 rounded p-4 shadow-lg w-72 transition-all">
-          <p className="font-semibold mb-2">
+    <div className="fixed bottom-24 right-4 z-50 bg-white dark:bg-zinc-800 text-sm text-black dark:text-white border border-zinc-300 dark:border-zinc-600 rounded p-4 shadow-lg w-72 transition-all">
+      <div className="flex justify-between items-start mb-4">
+        <p className="font-semibold">
             File offline : {queue.length} action(s)
-          </p>
-          {queue.length > 0 && (
-            <ul className="list-disc pl-5 text-xs mb-2">
-              {queue.map((item, i) => (
-                <li key={i}>
-                  <code>{item.type}</code>
-                </li>
-              ))}
-            </ul>
-          )}
-          <button
-            onClick={synchronizeNow}
-            disabled={syncing}
-            className="w-full px-3 py-1 bg-bioGreen hover:bg-green-700 text-white rounded transition flex items-center justify-center gap-2"
-          >
-            <RefreshCcw size={14} />
-            {syncing ? "Synchronisation..." : "Forcer la synchro"}
-          </button>
-          {message && (
-            <p className="mt-2 text-green-600 dark:text-green-400">{message}</p>
-          )}
-        </div>
+        </p>
+        <button onClick={onClose} className="text-zinc-400 hover:text-red-500 transition" title="Fermer">
+            <X size={18} />
+        </button>
+      </div>
+      {queue.length > 0 && (
+        <ul className="list-disc pl-5 text-xs mb-2">
+          {queue.map((item, i) => (
+            <li key={i}><code>{item.type}</code></li>
+          ))}
+        </ul>
       )}
-
       <button
-        onClick={() => setOpen(!open)}
-        className="rounded-full bg-bioGreen hover:bg-green-700 text-white w-13 h-13 shadow-md flex items-center justify-center"
-        title="File offline"
+        onClick={synchronizeNow}
+        disabled={syncing}
+        className="w-full px-3 py-1 bg-bioGreen hover:bg-green-700 text-white rounded transition flex items-center justify-center gap-2"
       >
-        <UploadCloud size={20} />
+        <RefreshCcw size={14} />
+        {syncing ? "Synchronisation..." : "Forcer la synchro"}
       </button>
+      {message && (
+        <p className="mt-2 text-green-600 dark:text-green-400">{message}</p>
+      )}
     </div>
   );
 }
