@@ -74,11 +74,25 @@ export default function CalendarWidget() {
           heure_fin: heureFin || null,
         },
       });
+
       setNouvelEvenement("");
       setRange(undefined);
       fetchEvenements();
     } catch (err) {
-      console.error("Erreur ajout événement :", err);
+      console.warn("❌ Erreur ajout événement, fallback offline :", err);
+      await addToQueue({
+        type: "evenement",
+        employee_id: user.employe_id,
+        titre: nouvelEvenement,
+        date_debut,
+        date_fin,
+        heure_debut: heureDebut || null,
+        heure_fin: heureFin || null,
+      });
+
+      setNouvelEvenement("");
+      setRange(undefined);
+      console.log("📦 Événement ajouté à la file offline");
     }
   };
 
@@ -97,11 +111,26 @@ export default function CalendarWidget() {
           heure_fin: heureFin || null,
         },
       });
+
       setEditionId(null);
       setEditionTitre("");
       fetchEvenements();
     } catch (err) {
-      console.error("Erreur modification événement :", err);
+      console.warn("❌ Erreur modif événement, fallback offline :", err);
+
+      await addToQueue({
+        type: "evenement_modif",
+        id,
+        titre: editionTitre,
+        date_debut: evenement.date_debut,
+        date_fin: evenement.date_fin,
+        heure_debut: heureDebut || null,
+        heure_fin: heureFin || null,
+      });
+
+      setEditionId(null);
+      setEditionTitre("");
+      fetchEvenements();
     }
   };
 
@@ -110,7 +139,14 @@ export default function CalendarWidget() {
       await invoke("supprimer_evenement", { id });
       fetchEvenements();
     } catch (err) {
-      console.error("Erreur suppression :", err);
+      console.warn("❌ Erreur suppression événement, fallback offline :", err);
+
+      await addToQueue({
+        type: "evenement_suppression",
+        id,
+      });
+
+      fetchEvenements();
     }
   };
   const normalizeDate = (dateStr: string) => {

@@ -152,42 +152,56 @@ export default function GestionComptes() {
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-200 dark:divide-zinc-700">
-            {comptes.map((c) => (
-              <tr key={c.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-700">
-                <td className="p-3">{c.nom}</td>
-                <td className="p-3">{c.prenom}</td>
-                <td className="p-3">{c.poste}</td>
-                <td className="p-3">{c.username}</td>
-                <td className="p-3">
-                  <select
-                    value={c.role}
-                    onChange={(e) => handleChangeRole(c.id, e.target.value)}
-                    className="border border-zinc-300 dark:border-zinc-600 rounded px-2 py-1 bg-white dark:bg-zinc-900 text-sm"
-                  >
-                    <option value="Admin">Admin</option>
-                    <option value="User">User</option>
-                  </select>
-                </td>
-                <td className="p-3 text-center">
-                  <button
-                    onClick={() => openPwdModal(c)}
-                    className="text-yellow hover:underline flex items-center gap-1 mx-auto"
-                    title="Réinitialiser le mot de passe"
-                  >
-                    <KeyRound size={16} /> Réinitialiser
-                  </button>
-                </td>
-                <td className="p-3 text-center">
-                  <button
-                    onClick={() => handleDelete(c.id)}
-                    className="text-red-600 hover:underline flex items-center gap-1 mx-auto"
-                    title="Supprimer le compte"
-                  >
-                    <Trash2 size={16} /> Supprimer
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {comptes.map((c) => {
+              const estIndestructible = c.nom === "Admin" && c.prenom === "Admin";
+
+              return (
+                <tr key={c.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-700">
+                  <td className="p-3">{c.nom}</td>
+                  <td className="p-3">{c.prenom}</td>
+                  <td className="p-3">{c.poste}</td>
+                  <td className="p-3">{c.username}</td>
+
+                  <td className="p-3">
+                    <select
+                      value={c.role}
+                      onChange={(e) => handleChangeRole(c.id, e.target.value)}
+                      className="border border-zinc-300 dark:border-zinc-600 rounded px-2 py-1 bg-white dark:bg-zinc-900 text-sm"
+                      disabled={estIndestructible}
+                    >
+                      <option value="Admin">Admin</option>
+                      <option value="User">User</option>
+                    </select>
+                  </td>
+
+                  <td className="p-3 text-center">
+                    {!estIndestructible && (
+                      <button
+                        onClick={() => openPwdModal(c)}
+                        className="text-yellow hover:underline flex items-center gap-1 mx-auto"
+                        title="Réinitialiser le mot de passe"
+                      >
+                        <KeyRound size={16} /> Réinitialiser
+                      </button>
+                    )}
+                  </td>
+
+                  <td className="p-3 text-center">
+                    {!estIndestructible ? (
+                      <button
+                        onClick={() => handleDelete(c.id)}
+                        className="text-red-600 hover:underline flex items-center gap-1 mx-auto"
+                        title="Supprimer le compte"
+                      >
+                        <Trash2 size={16} /> Supprimer
+                      </button>
+                    ) : (
+                      <span className="text-zinc-400 italic">Verrouillé</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

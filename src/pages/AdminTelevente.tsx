@@ -161,17 +161,6 @@ export default function AdminTelevente() {
         </label>
       </div>
 
-      {/* Graphique BarChart */}
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={chartData}>
-          <XAxis dataKey="name" />
-          <YAxis allowDecimals={false} />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="total" fill="#3b82f6" name="Ventes totales" />
-          <Bar dataKey="hits" fill="#10b981" name="Ventes réussies (Hit)" />
-        </BarChart>
-      </ResponsiveContainer>
 
       {/* Boutons PDF / Print */}
       <div className="my-6 flex gap-4">
@@ -239,6 +228,20 @@ export default function AdminTelevente() {
             </li>
           ))}
         </ol>
+      </div>
+
+      {/* Graphique BarChart */}
+      <div className="mt-10">
+      <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={chartData}>
+          <XAxis dataKey="name" />
+          <YAxis allowDecimals={false} />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="total" fill="#3b82f6" name="Ventes totales" />
+          <Bar dataKey="hits" fill="#10b981" name="Ventes réussies (Hit)" />
+        </BarChart>
+      </ResponsiveContainer>
       </div>
 
       {/* Graphiques */}

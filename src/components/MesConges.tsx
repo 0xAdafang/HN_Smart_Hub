@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "react-toastify";
 import { CalendarDays, Inbox, PlaneTakeoff, SendHorizontal, SortAsc, SortDesc } from "lucide-react";
+import { addToQueue } from "../utils/offlineQueue";
 
 // Structure d'un congé
 interface Conge {
@@ -51,33 +52,45 @@ export default function MesConges() {
     }
 
     try {
-      await invoke("demande_conge", {
-        payload: {
-          employe_id: Number(employe_id),
-          date_debut: form.date_debut,
-          date_fin: form.date_fin,
-          type_conge: form.type_conge,
-        },
-      });
+    const debut = new Date(form.date_debut);
+    const fin = new Date(form.date_fin);
 
-      const debut = new Date(form.date_debut);
-      const fin = new Date(form.date_fin);
-
-      if(debut > fin) {
-        toast.error("La date de début ne peut pas être après la date de fin.");
-        return
-      }
-
-      toast.success("Demande envoyée !");
-      setForm({ type_conge: "", date_debut: "", date_fin: "" });
-
-      // Recharge la liste
-      const res = await invoke("get_mes_conges", { payload: { employeId: Number(employe_id) } });
-      setConges(res as Conge[]);
-    } catch (err) {
-      console.error(err);
-      toast.error("Erreur lors de l'envoi");
+    if (debut > fin) {
+      toast.error("La date de début ne peut pas être après la date de fin.");
+      return;
     }
+
+    await invoke("demande_conge", {
+      payload: {
+        employe_id: Number(employe_id),
+        date_debut: form.date_debut,
+        date_fin: form.date_fin,
+        type_conge: form.type_conge,
+      },
+    });
+
+    toast.success("Demande envoyée !");
+    setForm({ type_conge: "", date_debut: "", date_fin: "" });
+
+    const res = await invoke("get_mes_conges", {
+      payload: { employeId: Number(employe_id) },
+    });
+    setConges(res as Conge[]);
+
+  } catch (err) {
+    console.warn("❌ Erreur lors de l'envoi, fallback offline :", err);
+
+    await addToQueue({
+      type: "conge_demande",
+      employe_id: Number(employe_id),
+      date_debut: form.date_debut,
+      date_fin: form.date_fin,
+      type_conge: form.type_conge,
+    });
+
+    toast.success("📦 Demande enregistrée hors-ligne !");
+  }
+
   };
   const congesFiltres = conges.filter((c) => {
     if (filtreStatut === "Tous") return true;
