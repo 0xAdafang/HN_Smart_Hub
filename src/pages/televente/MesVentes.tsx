@@ -28,7 +28,7 @@ type Vente = {
 
 export default function MesVentes({ employeeId }: { employeeId: number }) {
   const [ventes, setVentes] = useState<Vente[]>([]);
-  const [filter, setFilter] = useState<"jour" | "semaine" | "total">("jour");
+  const [filter, setFilter] = useState<"jour" | "semaine" | "mois" | "total">("jour");
 
   useEffect(() => {
     const fetchVentes = async () => {
@@ -55,10 +55,20 @@ export default function MesVentes({ employeeId }: { employeeId: number }) {
               const vd = new Date(v.date);
               return vd >= startOfWeek && vd <= endOfWeek;
             });
-          } else if (filter === "total") {
+            
           }
+          else if (filter === "mois") {
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-          setVentes(filtered);
+            filtered = filtered.filter(v => {
+              const vd = new Date(v.date);
+              return vd >= startOfMonth && vd <= endOfMonth;
+            });
+        } else if (filter === "total") {
+        }
+
+        setVentes(filtered);
 
       } catch (err) {
         console.error("Erreur chargement ventes :", err);
@@ -88,11 +98,14 @@ export default function MesVentes({ employeeId }: { employeeId: number }) {
         <select
           id="filter"
           value={filter}
-          onChange={(e) => setFilter(e.target.value as "jour" | "semaine" | "total")}
+          onChange={(e) =>
+            setFilter(e.target.value as "jour" | "semaine" | "mois" | "total")
+          }
           className="px-3 py-1 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-sm text-zinc-800 dark:text-white"
         >
           <option value="jour">Jour</option>
           <option value="semaine">Semaine</option>
+          <option value="mois">Mois</option>
           <option value="total">Total</option>
         </select>
       </div>
