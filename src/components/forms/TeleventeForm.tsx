@@ -28,6 +28,8 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
   });
 
   const [pendingList, setPendingList] = useState<typeof form[]>([]);
+  const [venteAValider, setVenteAValider] = useState<number | null>(null);
+
   
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -54,7 +56,8 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
   };
 
   const handleValidate = async (index: number) => {
-    const vente = pendingList[index];
+  const vente = pendingList[index];
+
     try {
       await invoke("add_televente_entry", {
         payload: {
@@ -64,7 +67,7 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
           category: vente.category,
         },
       });
-      toast.success("Vente envoyée !");
+      toast.success("✅ Vente validée !");
     } catch (err: any) {
       console.warn("❌ Erreur réseau, ajout à la file offline :", err);
       await addToQueue({
@@ -73,8 +76,10 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
         quantity: Number(vente.quantity),
         employee_id: employeeId,
       });
-      toast.info("⏳ Vente stockée pour envoi différé (mode offline).");
+      toast.info("⏳ Vente stockée hors-ligne !");
     }
+
+    setPendingList((prev) => prev.filter((_, i) => i !== index));
   };
   const handleRemoveFromList = (index: number) => {
     const newList = [...pendingList];
@@ -194,12 +199,39 @@ export default function TeleventeForm({ employeeId }: { employeeId: number }) {
             </label>
             <button
               className="mt-2 bg-green-600 hover:bg-green-700 text-white rounded px-4 py-1 flex items-center gap-2"
-              onClick={() => handleValidate(index)}
+              onClick={() => setVenteAValider(index)}
             >
               <Save size={16} /> Fait
             </button>
           </div>
         ))}
+        {venteAValider !== null && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white rounded-lg p-6 w-96 shadow-xl">
+              <h3 className="text-lg font-semibold mb-4">Confirmer la vente</h3>
+              <p className="mb-4">
+                Es-tu sûr de vouloir valider cette vente ? Cette action est définitive.
+              </p>
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setVenteAValider(null)}
+                  className="px-3 py-1 rounded bg-zinc-300 text-zinc-800"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={() => {
+                    handleValidate(venteAValider);
+                    setVenteAValider(null);
+                  }}
+                  className="px-3 py-1 rounded bg-bioGreen text-white"
+                >
+                  Valider
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     )}
   </div>
