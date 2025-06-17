@@ -13,13 +13,15 @@ import {
   RefreshCw,
   Crown
 } from "lucide-react";
-import { toast } from "react-toastify";
+import { motion, AnimatePresence } from "framer-motion";
+
 
 
 type Vente = {
   hit_click: boolean;
   date: string;
   employee_id: number;
+  client_number: string; 
 };
 
 type UnlockedAchievement = {
@@ -30,6 +32,8 @@ type UnlockedAchievement = {
 export default function Succes({ employeeId }: { employeeId: number }) {
   const [ventes, setVentes] = useState<Vente[]>([]);
   const [unlockedList, setUnlockedList] = useState<UnlockedAchievement[]>([]);
+  const [nouveauxSucces, setNouveauxSucces] = useState<string[]>([]);
+
 
 
   useEffect(() => {
@@ -54,130 +58,98 @@ export default function Succes({ employeeId }: { employeeId: number }) {
 
     useEffect(() => {
     const unlockSuccesses = async () => {
-        try {
-        if (ventes.length >= 1) {
-            await invoke("unlock_achievement", {
+      const ajouterSucces = async (code: string, label: string) => {
+        if (!unlocked[code as keyof typeof unlocked]) {
+          await invoke("unlock_achievement", {
             payload: {
-                employee_id: employeeId,
-                achievement_code: "first_call",
+              employee_id: employeeId,
+              achievement_code: code,
             },
-            });
-            toast.success('🎉 Succès "Premier appel" débloqué !');
+          });
+          setNouveauxSucces((prev) =>
+            prev.includes(label) ? prev : [...prev, label]
+          );
+        }
+      };
+
+      try {
+        if (ventes.length >= 1) {
+          await ajouterSucces("first_call", "Premier appel");
         }
 
         if (ventes.length >= 10) {
-            await invoke("unlock_achievement", {
-            payload: {
-                employee_id: employeeId,
-                achievement_code: "ten_calls_day",
-            },
-            });
-            toast.success('🎉 Succès "Appels en rafale (10/jour)" débloqué !');
+          await ajouterSucces("ten_calls_day", "Appels en rafale (10/jour)");
+        }
+
+        const refusPuisVente = ventes.some((venteActuelle, i) => {
+          if (!venteActuelle.hit_click) return false;
+          return ventes.some(
+            (v, j) =>
+              j < i &&
+              v.client_number === venteActuelle.client_number &&
+              !v.hit_click
+          );
+        });
+
+        if (refusPuisVente) {
+          await ajouterSucces("first_flip", "Le destin");
         }
 
         const hits = ventes.filter((v) => v.hit_click).length;
-        if (hits >= 5) {
-            await invoke("unlock_achievement", {
-            payload: {
-                employee_id: employeeId,
-                achievement_code: "five_hit",
-            },
-            });
-            toast.success('🎉 Succès "100% Hit (5 ventes)" débloqué !');
-        }
         const total = ventes.length;
 
-
-      // Trente appels cumulés
-      if (total >= 30) {
-        await invoke("unlock_achievement", {
-          payload: {
-            employee_id: employeeId,
-            achievement_code: "thirty_total",
-          },
-        });
-        toast.success('🎉 Succès "30 ventes cumulées" débloqué !');
-      }
-
-      // Journée sans Hit
-      if (total > 0 && hits === 0) {
-        await invoke("unlock_achievement", {
-          payload: {
-            employee_id: employeeId,
-            achievement_code: "no_hit_day",
-          },
-        });
-        toast.success('🎉 Succès "Journée sans Hit" débloqué !');
-      }
-
-      // Combo de 3 Hit d'affilée (simplifié)
-      let combo = 0;
-      for (const v of ventes) {
-        if (v.hit_click) {
-          combo++;
-          if (combo >= 3) break;
-        } else {
-          combo = 0;
-        }
-      }
-      
-      if (combo >= 3) {
-        await invoke("unlock_achievement", {
-          payload: {
-            employee_id: employeeId,
-            achievement_code: "combo_hit",
-          },
-        });
-        toast.success('🎉 Succès "Combo 3 Hits" débloqué !');
-      }
-
-      if (ventes.length >= 100) {
-        await invoke("unlock_achievement", {
-          payload: { employee_id: employeeId, achievement_code: "hundred_total" },
-        });
-        toast.success('🎉 Succès "100 ventes totales" débloqué !');
-      }
-
-      const totalHits = ventes.filter((v) => v.hit_click).length;
-        if (totalHits >= 1000) {
-          await invoke("unlock_achievement", {
-            payload: { employee_id: employeeId, achievement_code: "televendeur_master" },
-          });
-          toast.success('🎉 Succès "Maître télévendeur" débloqué !');
+        if (hits >= 5) {
+          await ajouterSucces("five_hit", "100% Hit !");
         }
 
-      const daysSet = new Set(ventes.map((v) => v.date));
-      if (daysSet.size >= 3) {
-        await invoke("unlock_achievement", {
-          payload: { employee_id: employeeId, achievement_code: "weekly_active" },
-        });
-        toast.success('🎉 Succès "3 jours/semaine" débloqué !');
-      }
+        if (total >= 30) {
+          await ajouterSucces("thirty_total", "Trente appels");
+        }
 
-      const sortedDates = [...daysSet].sort();
-      let streak = 1;
+        if (total > 0 && hits === 0) {
+          await ajouterSucces("no_hit_day", "Journée difficile");
+        }
 
-      for (let i = 1; i < sortedDates.length; i++) {
-        const d1 = new Date(sortedDates[i - 1]);
-        const d2 = new Date(sortedDates[i]);
-        const diff = (d2.getTime() - d1.getTime()) / (1000 * 3600 * 24);
-        streak = diff === 1 ? streak + 1: 1; 
-        if(streak >=5) break;
-      }
+        // Combo 3 Hits
+        let combo = 0;
+        for (const v of ventes) {
+          if (v.hit_click) {
+            combo++;
+            if (combo >= 3) break;
+          } else {
+            combo = 0;
+          }
+        }
+        if (combo >= 3) {
+          await ajouterSucces("combo_hit", "Combo 3 Hits");
+        }
 
-      if (streak >=5 ) {
-        await invoke("unlock_achievement", {
-          payload : { employee_id: employeeId, achievement_code: "five_days_row" },
-        });
-        await invoke("unlock_achievement", {
-          payload : { employee_id: employeeId, achievement_code: "five_day_streak" },
-        });
-        toast.success('🎉 Succès "5 jours consécutifs" et "Série de feu" débloqués !');
-      }
+        if (ventes.length >= 100) {
+          await ajouterSucces("hundred_total", "Maitre télévendeur");
+        }
 
-        } catch (err) {
+        const daysSet = new Set(ventes.map((v) => v.date));
+        if (daysSet.size >= 3) {
+          await ajouterSucces("weekly_active", "Agent assidu");
+        }
+
+        const sortedDates = [...daysSet].sort();
+        let streak = 1;
+        for (let i = 1; i < sortedDates.length; i++) {
+          const d1 = new Date(sortedDates[i - 1]);
+          const d2 = new Date(sortedDates[i]);
+          const diff = (d2.getTime() - d1.getTime()) / (1000 * 3600 * 24);
+          streak = diff === 1 ? streak + 1 : 1;
+          if (streak >= 5) break;
+        }
+
+        if (streak >= 5) {
+          await ajouterSucces("five_days_row", "Semaine active");
+          await ajouterSucces("five_day_streak", "Serie de feu");
+        }
+      } catch (err) {
         console.error("Erreur déblocage succès :", err);
-        }
+      }
     };
 
     unlockSuccesses();
@@ -301,6 +273,47 @@ export default function Succes({ employeeId }: { employeeId: number }) {
             </div>
           );
         })}
+        <AnimatePresence>
+        {nouveauxSucces.length > 0 && (
+          <motion.div
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white rounded-xl p-6 shadow-xl w-full max-w-md"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Sparkles size={24} className="text-yellow-500" />
+                Succès débloqué{nouveauxSucces.length > 1 ? "s" : ""}
+              </h3>
+
+              <ul className="mb-4 space-y-2">
+                {nouveauxSucces.map((s, i) => (
+                  <li key={i} className="flex items-center gap-2 text-sm">
+                    <CheckCircle size={16} className="text-green-500" />
+                    <strong>{s}</strong>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setNouveauxSucces([])}
+                  className="px-4 py-1 rounded bg-bioGreen text-white hover:bg-green-700"
+                >
+                  OK
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+        </AnimatePresence>
       </div>
     </div>
 );
