@@ -69,7 +69,7 @@
 - Notifications dynamiques selon le contexte (vente à faire, client à rappeler, etc.).
 
 ### 🤖 Assistant IA local (offline)
-- Chatbot local embarqué (Rust ↔ Elixir).
+- Chatbot local embarqué (Rust - Concept : Regex, Intent, StaticWords, HashMap).
 - Capable de répondre à des questions métier (congés restants, infos produits, etc.).
 - Intelligence d’intention avec reconnaissance sémantique.
 
