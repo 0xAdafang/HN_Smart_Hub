@@ -89,7 +89,7 @@ L’application inclut un système **offline-first** :
 |-------------------|---------------------|
 | TypeScript        | Rust (Tauri)        |
 | React             | SQLx + PostgreSQL   |
-| Tailwind CSS      | Elixir (assistant)  |
+| Tailwind CSS      |                     |
 | Framer Motion     |                     |
 
 ---
