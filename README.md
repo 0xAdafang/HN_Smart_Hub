@@ -108,7 +108,7 @@ Ce projet m’a permis de :
 
 ## 📸 Crédits & Remerciements
 
-- 💡 Interface inspirée du projet [`tauri-ui`](https://github.com/agmmnn) d’[@agmmnn](https://github.com/agmmnn) — un grand merci pour cette base solide et élégante.
+- 💡 Interface inspirée du projet [`tauri-ui`](https://github.com/agmmnn) d’[@agmmnn](https://github.com/agmmnn) 
 - 🎨 Palette de couleurs : **Marble** (`#F2F8DC`) & **Dark Blue** (`#0F172A`)
 - 🖼 Icônes : [Lucide](https://lucide.dev/)
 - 📊 Graphiques : [Recharts](https://recharts.org/)
