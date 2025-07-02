@@ -2,7 +2,7 @@
 
 **HN Smart Hub** is a modern, high-performance, and functional desktop application developed with **Tauri**, **TypeScript**, **Rust**, and **React**. It's designed to centralize HR management, sales, training, and customer support in an ergonomic and responsive environment.
 
-> **Note:** This application is built in French to serve French-speaking users in Quebec, Canada.
+> ⚠️ *Please note: The application is in French to reflect its localized context.*
 
 ---
 
