@@ -1,91 +1,93 @@
 # 🧠 HN Smart Hub
 
-**HN Smart Hub** est une application de bureau moderne, performante et fonctionnelle, développée avec **Tauri**, **TypeScript**, **Rust** et **React**. Elle est conçue pour centraliser la gestion RH, les ventes, la formation et l'assistance client dans un environnement ergonomique et réactif.
+**HN Smart Hub** is a modern, high-performance, and functional desktop application developed with **Tauri**, **TypeScript**, **Rust**, and **React**. It's designed to centralize HR management, sales, training, and customer support in an ergonomic and responsive environment.
+
+> **Note:** This application is built in French to serve French-speaking users in Quebec, Canada.
 
 ---
 
-## 🎨 Aperçu visuel
+## 🎨 Visual Overview
 
-### 🌞 Thème clair
+### 🌞 Light Theme
 ![Dashboard Light](./images/1.jpg)
 
-### 🌙 Thème sombre
+### 🌙 Dark Theme
 ![Dashboard Dark](./images/2.jpg)
 
 ---
 
-## 🚀 Fonctionnalités principales
+## 🚀 Key Features
 
-### 🔐 Authentification sécurisée
-- Système de login avec gestion des rôles (admin / utilisateur).
-- Redirection automatique vers le dashboard approprié après connexion.
+### 🔐 Secure Authentication
+- Login system with role management (admin / user).
+- Automatic redirection to the appropriate dashboard after login.
 
-### 🧭 Dashboard interactif
-- Vue d'ensemble personnalisée selon le rôle.
-- Widgets dynamiques : alertes, congés restants, rappels, indicateurs RH à traiter.
+### 🧭 Interactive Dashboard
+- Personalized overview based on user role.
+- Dynamic widgets: alerts, remaining vacation days, reminders, HR indicators to process.
 
-### 📊 Indicateurs RH
-- Visualisation et évaluation des employés (grilles 1–10).
-- Accès restreint selon les rôles.
-- Filtres dynamiques pour une navigation rapide.
+### 📊 HR Indicators
+- Employee visualization and evaluation (1–10 rating scales).
+- Role-based access restrictions.
+- Dynamic filters for quick navigation.
 
-### 🌴 Congés
-- Système de demande et validation.
-- Compteur de jours restants.
-- Calendrier interactif synchronisé.
+### 🌴 Vacation Management
+- Request and approval system.
+- Remaining days counter.
+- Synchronized interactive calendar.
 
-### 🥦 Répertoire alimentaire
-- Accès rapide à une base de produits alimentaires.
-- Descriptions détaillées utiles pour les appels clients.
+### 🥦 Food Directory
+- Quick access to a food product database.
+- Detailed descriptions useful for customer calls.
 
-### 📞 Télévente
-- Formulaire de saisie rapide avec jauge de progression.
-- Vue détaillée des ventes par utilisateur.
-- Statistiques & succès débloquables.
-- Vue admin : comparatif, filtres, export PDF.
+### 📞 Telesales
+- Quick entry form with progress gauge.
+- Detailed sales view per user.
+- Statistics & unlockable achievements.
+- Admin view: comparison, filters, PDF export.
 
-### 🎓 Formation
-- Modules de formation interactifs (Acomba, commandes, routes, appels, etc.).
-- Quiz de validation intégrés.
-- Suivi de progression visible par les admins.
+### 🎓 Training
+- Interactive training modules (Acomba, orders, routes, calls, etc.).
+- Integrated validation quizzes.
+- Progress tracking visible to admins.
 
-### 👤 Gestion de compte
-- Création/modification des utilisateurs (admin only).
-- Rôles attribués dynamiquement.
+### 👤 Account Management
+- User creation/modification (admin only).
+- Dynamically assigned roles.
 
-### 👥 Vue différenciée selon le rôle
-- Interface utilisateur personnalisée.
-- Admins ont accès à la gestion RH, formations, ventes, création de comptes, etc.
+### 👥 Role-Based Interface
+- Personalized user interface.
+- Admins have access to HR management, training, sales, account creation, etc.
 
-### 📆 Événements
-- Ajout de rappels dans le calendrier intégré.
-- Visualisation claire des événements planifiés.
+### 📆 Events
+- Add reminders to the integrated calendar.
+- Clear visualization of scheduled events.
 
 ### ✅ Todo List
-- Gestion simple des tâches journalières.
-- Intégrée au dashboard.
+- Simple daily task management.
+- Integrated into the dashboard.
 
-### 🚨 Alerte widget
-- Notifications dynamiques selon le contexte (vente à faire, client à rappeler, etc.).
+### 🚨 Alert Widget
+- Dynamic notifications based on context (sales to make, customers to call back, etc.).
 
-### 🤖 Assistant IA local (offline)
-- Chatbot local embarqué (Rust - Concept : Regex, Intent, StaticWords, HashMap).
-- Capable de répondre à des questions métier (congés restants, infos produits, etc.).
-- Intelligence d’intention avec reconnaissance sémantique.
-
----
-
-## 🔌 Mode hors-ligne
-
-L’application inclut un système **offline-first** :
-- Les actions (ex : demande de congé) sont stockées localement si la connexion échoue.
-- Synchronisation automatique dès que la connexion est rétablie.
+### 🤖 Local AI Assistant (offline)
+- Embedded local chatbot (Rust - Concept: Regex, Intent, StaticWords, HashMap).
+- Capable of answering business questions (remaining vacation days, product info, etc.).
+- Intent intelligence with semantic recognition.
 
 ---
 
-## 🛠️ Stack technique
+## 🔌 Offline Mode
 
-| Frontend          | Backend / Logiciel |
+The application includes an **offline-first** system:
+- Actions (e.g., vacation requests) are stored locally if the connection fails.
+- Automatic synchronization as soon as the connection is restored.
+
+---
+
+## 🛠️ Tech Stack
+
+| Frontend          | Backend / Software  |
 |-------------------|---------------------|
 | TypeScript        | Rust (Tauri)        |
 | React             | SQLx + PostgreSQL   |
@@ -94,40 +96,40 @@ L’application inclut un système **offline-first** :
 
 ---
 
-## 🧠 Objectifs pédagogiques
+## 🧠 Learning Objectives
 
-Ce projet m’a permis de :
+This project allowed me to:
 
-- Approfondir Rust dans un contexte applicatif concret.  
-- Créer un design moderne avec React + Tailwind.  
-- Expérimenter les architectures offline-first.  
-- Intégrer une IA locale avec logique d’intention.  
-- Gérer un projet complet en frontend + backend.
-
----
-
-## 📸 Crédits & Remerciements
-
-- 💡 Interface inspirée du projet [`tauri-ui`](https://github.com/agmmnn) d’[@agmmnn](https://github.com/agmmnn) 
-- 🎨 Palette de couleurs : **Marble** (`#F2F8DC`) & **Dark Blue** (`#0F172A`)
-- 🖼 Icônes : [Lucide](https://lucide.dev/)
-- 📊 Graphiques : [Recharts](https://recharts.org/)
+- Deepen my knowledge of Rust in a concrete application context.
+- Create a modern design with React + Tailwind.
+- Experiment with offline-first architectures.
+- Integrate a local AI with intent logic.
+- Manage a complete frontend + backend project.
 
 ---
 
-## 💼 Auteur
+## 📸 Credits & Acknowledgments
+
+- 💡 Interface inspired by the [`tauri-ui`](https://github.com/agmmnn) project by [@agmmnn](https://github.com/agmmnn)
+- 🎨 Color palette: **Marble** (`#F2F8DC`) & **Dark Blue** (`#0F172A`)
+- 🖼 Icons: [Lucide](https://lucide.dev/)
+- 📊 Charts: [Recharts](https://recharts.org/)
+
+---
+
+## 💼 Author
 
 👨‍💻 **0xAdafang - Térence**  
 📫 [adafang@proton.me]  
-🇨🇦 Projet réalisé a Montrea/Québec dans le cadre d’un stage de fin d’études, l'application sera deployé et utiliser par l'entreprise qui m'a mendaté pour mon stage
+🇨🇦 Project completed in Montreal/Quebec as part of an end-of-studies internship. The application will be deployed and used by the company that hired me for this internship.
 
 ---
 
-## 📦 Installation (mode dev)
+## 📦 Installation (dev mode)
 
 ```bash
-git clone https://github.com/votre-username/hn-smart-hub
+git clone https://github.com/your-username/hn-smart-hub
 cd hn-smart-hub
 npm install
 npm run tauri dev
-
+```
