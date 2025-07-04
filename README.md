@@ -4,7 +4,7 @@
 
 > ⚠️ *Please note: The application is in French to reflect its localized context.*
 > ⚠️ *This project contains only dummy data for demonstration purposes.
-No real company information is included.
+No real company information is included.*
 
 ---
 
