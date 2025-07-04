@@ -128,8 +128,17 @@ This project allowed me to:
 ## 📦 Installation (dev mode)
 
 ```bash
-git clone https://github.com/your-username/hn-smart-hub
+git clone https://github.com/your-username/smart-hub
 cd hn-smart-hub
+
+psql -U postgres -c "CREATE DATABASE hn_smart_bdd_demo;"
+psql -U postgres -d hn_smart_bdd_demo -f sql/hn_smart_bdd_demo.sql
+
+create or modify .env file
+
+DATABASE_URL=postgres://postgres:motdepasse@localhost:5432/hn_smart_bdd_demo (example)
+
 npm install
 npm run tauri dev
+
 ```
